@@ -1,0 +1,81 @@
+// import axios from 'axios'
+import { Platform } from 'react-native';
+import moment, { utc } from 'moment';
+import baseURL from '../network/base_url';
+import axios from 'axios';
+
+export async function getApi(method, authKey) {
+  let response = {};
+
+  await axios
+    .get(baseURL.base_url + method, {
+      headers: {
+        Authorization: `Bearer ${authKey}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(resp => {
+      response = resp.data;
+      console.log('getApi response : ', response);
+    })
+    .catch(error => {
+      console.log('error : ', error);
+    });
+  return response;
+}
+
+export function getAPI(method) {
+  console.log(
+    'gitapi---baseURL.termsBaseUrl + method------',
+    baseURL.termsBaseUrl + method,
+  );
+  return fetch(baseURL.termsBaseUrl + method, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  })
+    .then(response => {
+      console.log('responseresponse--', response);
+      return response.json();
+    })
+    .catch(function (error) {
+      console.log('Request failed', error);
+    });
+}
+
+export async function postAPI(method, data) {
+  const formData = new FormData();
+  let response = {};
+  for (let key in data) {
+    formData.append(key, data[key]);
+  }
+  console.log('baseURL + method', baseURL.base_url + method);
+  console.log('Request params', formData);
+  await axios.post(baseURL.base_url + method, data).then(res => {
+    response = res.data;
+  });
+  return response;
+}
+
+export async function postApi(method, data, authKey) {
+  console.log('baseURL + method', baseURL.base_url + method);
+  let response = {};
+  await axios
+    .post(baseURL.base_url + method, data, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(res => {
+      console.log('Respoooooooooooooooo', res.data);
+      response = res.data;
+    })
+    .catch(e => {
+      console.log('eeeeeeee-----', e.response.data.message);
+      response = e.response.data;
+    });
+  return response;
+}

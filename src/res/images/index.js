@@ -1,0 +1,18 @@
+export default {
+  Back: require('./icons/back.png'),
+  arrowprev: require('./icons/arrowprev.png'),
+  downarrow: require('./icons/downArrow.png'),
+  arrownext: require('./icons/arrownext.png'),
+  Close: require('./icons/Close.png'),
+  Home: require('./icons/Home.png'),
+  logo: require('./icons/logo.png'),
+  explore: require('./icons/explore.png'),
+  loyalty: require('./icons/loyalty.png'),
+  Account: require('./icons/account.png'),
+  calender: require('./icons/calendar.png'),
+  loginBg: require('./icons/loginBg.jpg'),
+  cc: require('./icons/C1.jpg'),
+  ccc: require('./icons/C2.jpg'),
+  closeeye: require('./icons/closeeye.png'),
+  openeye: require('./icons/openeye.png'),
+};

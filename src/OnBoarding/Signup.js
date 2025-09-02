@@ -189,11 +189,19 @@ export default function SignUp(props) {
         behavior={Platform.OS === 'ios' ? 'padding' : null}
         style={[{ flex: 1 }]}
       >
+        <TouchableOpacity
+          onPress={() =>
+            props.navigation.navigate('BottomTabs', { screen: 'Explore' })
+          }
+          style={{ marginTop: 50, marginLeft: 20 }}
+        >
+          <Image source={AppImages.Back} style={{ height: 25, width: 25 }} />
+        </TouchableOpacity>
         <ScrollView
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={{ marginTop: '20%', alignSelf: 'center' }}>
+          <View style={{ marginTop: '10%', alignSelf: 'center' }}>
             <Image
               style={{ height: 150, width: 200, resizeMode: 'contain' }}
               source={AppImages.logo}
@@ -441,7 +449,7 @@ const style = StyleSheet.create({
   },
   already: {
     fontFamily: 'Montserrat-regular',
-
+    marginTop: 10,
     fontSize: fonts.fs_16,
     textAlign: 'center',
     color: colors.white,

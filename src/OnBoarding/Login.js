@@ -266,7 +266,7 @@ const style = StyleSheet.create({
   already: {
     fontSize: fonts.fs_16,
     fontFamily: 'Montserrat-regular',
-    color: colors.black,
+    color: colors.white,
     textAlign: 'center',
     shadowColor: '#000',
     shadowOffset: {

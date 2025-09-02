@@ -25,6 +25,7 @@ export default function Loyalty(props) {
         <Text style={styles.colony1}>OR</Text>
         <AppButton
           text={'JOIN NOW'}
+          onPress={() => navigation.navigate('Signup')}
           style={{ backgroundColor: Colors.WHITE, width: 250, marginTop: 20 }}
           textStyle={{
             color: Colors.BLACK,

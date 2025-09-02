@@ -24,11 +24,13 @@ function MainStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {enableSplash && <Stack.Screen name="Splash" component={Splash} />}
+      <Stack.Screen name="BottomTabs" component={BottomTabs} />
+
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Signup" component={Signup} />
       <Stack.Screen name="RestaurantList" component={RestaurantList} />
 
-      <Stack.Screen name="BottomTabs" component={BottomTabs} />
+      {/* <Stack.Screen name="BottomTabs" component={BottomTabs} /> */}
     </Stack.Navigator>
   );
 }

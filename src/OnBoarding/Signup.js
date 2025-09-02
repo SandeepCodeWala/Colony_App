@@ -208,7 +208,6 @@ export default function SignUp(props) {
             />
           </View>
           <Text style={style.getStart}>{`CREATE ACCOUNT`}</Text>
-          {/* <Text style={style.information}>{`Please enter your information.`}</Text> */}
           <InputText
             // InputIcon={Icons.userName}
             placeholder="Name"

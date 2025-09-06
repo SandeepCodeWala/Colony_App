@@ -74,7 +74,7 @@ export async function postApi(method, data, authKey) {
       response = res.data;
     })
     .catch(e => {
-      console.log('eeeeeeee-----', e.response.data.message);
+      console.log('eeeeeeee-----', e.response.data);
       response = e.response.data;
     });
   return response;

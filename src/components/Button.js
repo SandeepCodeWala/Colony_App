@@ -32,9 +32,9 @@ const style = StyleSheet.create({
   },
   searchStyle: {
     height: 48,
-    width: '65%',
+    width: '90%',
     backgroundColor: colors.buttonBgColor,
-    borderRadius: 14,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
     ...styles.row,

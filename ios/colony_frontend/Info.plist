@@ -69,6 +69,30 @@
 		<string>Montserrat-SemiBoldItalic.ttf</string>
 		<string>Montserrat-Thin.ttf</string>
 		<string>Montserrat-ThinItalic.ttf</string>
+		<string>InstrumentSans-Bold.ttf</string>
+		<string>InstrumentSans-BoldItalic.ttf</string>
+		<string>InstrumentSans-Italic.ttf</string>
+		<string>InstrumentSans-Medium.ttf</string>
+		<string>InstrumentSans-MediumItalic.ttf</string>
+		<string>InstrumentSans-Regular.ttf</string>
+		<string>InstrumentSans-SemiBold.ttf</string>
+		<string>InstrumentSans-SemiBoldItalic.ttf</string>
+		<string>InstrumentSans_Condensed-Bold.ttf</string>
+		<string>InstrumentSans_Condensed-BoldItalic.ttf</string>
+		<string>InstrumentSans_Condensed-Italic.ttf</string>
+		<string>InstrumentSans_Condensed-Medium.ttf</string>
+		<string>InstrumentSans_Condensed-MediumItalic.ttf</string>
+		<string>InstrumentSans_Condensed-Regular.ttf</string>
+		<string>InstrumentSans_Condensed-SemiBold.ttf</string>
+		<string>InstrumentSans_Condensed-SemiBoldItalic.ttf</string>
+		<string>InstrumentSans_SemiCondensed-Bold.ttf</string>
+		<string>InstrumentSans_SemiCondensed-BoldItalic.ttf</string>
+		<string>InstrumentSans_SemiCondensed-Italic.ttf</string>
+		<string>InstrumentSans_SemiCondensed-Medium.ttf</string>
+		<string>InstrumentSans_SemiCondensed-MediumItalic.ttf</string>
+		<string>InstrumentSans_SemiCondensed-Regular.ttf</string>
+		<string>InstrumentSans_SemiCondensed-SemiBold.ttf</string>
+		<string>InstrumentSans_SemiCondensed-SemiBoldItalic.ttf</string>
 	</array>
 </dict>
 </plist>

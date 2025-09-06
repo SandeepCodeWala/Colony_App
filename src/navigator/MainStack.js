@@ -5,6 +5,7 @@ import Login from '../OnBoarding/Login';
 import Signup from '../OnBoarding/Signup';
 import RestaurantList from '../OnBoarding/RestorentList';
 import BottomTabs from './BottomTabStack';
+import RightArrow from '../components/RightArrow'
 
 const Stack = createNativeStackNavigator();
 function MainStack() {
@@ -29,6 +30,7 @@ function MainStack() {
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Signup" component={Signup} />
       <Stack.Screen name="RestaurantList" component={RestaurantList} />
+       <Stack.Screen name="RightArrow" component={RightArrow} />
 
       {/* <Stack.Screen name="BottomTabs" component={BottomTabs} /> */}
     </Stack.Navigator>

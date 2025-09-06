@@ -1,12 +1,15 @@
 export default {
-  medium: 'Poppins-Medium',
-  bold: 'Poppins-Bold',
-  SemiBold: 'Poppins-SemiBold',
-  light: 'Poppins-Light',
-  regular: 'Poppins-Regular',
-  MediumItalic: 'Poppins-MediumItalic',
-  BoldItalic: 'Poppins-BoldItalic',
-  ExtraLightItalic: 'Poppins-ExtraLightItalic',
-  SemiBoldItalic: 'Poppins-SemiBoldItalic',
-  ThinItalic: 'Poppins-ThinItalic',
+  instrumentSansMedium: 'InstrumentSans-Medium', // 👈 matches Figma 500 weight
+  instrumentSansRegular: 'InstrumentSans-Regular',
+  instrumentSansBold: 'InstrumentSans-Bold',
+
+  poppinsBold: 'Poppins-Bold',
+  poppinsSemiBold: 'Poppins-SemiBold',
+  poppinsLight: 'Poppins-Light',
+  poppinsRegular: 'Poppins-Regular',
+  poppinsMediumItalic: 'Poppins-MediumItalic',
+  poppinsBoldItalic: 'Poppins-BoldItalic',
+  poppinsExtraLightItalic: 'Poppins-ExtraLightItalic',
+  poppinsSemiBoldItalic: 'Poppins-SemiBoldItalic',
+  poppinsThinItalic: 'Poppins-ThinItalic',
 };

@@ -15,4 +15,8 @@ export default {
   ccc: require('./icons/C2.jpg'),
   closeeye: require('./icons/closeeye.png'),
   openeye: require('./icons/openeye.png'),
+   restaurant: require('./icons/book1.jpg'),
+  lounge: require('./icons/book2.jpg'),
+  events: require('./icons/boo3.jpg'),
+
 };

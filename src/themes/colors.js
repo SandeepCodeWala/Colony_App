@@ -30,7 +30,8 @@ const colors = {
   maroon:"#C51230",
   specialgreen:"#1E4F49",
   selectedColor: "#283A52",
-  statusbar: '#02F3D1'
+  statusbar: '#02F3D1',
+  
   
 }
 

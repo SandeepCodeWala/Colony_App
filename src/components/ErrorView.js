@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
         width: '90%'
     },
     text: {
-        color: 'red',
+        color: 'gray',
         fontSize: 14,
         marginLeft:20,marginTop:5,
         fontFamily: 'Poppins-Medium'

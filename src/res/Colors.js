@@ -33,4 +33,11 @@ export default {
   BORDERGREY: '#ccc',
   CHATYELLOW: '#80fce22a',
   APPCOLOR: '#F3ECDE',
+  OFF_WHITE:'#FEFEFE',
+  Muted_Gold:'#B2975E',
+  BLUE_GRAY:'#E3E9ED'
+
+
+
+
 };

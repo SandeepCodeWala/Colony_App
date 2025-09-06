@@ -19,4 +19,5 @@ export default {
   lounge: require('./icons/book2.jpg'),
   events: require('./icons/boo3.jpg'),
 
+  colonyGif: require('./icons/colony.gif'),
 };

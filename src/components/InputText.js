@@ -1,63 +1,69 @@
-import React, { Component } from 'react';
-import { View, TextInput, Text, StyleSheet, Image } from 'react-native';
-import { colors, family, fonts, metrics, styles } from '../themes';
+import React from 'react';
+import { View, TextInput, Text, StyleSheet } from 'react-native';
+import { colors } from '../themes';
 
-const InputText = props => {
+const InputText = ({
+  label,
+  placeholder,
+  placeholderTextColor = '#999',
+  secureTextEntry,
+  returnKeyType,
+  keyboardType,
+  maxLength,
+  value,
+  onChangeText,
+  editable = true,
+  containerStyle,
+  inputStyle,
+  labelStyle,
+}) => {
   return (
-    <View
-      style={[
-        STYLES.inputContainer,
-        props.containerStyle,
-        { flexDirection: 'row' },
-      ]}
-    >
-      {/* <Image style={{ height:20,width:20, color: '#000',marginLeft:15,resizeMode:'contain' }} source={props.InputIcon}/> */}
-      <TextInput
-        style={[STYLES.inputText, props.inputStyle]}
-        placeholder={props.placeholder}
-        placeholderTextColor={props.placeholderTextColor}
-        underlineColorAndroid={colors.transperent}
-        secureTextEntry={props.secureTextEntry}
-        returnKeyType={props.returnKeyType}
-        keyboardType={props.keyboardType}
-        maxLength={props.maxLength}
-        value={props.value}
-        // onKeyPress={props.onKeyPress}
-        autoCorrect={false}
-        // multiline={props.multiline}
-        onChangeText={props.onChangeText}
-        editable={props.editable}
-      />
+    <View style={[styles.container, containerStyle]}>
+      <View style={{ width: '90%' }}>
+        {label ? <Text style={[styles.label, labelStyle]}>{label}</Text> : null}
+        <TextInput
+          style={[styles.input, inputStyle]}
+          placeholder={placeholder}
+          placeholderTextColor={placeholderTextColor}
+          underlineColorAndroid="transparent"
+          secureTextEntry={secureTextEntry}
+          returnKeyType={returnKeyType}
+          keyboardType={keyboardType}
+          maxLength={maxLength}
+          value={value}
+          onChangeText={onChangeText}
+          editable={editable}
+          autoCorrect={false}
+        />
+      </View>
     </View>
   );
 };
 
-const STYLES = StyleSheet.create({
-  inputContainer: {
-    height: 50,
-    width: '90%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: '#C8803A',
-    borderRadius: 12,
-    // borderBottomWidth: 1.5,
-    // borderBottomColor: colors.themeColor,
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
     alignSelf: 'center',
-    zIndex: 0,
+    marginVertical: 10,
+    alignItems: 'center',
   },
   label: {
-    fontSize: 16,
-    // color: Colors.labelColor,
-  },
-  inputText: {
-    fontSize: 18,
-    height: 55,
-    marginLeft: -5,
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 6,
+    fontFamily: 'InstrumentSans_Condensed-medium',
+    // alignSelf: 'flex-start',
 
-    flex: 1,
-    paddingLeft: 5,
+    color: '#000', // You can replace with colors.labelColor from your theme
+  },
+  input: {
+    height: 48,
+    borderWidth: 1,
+    borderColor: '#E7E7E7',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    fontSize: 16,
+    backgroundColor: colors.white,
     color: colors.black,
   },
 });

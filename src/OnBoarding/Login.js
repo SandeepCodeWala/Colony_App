@@ -26,6 +26,7 @@ import {
   checkPassword,
   checkConfirmPassword,
 } from '../components/Validation';
+import ActivityIndicator from '../components/ActivityIndicator';
 import { AppImages } from '../res';
 import InputText from '../components/InputText';
 import ErrorView from '../components/ErrorView';
@@ -46,7 +47,10 @@ export default function SignIn(props) {
     string: '',
   });
   const [isLoading, setIsLoading] = useState(false);
-
+  useEffect(() => {
+    console.log('jjjjjjjj----', props?.route?.params.membership);
+    setUserName(props?.route?.params?.membership);
+  }, [props.route]);
   const setErrorState = () => {
     if (userName === '') {
       setUserNameError(checkNormalData(userName, 'Please enter Email ID.'));
@@ -58,7 +62,7 @@ export default function SignIn(props) {
 
   const signIn = async () => {
     const data = {
-      email: userName,
+      loginField: userName,
       password: password,
     };
 
@@ -116,30 +120,47 @@ export default function SignIn(props) {
         >
           <Image source={AppImages.Back} style={{ height: 25, width: 25 }} />
         </TouchableOpacity>
+        <View style={{ marginTop: '20%', alignSelf: 'center' }}>
+          <Image
+            style={{ height: 150, width: 200, resizeMode: 'contain' }}
+            source={AppImages.logo}
+          />
+        </View>
         <ScrollView
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
-          style={{ marginBottom: 60 }}
+          style={{
+            marginBottom: 0,
+            height: 'auto',
+            width: '100%',
+            backgroundColor: 'white',
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+          }}
         >
-          <View style={{ marginTop: '20%', alignSelf: 'center' }}>
-            <Image
-              style={{ height: 150, width: 200, resizeMode: 'contain' }}
-              source={AppImages.logo}
-            />
-          </View>
+          {/* <View
+            style={{
+              height: '80%',
+              width: '100%',
+              backgroundColor: 'white',
+              justifyContent: 'flex-end',
+            }}
+          > */}
           <Text style={style.getStart}>{`SIGN IN`}</Text>
+          <Text style={style.getStart1}>{`Your Colony Account`}</Text>
+
           <InputText
-            placeholder="Email / membership number
-"
-            placeholderTextColor={colors.black}
+            placeholder="Enter email / membership no."
+            label={'Email / Membership number'}
+            placeholderTextColor={'#6D6D6D'}
             containerStyle={{ marginTop: 30 }}
             inputStyle={[
-              family.Montserrat_Regular,
               {
                 fontSize: fonts.fs_16,
-                width: '90%',
-                marginLeft: 5,
+                width: '100%',
+                // marginLeft: 5,
                 color: colors.black,
+                fontFamily: 'InstrumentSans_Condensed-medium',
               },
             ]}
             value={userName}
@@ -157,20 +178,20 @@ export default function SignIn(props) {
               width: '100%',
               justifyContent: 'center',
               alignItems: 'center',
-              marginTop: 15,
+              marginTop: 10,
             }}
           >
             <InputText
-              placeholder="Password"
-              placeholderTextColor={colors.black}
+              placeholder="Enter Password"
+              label="Password"
+              placeholderTextColor={'#6D6D6D'}
               containerStyle={{ marginTop: 0 }}
               secureTextEntry={hidePassword}
               inputStyle={[
-                family.Montserrat_Regular,
                 {
                   fontSize: fonts.fs_16,
-                  width: '90%',
-                  marginLeft: 5,
+                  width: '100%',
+                  fontFamily: 'InstrumentSans_Condensed-medium',
                   color: colors.black,
                 },
               ]}
@@ -196,6 +217,7 @@ export default function SignIn(props) {
                 style={{
                   height: 25,
                   width: 25,
+                  marginTop: 15,
                   resizeMode: 'contain',
                   tintColor: colors.black,
                 }}
@@ -204,30 +226,30 @@ export default function SignIn(props) {
             </TouchableOpacity>
           </View>
           <ErrorView text={passwordError.text} show={passwordError.status} />
-
-          {/* <Text
+          <Text
             style={style.forgot}
             onPress={() => props.navigation.push('ForgotPassword')}
-          >{`Forgot Password?`}</Text> */}
+          >{`Forgot Password?`}</Text>
 
           <Button
             title="Sign In"
             style={{ alignSelf: 'center', marginTop: 25 }}
             textTitle={{
-              fontFamily: 'Montserrat-medium',
+              fontFamily: 'InstrumentSans_Condensed-medium',
               fontSize: fonts.fs_16,
               color: colors.white,
             }}
             onPress={() => submit()}
           />
+          {/* </View> */}
         </ScrollView>
-        {/* <ActivityIndicator onRequestClose={false} isLoading={isLoading} /> */}
+        <ActivityIndicator onRequestClose={false} isLoading={isLoading} />
       </KeyboardAvoidingView>
       <View style={{ position: 'absolute', bottom: 20, alignSelf: 'center' }}>
         <Text style={style.already}>
           Don't have an account?{' '}
           <Text
-            style={{ color: '#FF0007' }}
+            style={{ color: '#2E43C5' }}
             onPress={() => props.navigation.push('Signup')}
           >
             Sign Up.
@@ -241,11 +263,17 @@ export default function SignIn(props) {
 const style = StyleSheet.create({
   container: { ...styles.container },
   getStart: {
-    fontFamily: 'Montserrat-medium',
+    fontFamily: 'InstrumentSans_Condensed-medium',
     textAlign: 'center',
-    fontSize: Platform.OS == 'ios' ? fonts.fs_36 : fonts.fs_30,
-
-    color: colors.white,
+    fontSize: Platform.OS == 'ios' ? fonts.fs_32 : fonts.fs_32,
+    color: '#1A1A1A',
+    marginTop: 30,
+  },
+  getStart1: {
+    fontFamily: 'InstrumentSans_Condensed-medium',
+    textAlign: 'center',
+    fontSize: Platform.OS == 'ios' ? fonts.fs_22 : fonts.fs_22,
+    color: colors.txtColor,
   },
   information: {
     ...family.Montserrat_Regular,
@@ -255,27 +283,26 @@ const style = StyleSheet.create({
     fontWeight: Platform.OS == 'ios' ? '600' : null,
   },
   forgot: {
-    fontFamily: 'Verlag-Book',
-
+    fontFamily: 'InstrumentSans_Condensed-medium',
     fontSize: fonts.fs_18,
     marginLeft: 20,
     marginTop: 15,
-    color: colors.white,
+    color: colors.txtColor,
     textAlign: 'center',
   },
   already: {
     fontSize: fonts.fs_16,
-    fontFamily: 'Montserrat-regular',
-    color: colors.white,
+    fontFamily: 'InstrumentSans_Condensed-regular',
+    color: colors.txtColor,
     textAlign: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
+    // shadowColor: '#000',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 4,
+    // },
+    // shadowOpacity: 0.3,
+    // shadowRadius: 4.65,
 
-    elevation: 8,
+    // elevation: 8,
   },
 });

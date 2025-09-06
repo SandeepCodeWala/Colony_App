@@ -1,5 +1,5 @@
 const baseURL = {
-  base_url: 'https://9af0054786cb.ngrok-free.app/user/',
+  base_url: 'https://31692978b769.ngrok-free.app/user/',
 };
 
 export default baseURL;

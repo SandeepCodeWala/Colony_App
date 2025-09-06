@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import React, { Component, useEffect, useState } from 'react';
 import InputText from '../components/InputText';
-// import DateTimeLevel from '../components/DateTimeLevel';
+import ActivityIndicator from '../components/ActivityIndicator';
 import Button from '../components/Button';
 import ErrorView from '../components/ErrorView';
 import { colors, family, fonts, metrics, styles } from '../themes';
@@ -131,14 +131,18 @@ export default function SignUp(props) {
     const data = {
       name: userName,
       email: email,
-      phoneNumber: phoneNumber,
+      // phoneNumber: phoneNumber,
+      // anniversary_date: '02-04-2025',
+      // birthday_date: '02-02-2025',
       password: password,
     };
     setIsLoading(true);
     const response = await postApi('register', data);
     setIsLoading(false);
     if (response.success) {
-      props.navigation.navigate('Login');
+      props.navigation.navigate('Login', {
+        membership: response?.data?.memberShipNumber,
+      });
       Alert.alert('Colony', response.message, [
         {
           text: 'OK',
@@ -395,7 +399,7 @@ export default function SignUp(props) {
           {/* </View> */}
         </ScrollView>
 
-        {/* <ActivityIndicator onRequestClose={false} isLoading={isLoading} /> */}
+        <ActivityIndicator onRequestClose={false} isLoading={isLoading} />
       </KeyboardAvoidingView>
     </ImageBackground>
     // <ImageBackground style={style.container} source={AppImages.ccc}>

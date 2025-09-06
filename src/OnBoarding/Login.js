@@ -26,6 +26,7 @@ import {
   checkPassword,
   checkConfirmPassword,
 } from '../components/Validation';
+import ActivityIndicator from '../components/ActivityIndicator';
 import { AppImages } from '../res';
 import InputText from '../components/InputText';
 import ErrorView from '../components/ErrorView';
@@ -46,7 +47,10 @@ export default function SignIn(props) {
     string: '',
   });
   const [isLoading, setIsLoading] = useState(false);
-
+  useEffect(() => {
+    console.log('jjjjjjjj----', props?.route?.params.membership);
+    setUserName(props?.route?.params?.membership);
+  }, [props.route]);
   const setErrorState = () => {
     if (userName === '') {
       setUserNameError(checkNormalData(userName, 'Please enter Email ID.'));
@@ -58,7 +62,7 @@ export default function SignIn(props) {
 
   const signIn = async () => {
     const data = {
-      email: userName,
+      loginField: userName,
       password: password,
     };
 
@@ -239,7 +243,7 @@ export default function SignIn(props) {
           />
           {/* </View> */}
         </ScrollView>
-        {/* <ActivityIndicator onRequestClose={false} isLoading={isLoading} /> */}
+        <ActivityIndicator onRequestClose={false} isLoading={isLoading} />
       </KeyboardAvoidingView>
       <View style={{ position: 'absolute', bottom: 20, alignSelf: 'center' }}>
         <Text style={style.already}>

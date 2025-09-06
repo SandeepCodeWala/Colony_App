@@ -15,4 +15,5 @@ export default {
   ccc: require('./icons/C2.jpg'),
   closeeye: require('./icons/closeeye.png'),
   openeye: require('./icons/openeye.png'),
+  colonyGif: require('./icons/colony.gif'),
 };

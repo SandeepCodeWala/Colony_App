@@ -18,6 +18,10 @@ export default {
    restaurant: require('./icons/book1.jpg'),
   lounge: require('./icons/book2.jpg'),
   events: require('./icons/boo3.jpg'),
+  rightic: require('./icons/Right.png'),
+  leftic: require('./icons/Left.png'),
+   bell: require('./icons/Bell.png'),
+
 
   colonyGif: require('./icons/colony.gif'),
 };

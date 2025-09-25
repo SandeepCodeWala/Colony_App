@@ -17,6 +17,8 @@ import ActivityIndicator from '../components/ActivityIndicator';
 import Button from '../components/Button';
 import ErrorView from '../components/ErrorView';
 import { colors, family, fonts, metrics, styles } from '../themes';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 import {
   checkNormalData,
   checkName,
@@ -195,213 +197,163 @@ export default function SignUp(props) {
   };
 
   return (
-    <ImageBackground style={style.container} source={AppImages.ccc}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : null}
-        style={[styles.container, { flex: 1 }]}
+
+<ImageBackground style={style.container} source={AppImages.ccc}>
+  {/* No need for KeyboardAvoidingView when using KeyboardAwareScrollView */}
+  <View style={{ flex: 1 }}>
+    
+    {/* Static Part: Back button + Logo */}
+    <View style={{ alignItems: 'center' }}>
+      <TouchableOpacity
+        onPress={() =>
+          props.navigation.navigate('BottomTabs', { screen: 'Explore' })
+        }
+        style={{ alignSelf: 'flex-start', marginTop: 50, marginLeft: 20 }}
       >
+        <Image source={AppImages.Back} style={{ height: 25, width: 25 }} />
+      </TouchableOpacity>
+
+      <Image
+        style={{
+          height: 150,
+          width: 200,
+          resizeMode: 'contain',
+          marginTop: 40,
+        }}
+        source={AppImages.logo}
+      />
+    </View>
+
+    {/* Scrollable Form */}
+
+    <KeyboardAwareScrollView
+      enableOnAndroid={true}
+      extraScrollHeight={20} // pushes focused input above keyboard
+      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
+      style={{
+        flex: 1,
+        backgroundColor: 'white',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        marginTop: 20,
+      }}
+    >
+      <Text style={style.getStart}>{`SIGN UP`}</Text>
+      <Text style={style.getStart1}>{`Your Colony Account`}</Text>
+
+      {/* Name */}
+      <InputText
+        placeholder="Enter your full name"
+        label="Name"
+        placeholderTextColor="#6D6D6D"
+        containerStyle={{ marginTop: 30 }}
+        value={userName}
+        onChangeText={value => {
+          setUserName(value);
+          nameValidate(value);
+        }}
+      />
+      <ErrorView text={userNameError.text} show={userNameError.status} />
+
+      {/* Phone */}
+      <InputText
+        placeholder="Enter your phone number"
+        label="Phone Number"
+        placeholderTextColor={colors.txtColor}
+        containerStyle={{ marginTop: 10 }}
+        keyboardType="phone-pad"
+        maxLength={10}
+        value={phoneNumber}
+        onChangeText={value => {
+          setPhoneNumber(value);
+          phoneValidate(value);
+        }}
+      />
+      <ErrorView text={phoneNumberError.text} show={phoneNumberError.status} />
+
+      {/* Email */}
+      <InputText
+        label="Email Address"
+        placeholder="Enter your email address"
+        containerStyle={{ marginTop: 15 }}
+        value={email}
+        onChangeText={value => {
+          setEmail(value);
+          emailValidate(value);
+        }}
+      />
+      <ErrorView text={emailError.text} show={emailError.status} />
+
+      {/* Password */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+        <InputText
+          placeholder="Enter Password"
+          label="Password"
+          secureTextEntry={hidePassword}
+          value={password}
+          onChangeText={value => {
+            setPassword(value);
+            setPasswordError(checkNormalData(value, 'Please enter password'));
+          }}
+        />
         <TouchableOpacity
-          onPress={() =>
-            props.navigation.navigate('BottomTabs', { screen: 'Explore' })
-          }
-          style={{ marginTop: 50, marginLeft: 20 }}
-        >
-          <Image source={AppImages.Back} style={{ height: 25, width: 25 }} />
-        </TouchableOpacity>
-        <View style={{ marginTop: '20%', alignSelf: 'center' }}>
-          <Image
-            style={{ height: 150, width: 200, resizeMode: 'contain' }}
-            source={AppImages.logo}
-          />
-        </View>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{
-            flexGrow: 1,
-            justifyContent: 'flex-start',
-            paddingBottom: 40,
-          }}
           style={{
-            marginBottom: 0,
-            width: '100%',
-            backgroundColor: 'white',
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
+            right: 35,
+            position: 'absolute',
           }}
+          onPress={hideOnPress}
         >
-          <Text style={style.getStart}>{`SIGN UP`}</Text>
-          <Text style={style.getStart1}>{`Your Colony Account`}</Text>
-
-          <InputText
-            placeholder="Enter your full name"
-            label={'Name'}
-            placeholderTextColor={'#6D6D6D'}
-            containerStyle={{ marginTop: 30 }}
-            inputStyle={[
-              {
-                fontSize: fonts.fs_16,
-                width: '100%',
-                // marginLeft: 5,
-                color: colors.black,
-                fontFamily: 'InstrumentSans_Condensed-medium',
-              },
-            ]}
-            value={userName}
-            onChangeText={value => {
-              setUserName(value), nameValidate(value);
-            }}
-          />
-          <ErrorView text={userNameError.text} show={userNameError.status} />
-          {/* <InputText
-            placeholder="Enter your phone number"
-            label={'Phone Number'}
-            placeholderTextColor={colors.txtColor}
-            containerStyle={{ marginTop: 10 }}
-            inputStyle={[
-              {
-                fontSize: fonts.fs_16,
-                width: '100%',
-                // marginLeft: 5,
-                color: colors.black,
-                fontFamily: 'InstrumentSans_Condensed-medium',
-              },
-            ]}
-            value={userName}
-            onChangeText={value => {
-              setUserName(value), nameValidate(value);
-            }}
-          />
-          <ErrorView text={userNameError.text} show={userNameError.status} /> */}
-          <InputText
-            placeholder="Enter your phone number"
-            label={'Phone Number'}
-            placeholderTextColor={colors.txtColor}
-            containerStyle={{ marginTop: 10 }}
-            inputStyle={[
-              {
-                fontSize: fonts.fs_16,
-                width: '100%',
-                // marginLeft: 5,
-                color: colors.black,
-                fontFamily: 'InstrumentSans_Condensed-medium',
-              },
-            ]}
-            keyboardType="phone-pad"
-            maxLength={10}
-            secureTextEntry={false}
-            returnKeyType="done"
-            value={phoneNumber}
-            onChangeText={value => {
-              setPhoneNumber(value), phoneValidate(value);
-            }}
-          />
-          <ErrorView
-            text={phoneNumberError.text}
-            show={phoneNumberError.status}
-          />
-
-          <InputText
-            label={'Email Address'}
-            placeholder="Enter your email address"
-            placeholderTextColor={colors.txtColor}
-            containerStyle={{ marginTop: 15 }}
-            inputStyle={[
-              {
-                fontSize: fonts.fs_16,
-                width: '90%',
-                color: colors.black,
-                fontFamily: 'InstrumentSans_Condensed-medium',
-              },
-            ]}
-            value={email}
-            onChangeText={value => {
-              setEmail(value), emailValidate(value);
-            }}
-          />
-          <ErrorView text={emailError.text} show={emailError.status} />
-
-          <View
+          <Image
             style={{
-              flexDirection: 'row',
-              width: '100%',
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginTop: 10,
+              height: 25,
+              width: 25,
+              resizeMode: 'contain',
+              tintColor: colors.black,
             }}
-          >
-            <InputText
-              placeholder="Enter Password"
-              label="Password"
-              placeholderTextColor={'#6D6D6D'}
-              containerStyle={{ marginTop: 0 }}
-              secureTextEntry={hidePassword}
-              inputStyle={[
-                {
-                  fontSize: fonts.fs_16,
-                  width: '100%',
-                  fontFamily: 'InstrumentSans_Condensed-medium',
-                  color: colors.black,
-                },
-              ]}
-              value={password}
-              onChangeText={value => {
-                setPassword(value),
-                  setPasswordError(
-                    checkNormalData(value, 'Please enter password'),
-                  );
-              }}
-            />
-            <TouchableOpacity
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                right: 35,
-                position: 'absolute',
-              }}
-              activeOpacity={0.3}
-              onPress={() => hideOnPress()}
-            >
-              <Image
-                style={{
-                  height: 25,
-                  width: 25,
-                  marginTop: 15,
-                  resizeMode: 'contain',
-                  tintColor: colors.black,
-                }}
-                source={hidePassword ? AppImages.closeeye : AppImages.openeye}
-              />
-            </TouchableOpacity>
-          </View>
-          <ErrorView text={passwordError.text} show={passwordError.status} />
-          <Button
-            title="Sign Up"
-            style={{ alignSelf: 'center', marginTop: 25 }}
-            textTitle={{
-              fontFamily: 'InstrumentSans_Condensed-medium',
-              fontSize: fonts.fs_16,
-              color: colors.white,
-            }}
-            onPress={() => createAccount1()}
+            source={hidePassword ? AppImages.closeeye : AppImages.openeye}
           />
-          <View style={{ alignSelf: 'center' }}>
-            <Text style={style.already}>
-              Already have an account?{' '}
-              <Text
-                style={{ color: '#FF0007' }}
-                onPress={() => props.navigation.navigate('Login')}
-              >
-                Sign In.
-              </Text>
-            </Text>
-          </View>
-          {/* </View> */}
-        </ScrollView>
+        </TouchableOpacity>
+      </View>
+      <ErrorView text={passwordError.text} show={passwordError.status} />
 
-        <ActivityIndicator onRequestClose={false} isLoading={isLoading} />
-      </KeyboardAvoidingView>
-    </ImageBackground>
+      {/* Sign up button */}
+      <Button
+        title="Sign Up"
+        style={{ alignSelf: 'center', marginTop: 25 }}
+        textTitle={{
+          fontFamily: 'InstrumentSans_Condensed-medium',
+          fontSize: fonts.fs_16,
+          color: colors.white,
+        }}
+        onPress={createAccount1}
+      />
+
+      {/* Footer */}
+      <View style={{ alignSelf: 'center', marginTop: 10 }}>
+        <Text style={style.already}>
+          Already have an account?{' '}
+          <Text
+            style={{ color: '#FF0007' }}
+            onPress={() => props.navigation.navigate('Login')}
+          >
+            Sign In.
+          </Text>
+        </Text>
+      </View>
+    </KeyboardAwareScrollView>
+
+
+    {/* Loader */}
+    <ActivityIndicator onRequestClose={false} isLoading={isLoading} />
+  </View>
+</ImageBackground>
+
+
+
+
     // <ImageBackground style={style.container} source={AppImages.ccc}>
     //   <KeyboardAvoidingView
     //     behavior={Platform.OS === 'ios' ? 'padding' : null}

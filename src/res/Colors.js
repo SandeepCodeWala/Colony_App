@@ -1,5 +1,6 @@
 export default {
-  BLACK: 'black',
+  BLACK: '#1A1A1A',
+
   APPBLACK: '#181823',
   PROGRESSORANGE: '#fca02a',
   BLACKGRAY: '#666666',

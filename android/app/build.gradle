@@ -2,6 +2,11 @@ apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
+project.ext.react = [
+    entryFile: "index.js",
+    nodeExecutableAndArgs: ["/opt/homebrew/bin/node"]
+]
+
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
@@ -106,9 +111,10 @@ android {
         }
     }
 }
-project.ext.react = [
-    enableHermes: false
-]
+// project.ext.react = [
+//     enableHermes: false
+// ]
+
 
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin

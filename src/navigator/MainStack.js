@@ -5,7 +5,13 @@ import Login from '../OnBoarding/Login';
 import Signup from '../OnBoarding/Signup';
 import RestaurantList from '../OnBoarding/RestorentList';
 import BottomTabs from './BottomTabStack';
-import RightArrow from '../components/RightArrow'
+import RightArrow from '../components/RightArrow';
+import ChangePassword from '../screens/ChangePassword';
+import EditProfile from '../screens/EditProfile';
+import ManageConsents from '../screens/ManageConsents';
+import HelpSupport from '../screens/ChangePassword';
+import TermsConditions from '../screens/TermsConditions';
+
 
 const Stack = createNativeStackNavigator();
 function MainStack() {
@@ -26,6 +32,14 @@ function MainStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {enableSplash && <Stack.Screen name="Splash" component={Splash} />}
       <Stack.Screen name="BottomTabs" component={BottomTabs} />
+      <Stack.Screen name="ChangePassword" component={ChangePassword} />
+      <Stack.Screen name="EditProfile" component={EditProfile} />
+      <Stack.Screen name="HelpSupport" component={HelpSupport} />
+      <Stack.Screen name="ManageConsents" component={ManageConsents} />
+      {/* <Stack.Screen name="MyStatement" component={MyStatement} /> */}
+    
+      {/* <Stack.Screen name="RegisteredOffice" component={RegisteredOffice} /> */}
+      <Stack.Screen name="TermsConditions" component={TermsConditions} />
 
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Signup" component={Signup} />

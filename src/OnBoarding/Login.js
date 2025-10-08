@@ -34,7 +34,7 @@ import Button from '../components/Button';
 import { postApi } from '../services/network/api';
 
 export default function SignIn(props) {
-  const [userName, setUserName] = useState('');
+  const [loginField, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [hidePassword, setHidePassword] = useState(true);
 
@@ -47,13 +47,20 @@ export default function SignIn(props) {
     string: '',
   });
   const [isLoading, setIsLoading] = useState(false);
+  // useEffect(() => {
+  //   console.log('jjjjjjjj----', props?.route?.params.membership);
+  //   setUserName(props?.route?.params?.membership);
+  // }, [props.route]);
   useEffect(() => {
-    console.log('jjjjjjjj----', props?.route?.params.membership);
-    setUserName(props?.route?.params?.membership);
-  }, [props.route]);
+  const membership = props?.route?.params?.membership;
+  if (membership) {
+    console.log('Membership received:', membership);
+    setUserName(membership);
+  }
+}, [props.route]);
   const setErrorState = () => {
-    if (userName === '') {
-      setUserNameError(checkNormalData(userName, 'Please enter Email ID.'));
+    if (loginField === '') {
+      setUserNameError(checkNormalData(loginField, 'Please enter Email ID.'));
     }
     if (password == '') {
       setPasswordError(checkNormalData(password, 'Please enter password'));
@@ -62,7 +69,7 @@ export default function SignIn(props) {
 
   const signIn = async () => {
     const data = {
-      loginField: userName,
+      loginField: loginField,
       password: password,
     };
 
@@ -92,7 +99,7 @@ export default function SignIn(props) {
   const submit = () => {
     Keyboard.dismiss();
     if (
-      !checkNormalData(userName, '').status &&
+      !checkNormalData(loginField, '').status &&
       !checkNormalData(password, '').status
     ) {
       setErrorState();
@@ -163,7 +170,7 @@ export default function SignIn(props) {
                 fontFamily: 'InstrumentSans_Condensed-medium',
               },
             ]}
-            value={userName}
+            value={loginField}
             onChangeText={value => {
               setUserName(value),
                 setUserNameError(

@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   Text,
   StyleSheet,
@@ -6,583 +7,214 @@ import {
   Image,
   TouchableOpacity,
   Alert,
-  KeyboardAvoidingView,
-  ScrollView,
-  Platform,
   Keyboard,
 } from 'react-native';
-import React, { Component, useEffect, useState } from 'react';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import InputText from '../components/InputText';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Button from '../components/Button';
 import ErrorView from '../components/ErrorView';
-import { colors, family, fonts, metrics, styles } from '../themes';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { colors, fonts, styles } from '../themes';
+import { AppImages } from '../res';
+import * as Yup from 'yup';
+import { postApi } from '../services/network/api';
+import { SignUpSchema } from '../schema/SignUpSchema';
 
-import {
-  checkNormalData,
-  checkName,
-  checkEmail,
-  checkPassword,
-  checkConfirmPassword,
-  checkMobile,
-} from '../components/Validation';
-import { postApi, getApi } from '../services/network/api';
+// Yup schema
 
-import { AppImages, Fonts, Colors } from '../res';
 
-export default function SignUp(props) {
-  const [userName, setUserName] = useState('');
-  const [email, setEmail] = useState('');
-  const [DOB, setDOB] = useState('');
-  const [aniversary, setAniversary] = useState('');
+export default function SignUp({ navigation }) {
+  const [name, setUserName] = useState('');
+  const [phone, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [userNameError, setUserNameError] = useState({
-    status: false,
-    string: '',
-  });
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [phoneNumberError, setPhoneNumberError] = useState({
-    status: false,
-    string: '',
-  });
-
-  const [emailError, setEmailError] = useState({ status: false, string: '' });
-
-  const [dateTimeError, setDateTimeError] = useState({
-    status: false,
-    string: '',
-  });
-  const [passwordError, setPasswordError] = useState({
-    status: false,
-    string: '',
-  });
-  const [confirmPasswordError, setConfirmPasswordError] = useState({
-    status: false,
-    string: '',
-  });
+  const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [confirm, setConfirm] = useState(false);
   const [hidePassword, setHidePassword] = useState(true);
-  const [hidePassword1, setHidePassword1] = useState(true);
 
-  const nameValidate = value => {
-    if (value === '') {
-      setUserNameError(checkName(value, 'Please enter Name'));
-    } else if (value.length > 0 && checkName(value)) {
-      setUserNameError(checkName(value, 'Please enter valid Name'));
-    }
-  };
+  // const handleSignUp = async () => {
+  //   Keyboard.dismiss();
 
-  const emailValidate = value => {
-    setEmail(value);
-    if (value === '') {
-      setEmailError(checkEmail(value, 'Please enter Email ID.'));
-    } else if (value.length > 0 && checkEmail(value)) {
-      setEmailError(checkEmail(value, 'Please enter valid Email ID'));
-    }
-  };
+  //   try {
+  //     // Validate form
+  //     await SignUpSchema.validate({ name, phone, password }, { abortEarly: false });
 
-  const passwordValidate = value => {
-    if (value === '') {
-      setPasswordError(checkPassword(value, 'Please enter password'));
-    } else if (value.length > 0 && checkPassword(value))
-      setPasswordError(
-        checkPassword(
-          value,
-          `Password should be between 8 to 16 characters and should include 1 Uppercase, 1 Lowercase, 1 Number and 1 Special Character ( !"#$%&'()*+,-.:;<=>?@[]^_{|})`,
-        ),
-      );
-  };
+  //     // Clear previous errors
+  //     setErrors({});
 
-  const setErrorState = () => {
-    if (userName === '') {
-      setUserNameError(checkName(userName, 'Please enter Name'));
-    } else if (userName.length > 0 && checkName(userName)) {
-      setUserNameError(checkName(userName, 'Please enter valid Name'));
-    }
-    if (phoneNumber === '') {
-      setPhoneNumberError(
-        checkMobile(phoneNumber, 'Please enter phone number'),
-      );
-    } else if (phoneNumber.length > 0 && checkMobile(phoneNumber)) {
-      setPhoneNumberError(
-        checkMobile(phoneNumber, 'Please enter valid phone number'),
-      );
-    }
-    if (email === '') {
-      setEmailError(checkEmail(email, 'Please enter Email ID.'));
-    } else if (email.length > 0 && checkEmail(email)) {
-      setEmailError(checkEmail(email, 'Please enter valid Email ID'));
-    }
+  //     // API call
+  //     setIsLoading(true);
+  //     const response = await postApi('register', { name: name, phone, password });
+  //     setIsLoading(false);
 
-    if (password === '') {
-      setPasswordError(checkPassword(password, 'Please enter password'));
-    } else if (password.length > 0 && checkPassword(password)) {
-      setPasswordError(
-        checkPassword(
-          password,
-          `Password should be between 8 to 16 characters and should include 1 Uppercase, 1 Lowercase, 1 Number and 1 Special Character ( !"#$%&'()*+,-.:;<=>?@[]^_{|}~)`,
-        ),
-      );
-    }
-  };
+  //     if (response.success) {
+  //       Alert.alert('Colony', response.message, [
+  //         { text: 'OK', onPress: () => navigation.navigate('Login') },
+  //       ]);
+  //     } else {
+  //       Alert.alert('Colony', response.message);
+  //     }
+  //   } catch (validationError) {
+  //     if (validationError.inner) {
+  //       const formErrors = {};
+  //       validationError.inner.forEach(err => {
+  //         formErrors[err.path] = err.message;
+  //       });
+  //       setErrors(formErrors);
+  //     }
+  //   }
+  // };
 
-  const createAccount = async () => {
-    const data = {
-      name: userName,
-      email: email,
-      // phoneNumber: phoneNumber,
-      // anniversary_date: '02-04-2025',
-      // birthday_date: '02-02-2025',
-      password: password,
-    };
+  const handleSignUp = async () => {
+  Keyboard.dismiss();
+  console.log('Sign Up pressed'); // <-- log button press
+
+  try {
+    // Validate form
+    console.log('Validating form...', { name, phone, password });
+    await SignUpSchema.validate({ name: name, phone, password }, { abortEarly: false });
+
+    // Clear previous errors
+    setErrors({});
+
+    // API call
     setIsLoading(true);
-    const response = await postApi('register', data);
+    console.log('Calling API...');
+    const response = await postApi('register', { name: name, phone, password });
     setIsLoading(false);
+
+    console.log('API response:', response);
+
     if (response.success) {
-      props.navigation.navigate('Login', {
-        membership: response?.data?.memberShipNumber,
+       const membershipNumber = response?.data?.memberShipNumber || '';
+       console.log("mmem",membershipNumber)
+      Alert.alert('Colony', response.message, [
+        { text: 'OK',  onPress: () =>
+            navigation.navigate('Login', {
+              membership: membershipNumber || '', // pass membership to login
+            }), },
+      ]);
+    } else {
+      Alert.alert('Colony', response.message);
+    }
+  } catch (err) {
+    console.log('Error caught:', err);
+
+    if (err.inner) {
+      const formErrors = {};
+      err.inner.forEach(e => {
+        console.log('Validation error:', e.path, e.message);
+        formErrors[e.path] = e.message;
       });
-      Alert.alert('Colony', response.message, [
-        {
-          text: 'OK',
-          onPress: () => {},
-        },
-      ]);
+      setErrors(formErrors);
     } else {
-      Alert.alert('Colony', response.message, [
-        {
-          text: 'OK',
-          onPress: () => {},
-        },
-      ]);
+      Alert.alert('Error', err.message || 'Something went wrong');
     }
-  };
-  const phoneValidate = value => {
-    setPhoneNumber(value);
-    if (value === '') {
-      setPhoneNumberError(checkMobile(value, 'Please enter phone number'));
-    } else if (value.length > 0 && checkMobile(value)) {
-      setPhoneNumberError(
-        checkMobile(value, 'Please enter valid phone number'),
-      );
-    }
-  };
+  }
+};
 
-  const createAccount1 = () => {
-    Keyboard.dismiss();
-    if (
-      !checkNormalData(userName, '').status &&
-      !checkMobile(phoneNumber, '').status &&
-      !checkEmail(email, '').status &&
-      // !checkNormalData(aniversary, '').status &&
-      // !checkNormalData(DOB, '').status &&
-      !checkPassword(password, '').status
-      // !checkConfirmPassword(password, confirmPassword, '').status
-    ) {
-      setErrorState();
-      createAccount();
-    } else {
-      setErrorState();
-    }
-  };
-
-  const hideOnPress = () => {
-    setHidePassword(!hidePassword);
-  };
-  const hideOnPress1 = () => {
-    setHidePassword1(!hidePassword1);
-  };
 
   return (
-
-<ImageBackground style={style.container} source={AppImages.ccc}>
-  {/* No need for KeyboardAvoidingView when using KeyboardAwareScrollView */}
-  <View style={{ flex: 1 }}>
-    
-    {/* Static Part: Back button + Logo */}
-    <View style={{ alignItems: 'center' }}>
-      <TouchableOpacity
-        onPress={() =>
-          props.navigation.navigate('BottomTabs', { screen: 'Explore' })
-        }
-        style={{ alignSelf: 'flex-start', marginTop: 50, marginLeft: 20 }}
-      >
-        <Image source={AppImages.Back} style={{ height: 25, width: 25 }} />
-      </TouchableOpacity>
-
-      <Image
-        style={{
-          height: 150,
-          width: 200,
-          resizeMode: 'contain',
-          marginTop: 40,
-        }}
-        source={AppImages.logo}
-      />
-    </View>
-
-    {/* Scrollable Form */}
-
-    <KeyboardAwareScrollView
-      enableOnAndroid={true}
-      extraScrollHeight={20} // pushes focused input above keyboard
-      keyboardShouldPersistTaps="handled"
-      contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
-      style={{
-        flex: 1,
-        backgroundColor: 'white',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        marginTop: 20,
-      }}
-    >
-      <Text style={style.getStart}>{`SIGN UP`}</Text>
-      <Text style={style.getStart1}>{`Your Colony Account`}</Text>
-
-      {/* Name */}
-      <InputText
-        placeholder="Enter your full name"
-        label="Name"
-        placeholderTextColor="#6D6D6D"
-        containerStyle={{ marginTop: 30 }}
-        value={userName}
-        onChangeText={value => {
-          setUserName(value);
-          nameValidate(value);
-        }}
-      />
-      <ErrorView text={userNameError.text} show={userNameError.status} />
-
-      {/* Phone */}
-      <InputText
-        placeholder="Enter your phone number"
-        label="Phone Number"
-        placeholderTextColor={colors.txtColor}
-        containerStyle={{ marginTop: 10 }}
-        keyboardType="phone-pad"
-        maxLength={10}
-        value={phoneNumber}
-        onChangeText={value => {
-          setPhoneNumber(value);
-          phoneValidate(value);
-        }}
-      />
-      <ErrorView text={phoneNumberError.text} show={phoneNumberError.status} />
-
-      {/* Email */}
-      <InputText
-        label="Email Address"
-        placeholder="Enter your email address"
-        containerStyle={{ marginTop: 15 }}
-        value={email}
-        onChangeText={value => {
-          setEmail(value);
-          emailValidate(value);
-        }}
-      />
-      <ErrorView text={emailError.text} show={emailError.status} />
-
-      {/* Password */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-        <InputText
-          placeholder="Enter Password"
-          label="Password"
-          secureTextEntry={hidePassword}
-          value={password}
-          onChangeText={value => {
-            setPassword(value);
-            setPasswordError(checkNormalData(value, 'Please enter password'));
-          }}
-        />
-        <TouchableOpacity
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            right: 35,
-            position: 'absolute',
-          }}
-          onPress={hideOnPress}
-        >
-          <Image
-            style={{
-              height: 25,
-              width: 25,
-              resizeMode: 'contain',
-              tintColor: colors.black,
-            }}
-            source={hidePassword ? AppImages.closeeye : AppImages.openeye}
-          />
-        </TouchableOpacity>
-      </View>
-      <ErrorView text={passwordError.text} show={passwordError.status} />
-
-      {/* Sign up button */}
-      <Button
-        title="Sign Up"
-        style={{ alignSelf: 'center', marginTop: 25 }}
-        textTitle={{
-          fontFamily: 'InstrumentSans_Condensed-medium',
-          fontSize: fonts.fs_16,
-          color: colors.white,
-        }}
-        onPress={createAccount1}
-      />
-
-      {/* Footer */}
-      <View style={{ alignSelf: 'center', marginTop: 10 }}>
-        <Text style={style.already}>
-          Already have an account?{' '}
-          <Text
-            style={{ color: '#FF0007' }}
-            onPress={() => props.navigation.navigate('Login')}
+    <ImageBackground style={style.container} source={AppImages.ccc}>
+      <View style={{ flex: 1 }}>
+        {/* Header */}
+        <View style={{ alignItems: 'center' }}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('BottomTabs', { screen: 'Explore' })}
+            style={{ alignSelf: 'flex-start', marginTop: 50, marginLeft: 20 }}
           >
-            Sign In.
-          </Text>
-        </Text>
+            <Image source={AppImages.Back} style={{ height: 25, width: 25 }} />
+          </TouchableOpacity>
+
+          <Image
+            style={{ height: 150, width: 200, resizeMode: 'contain', marginTop: 40 }}
+            source={AppImages.logo}
+          />
+        </View>
+
+        {/* Form */}
+        <KeyboardAwareScrollView
+          enableOnAndroid
+          extraScrollHeight={20}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
+          style={{
+            flex: 1,
+            backgroundColor: 'white',
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            marginTop: 20,
+            paddingHorizontal: 20,
+          }}
+        >
+          <Text style={style.getStart}>SIGN UP</Text>
+          <Text style={style.getStart1}>Your Colony Account</Text>
+
+          {/* Name */}
+          <InputText
+            placeholder="Enter your full name"
+            label="Name"
+            value={name}
+            onChangeText={setUserName}
+            containerStyle={{ marginTop: 30 }}
+          />
+          <ErrorView text={errors.name} show={!!errors.name} />
+
+          {/* Phone */}
+          <InputText
+            placeholder="Enter your phone number"
+            label="Phone Number"
+            keyboardType="phone-pad"
+            maxLength={10}
+            value={phone}
+            onChangeText={setPhoneNumber}
+            containerStyle={{ marginTop: 15 }}
+          />
+          <ErrorView text={errors.phone} show={!!errors.phone} />
+
+          {/* Password */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 15 }}>
+            <InputText
+              placeholder="Enter Password"
+              label="Password"
+              secureTextEntry={hidePassword}
+              value={password}
+              onChangeText={setPassword}
+              containerStyle={{ flex: 1 }}
+            />
+            <TouchableOpacity
+              style={{ position: 'absolute', right: 10 }}
+              onPress={() => setHidePassword(!hidePassword)}
+            >
+              <Image
+                style={{ height: 25, width: 25, tintColor: colors.black }}
+                source={hidePassword ? AppImages.closeeye : AppImages.openeye}
+              />
+            </TouchableOpacity>
+          </View>
+          <ErrorView text={errors.password} show={!!errors.password} />
+
+          {/* Sign Up Button */}
+          <Button
+            title="Sign Up"
+            style={{ alignSelf: 'center', marginTop: 25 }}
+            onPress={handleSignUp}
+          />
+
+          {/* Footer */}
+          <View style={{ alignSelf: 'center', marginTop: 15 }}>
+            <Text style={style.already}>
+              Already have an account?{' '}
+              <Text style={{ color: '#FF0007' }} onPress={() => navigation.navigate('Login')}>
+                Sign In.
+              </Text>
+            </Text>
+          </View>
+        </KeyboardAwareScrollView>
+
+        {/* Loader */}
+        <ActivityIndicator onRequestClose={false} isLoading={isLoading} />
       </View>
-    </KeyboardAwareScrollView>
-
-
-    {/* Loader */}
-    <ActivityIndicator onRequestClose={false} isLoading={isLoading} />
-  </View>
-</ImageBackground>
-
-
-
-
-    // <ImageBackground style={style.container} source={AppImages.ccc}>
-    //   <KeyboardAvoidingView
-    //     behavior={Platform.OS === 'ios' ? 'padding' : null}
-    //     style={[{ flex: 1 }]}
-    //   >
-    //     <TouchableOpacity
-    //       onPress={() =>
-    //         props.navigation.navigate('BottomTabs', { screen: 'Explore' })
-    //       }
-    //       style={{ marginTop: 50, marginLeft: 20 }}
-    //     >
-    //       <Image source={AppImages.Back} style={{ height: 25, width: 25 }} />
-    //     </TouchableOpacity>
-    //     <ScrollView
-    //       showsVerticalScrollIndicator={false}
-    //       keyboardShouldPersistTaps="handled"
-    //     >
-    //       <View style={{ marginTop: '10%', alignSelf: 'center' }}>
-    //         <Image
-    //           style={{ height: 150, width: 200, resizeMode: 'contain' }}
-    //           source={AppImages.logo}
-    //         />
-    //       </View>
-    //       <Text style={style.getStart}>{`CREATE ACCOUNT`}</Text>
-    //       <InputText
-    //         // InputIcon={Icons.userName}
-    //         placeholder="Name"
-    //         placeholderTextColor={Colors.BLACK}
-    //         containerStyle={{ marginTop: 30 }}
-    //         inputStyle={[
-    //           family.Montserrat_Regular,
-    //           {
-    //             fontSize: fonts.fs_16,
-    //             width: '90%',
-    //             marginLeft: 5,
-    //             color: colors.black,
-    //           },
-    //         ]}
-    //         value={userName}
-    //         onChangeText={value => {
-    //           setUserName(value), nameValidate(value);
-    //         }}
-    //       />
-    //       <ErrorView text={userNameError.text} show={userNameError.status} />
-
-    //       <InputText
-    //         // InputIcon={Icons.email}
-    //         placeholder="Email"
-    //         placeholderTextColor={Colors.BLACK}
-    //         containerStyle={{ marginTop: 15 }}
-    //         inputStyle={[
-    //           family.Montserrat_Regular,
-    //           {
-    //             fontSize: fonts.fs_16,
-    //             width: '90%',
-    //             marginLeft: 5,
-    //             color: colors.black,
-    //           },
-    //         ]}
-    //         value={email}
-    //         onChangeText={value => {
-    //           setEmail(value), emailValidate(value);
-    //         }}
-    //       />
-    //       <ErrorView text={emailError.text} show={emailError.status} />
-
-    //       <DateTimeLevel
-    //         type="date"
-    //         selectedDate={res => {
-    //           setAniversary(res),
-    //             setDateTimeError(
-    //               checkNormalData(res, 'Please select anniversary date'),
-    //             );
-    //         }}
-    //         date={aniversary}
-    //         style={{ marginTop: 15, width: '90%' }}
-    //         placeholder="Date of anniversary"
-    //       />
-    //       <ErrorView text={dateTimeError.text} show={dateTimeError.status} />
-
-    //       <DateTimeLevel
-    //         type="date"
-    //         selectedDate={res => {
-    //           console.log('ressssss----', res),
-    //             setDOB(res),
-    //             setDateTimeError(checkNormalData(res, 'Please select DOB'));
-    //         }}
-    //         date={DOB}
-    //         style={{ marginTop: 15, width: '90%' }}
-    //         placeholder="Date of birth"
-    //       />
-    //       <ErrorView text={dateTimeError.text} show={dateTimeError.status} />
-    //       <View
-    //         style={{
-    //           flexDirection: 'row',
-    //           width: '100%',
-    //           justifyContent: 'center',
-    //           alignItems: 'center',
-    //           marginTop: 15,
-    //         }}
-    //       >
-    //         <InputText
-    //           placeholder="Password"
-    //           placeholderTextColor={colors.black}
-    //           containerStyle={{ marginTop: 0 }}
-    //           secureTextEntry={hidePassword}
-    //           inputStyle={[
-    //             family.Montserrat_Regular,
-    //             { fontSize: fonts.fs_16, marginLeft: 5, color: colors.black },
-    //           ]}
-    //           value={password}
-    //           onChangeText={value => {
-    //             setPassword(value), passwordValidate(value);
-    //           }}
-    //         />
-    //         <TouchableOpacity
-    //           style={{
-    //             alignItems: 'center',
-    //             justifyContent: 'center',
-    //             right: 35,
-    //             position: 'absolute',
-    //           }}
-    //           activeOpacity={0.3}
-    //           onPress={() => hideOnPress()}
-    //         >
-    //           <Image
-    //             style={{
-    //               height: 25,
-    //               width: 25,
-    //               resizeMode: 'contain',
-    //               tintColor: colors.black,
-    //             }}
-    //             source={hidePassword ? AppImages.closeeye : AppImages.openeye}
-    //           />
-    //         </TouchableOpacity>
-    //       </View>
-
-    //       <ErrorView text={passwordError.text} show={passwordError.status} />
-
-    //       <View
-    //         style={{
-    //           flexDirection: 'row',
-    //           width: '100%',
-    //           justifyContent: 'center',
-    //           alignItems: 'center',
-    //           marginTop: 15,
-    //         }}
-    //       >
-    //         <InputText
-    //           placeholder="Confirm password"
-    //           placeholderTextColor={colors.black}
-    //           containerStyle={{ marginTop: 0 }}
-    //           secureTextEntry={hidePassword1}
-    //           inputStyle={[
-    //             family.Montserrat_Regular,
-    //             {
-    //               fontSize: fonts.fs_16,
-    //               width: '90%',
-    //               marginLeft: 5,
-    //               color: colors.black,
-    //             },
-    //           ]}
-    //           value={confirmPassword}
-    //           onChangeText={value => {
-    //             setConfirmPassword(value),
-    //               setConfirmPasswordError(
-    //                 checkConfirmPassword(
-    //                   value,
-    //                   password,
-    //                   'Password and Confirm Passsword does not match',
-    //                 ),
-    //               ),
-    //               setConfirm(value.length > 0 ? false : true);
-    //           }}
-    //         />
-    //         <TouchableOpacity
-    //           style={{
-    //             alignItems: 'center',
-    //             justifyContent: 'center',
-    //             right: 35,
-    //             position: 'absolute',
-    //           }}
-    //           activeOpacity={0.3}
-    //           onPress={() => hideOnPress1()}
-    //         >
-    //           <Image
-    //             style={{
-    //               height: 25,
-    //               width: 25,
-    //               resizeMode: 'contain',
-    //               tintColor: colors.black,
-    //             }}
-    //             source={hidePassword1 ? AppImages.closeeye : AppImages.openeye}
-    //           />
-    //         </TouchableOpacity>
-    //       </View>
-    //       <ErrorView
-    //         text={
-    //           confirm
-    //             ? 'Please enter confirm password'
-    //             : confirmPasswordError.text
-    //         }
-    //         show={confirm ? true : confirmPasswordError.status}
-    //       />
-
-    //       <Button
-    //         title="Sign Up"
-    //         style={{ alignSelf: 'center', marginTop: 30 }}
-    //         textTitle={{
-    //           fontFamily: 'Montserrat-medium',
-    //           fontSize: fonts.fs_16,
-    //           color: colors.white,
-    //           // fontWeight: Platform.OS=="ios"?'700':null,
-    //         }}
-    //         onPress={() => createAccount1()}
-    //       />
-    //       <Text style={style.already}>
-    //         Already have an account?{' '}
-    //         <Text
-    //           style={{ color: '#FF0007' }}
-    //           onPress={() => props.navigation.navigate('Login')}
-    //         >
-    //           Sign In.
-    //         </Text>
-    //       </Text>
-    //     </ScrollView>
-    //     {/* <ActivityIndicator onRequestClose={false} isLoading={isLoading} /> */}
-    //   </KeyboardAvoidingView>
-    // </ImageBackground>
+    </ImageBackground>
   );
 }
 
@@ -591,45 +223,21 @@ const style = StyleSheet.create({
   getStart: {
     fontFamily: 'InstrumentSans_Condensed-medium',
     textAlign: 'center',
-    fontSize: Platform.OS == 'ios' ? fonts.fs_32 : fonts.fs_32,
+    fontSize: fonts.fs_32,
     color: '#1A1A1A',
     marginTop: 30,
   },
   getStart1: {
     fontFamily: 'InstrumentSans_Condensed-medium',
     textAlign: 'center',
-    fontSize: Platform.OS == 'ios' ? fonts.fs_22 : fonts.fs_22,
+    fontSize: fonts.fs_22,
     color: colors.txtColor,
-  },
-  information: {
-    ...family.Montserrat_Regular,
-    fontSize: fonts.fs_15,
-    marginLeft: 20,
-    color: colors.white,
-    fontWeight: Platform.OS == 'ios' ? '600' : null,
-  },
-  forgot: {
-    fontFamily: 'InstrumentSans_Condensed-medium',
-    fontSize: fonts.fs_18,
-    marginLeft: 20,
-    marginTop: 15,
-    color: colors.txtColor,
-    textAlign: 'center',
+    marginTop: 5,
   },
   already: {
     fontSize: fonts.fs_16,
     fontFamily: 'InstrumentSans_Condensed-regular',
     color: colors.txtColor,
     textAlign: 'center',
-    marginTop: 10,
-    // shadowColor: '#000',
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 4,
-    // },
-    // shadowOpacity: 0.3,
-    // shadowRadius: 4.65,
-
-    // elevation: 8,
   },
 });

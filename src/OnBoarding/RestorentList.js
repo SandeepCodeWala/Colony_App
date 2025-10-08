@@ -33,7 +33,7 @@ import Button from '../components/Button';
 import { postApi } from '../services/network/api';
 
 export default function RestaurantList(props) {
-  const [userName, setUserName] = useState('');
+  const [name, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [hidePassword, setHidePassword] = useState(true);
 
@@ -48,8 +48,8 @@ export default function RestaurantList(props) {
   const [isLoading, setIsLoading] = useState(false);
 
   const setErrorState = () => {
-    if (userName === '') {
-      setUserNameError(checkNormalData(userName, 'Please enter Email ID.'));
+    if (name === '') {
+      setUserNameError(checkNormalData(name, 'Please enter Email ID.'));
     }
     if (password == '') {
       setPasswordError(checkNormalData(password, 'Please enter password'));
@@ -58,7 +58,7 @@ export default function RestaurantList(props) {
 
   const signIn = async () => {
     const data = {
-      email: userName,
+      email: name,
       password: password,
     };
 
@@ -86,7 +86,7 @@ export default function RestaurantList(props) {
   const submit = () => {
     Keyboard.dismiss();
     if (
-      !checkNormalData(userName, '').status &&
+      !checkNormalData(name, '').status &&
       !checkNormalData(password, '').status
     ) {
       setErrorState();

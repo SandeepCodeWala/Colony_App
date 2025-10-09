@@ -19,11 +19,13 @@ import { AppImages } from '../res';
 import * as Yup from 'yup';
 import { postApi } from '../services/network/api';
 import { SignUpSchema } from '../schema/SignUpSchema';
-
+import { useDispatch } from 'react-redux';
+import { setMembershipNumber } from '../redux/slices/userSlice';
 // Yup schema
 
 
 export default function SignUp({ navigation }) {
+   const dispatch = useDispatch();
   const [name, setUserName] = useState('');
   const [phone, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
@@ -87,11 +89,12 @@ export default function SignUp({ navigation }) {
     if (response.success) {
        const membershipNumber = response?.data?.memberShipNumber || '';
        console.log("mmem",membershipNumber)
+        dispatch(setMembershipNumber(membershipNumber));
       Alert.alert('Colony', response.message, [
         { text: 'OK',  onPress: () =>
-            navigation.navigate('Login', {
-              membership: membershipNumber || '', // pass membership to login
-            }), },
+            navigation.navigate('Login', 
+              // membership: membershipNumber || '', // pass membership to login
+            ), },
       ]);
     } else {
       Alert.alert('Colony', response.message);

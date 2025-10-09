@@ -15,6 +15,8 @@ import {
 import React, { Component, useEffect, useState } from 'react';
 // import { Icons, Button, InputText, ErrorView,ActivityIndicator } from '@beverages/common';
 import { colors, family, fonts, metrics, styles } from '../themes';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoginField } from '../redux/slices/userSlice';
 import {
   validateName,
   validateEmail,
@@ -34,7 +36,11 @@ import Button from '../components/Button';
 import { postApi } from '../services/network/api';
 
 export default function SignIn(props) {
-  const [loginField, setUserName] = useState('');
+  const dispatch = useDispatch();
+
+  // Get membership number from Redux if exists
+  const membershipNumber = useSelector(state => state.user.membershipNumber);
+  const [loginField, setUserName] = useState(membershipNumber || '');
   const [password, setPassword] = useState('');
   const [hidePassword, setHidePassword] = useState(true);
 
@@ -51,13 +57,13 @@ export default function SignIn(props) {
   //   console.log('jjjjjjjj----', props?.route?.params.membership);
   //   setUserName(props?.route?.params?.membership);
   // }, [props.route]);
-  useEffect(() => {
-  const membership = props?.route?.params?.membership;
-  if (membership) {
-    console.log('Membership received:', membership);
-    setUserName(membership);
-  }
-}, [props.route]);
+//   useEffect(() => {
+//   // const membership = props?.route?.params?.membership;
+//   // if (membership) {
+//   //   console.log('Membership received:', membership);
+//   //   setUserName(membership);
+//   // }
+// }, [props.route]);
   const setErrorState = () => {
     if (loginField === '') {
       setUserNameError(checkNormalData(loginField, 'Please enter Email ID.'));
@@ -79,6 +85,7 @@ export default function SignIn(props) {
     console.log('data----', data);
 
     if (response.success) {
+       dispatch(setLoginField(loginField));
       props.navigation.navigate('RestaurantList');
       Alert.alert('Colony', response.message, [
         {

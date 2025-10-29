@@ -60,22 +60,50 @@ export async function postAPI(method, data) {
   return response;
 }
 
+// export async function postApi(method, data, authKey) {
+//   console.log('baseURL + method', baseURL.base_url + method);
+//   let response = {};
+//   await axios
+//     .post(baseURL.base_url + method, data, {
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//     })
+//     .then(res => {
+//       console.log('Respoooooooooooooooo', res.data);
+//       response = res.data;
+//     })
+//     .catch(e => {
+//       console.log('eeeeeeee-----', e.response.data);
+//       response = e.response.data;
+//     });
+//   return response;
+// }
+
+
 export async function postApi(method, data, authKey) {
-  console.log('baseURL + method', baseURL.base_url + method);
+  console.log('➡️ API Request:', baseURL.base_url + method);
   let response = {};
-  await axios
-    .post(baseURL.base_url + method, data, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    .then(res => {
-      console.log('Respoooooooooooooooo', res.data);
-      response = res.data;
-    })
-    .catch(e => {
-      console.log('eeeeeeee-----', e.response.data);
-      response = e.response.data;
-    });
+
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    // ✅ Add token if available
+    if (authKey) {
+      headers['Authorization'] = `Bearer ${authKey}`;
+    }
+
+    const res = await axios.post(baseURL.base_url + method, data, { headers });
+
+    console.log('✅ API Response:', res.data);
+    response = res.data;
+  } catch (e) {
+    console.log('❌ API Error:', e?.response?.data || e.message);
+    response = e?.response?.data || { success: false, message: e.message };
+  }
+
   return response;
 }
+

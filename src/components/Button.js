@@ -1,46 +1,38 @@
 import React from 'react';
 import {
-  View,
-  StyleSheet,
-  TextInput,
   TouchableOpacity,
-  Image,
   Text,
+  StyleSheet,
 } from 'react-native';
+import { colors, fonts, styles as themeStyles } from '../themes';
 
-// import { Icons } from '@beverages/common'
-import { colors, family, fonts, metrics, styles } from '../themes';
-
-const Button = props => {
+const Button = ({ title, onPress, style, textStyle }) => {
   return (
     <TouchableOpacity
       activeOpacity={0.6}
-      style={[style.searchStyle, props.style]}
-      onPress={props.onPress}
+      style={[styles.button, style]}
+      onPress={onPress}
     >
-      <Text style={[style.textTitle, props.textTitle]}>{props.title}</Text>
-      {/* <Image style={style.arrow} source={Icons.arrow}/> */}
+      <Text style={[styles.text, textStyle]}>{title}</Text>
     </TouchableOpacity>
   );
 };
 
-const style = StyleSheet.create({
-  textTitle: {
-    fontSize: fonts.fs_14,
-    fontFamily: 'Verlag-Black',
-    color: colors.white,
-  },
-  searchStyle: {
+export default Button;
+
+const styles = StyleSheet.create({
+  button: {
     height: 48,
     width: '90%',
-    backgroundColor: colors.buttonBgColor,
+    backgroundColor: colors.buttonBgColor || '#FFD700',
     borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    ...styles.row,
+    ...themeStyles.row, // optional row styles from your theme
   },
-  arrow: { height: 13, width: 20, resizeMode: 'contain', marginLeft: 15 },
-  // title: { ...styles.row, marginTop: 20, marginLeft: 10 }
+  text: {
+    fontSize: fonts.fs_14 || 16,
+    fontFamily: fonts.familyBlack || 'Verlag-Black',
+    color: colors.white || '#fff',
+  },
 });
-
-export default Button;

@@ -3,7 +3,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import persistReducer from 'redux-persist/es/persistReducer';
 import persistStore from 'redux-persist/es/persistStore';
 import { appSlice } from './app/reducer';
-import { setVersionStatus, userSlice } from './user/reducer';
+import { setVersionStatus, authSlice } from './user/reducer';
 import { retailerSlice } from './retailer/reducer';
 import { vendorSlice } from './vendor/reducer';
 // import {appSlice} from './app/reducer';
@@ -17,7 +17,7 @@ const persistConfig = {
 
 const combine = combineReducers({
   app: appSlice.reducer,
-  user: userSlice.reducer,
+  user: authSlice.reducer,
   retailer: retailerSlice.reducer,
   vendor: vendorSlice.reducer
 });

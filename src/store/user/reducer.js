@@ -13,7 +13,7 @@ export const initialState = {
   versionStatus: null
 };
 
-export const userSlice = createSlice({
+export const authSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
@@ -88,4 +88,4 @@ export const {
   setAgreeTerms,
   setVersionStatus,
   updateUserDetailOrderCount
-} = userSlice.actions;
+} = authSlice.actions;

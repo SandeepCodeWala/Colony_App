@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AppImages, Colors } from '../res';
 import Home from '../Dashboard/Home';
 import Settings from '../Dashboard/settings';
-import Book from '../Dashboard/Book';
+import BookScreen from '../screens/BookScreen';
 import Loyalty from '../Dashboard/Loyalty';
 
 const Tab = createBottomTabNavigator();
@@ -39,7 +39,7 @@ const BottomTabs = () => {
       />
       <Tab.Screen
         name='Book'
-        component={Book}
+        component={BookScreen}
         options={{
           tabBarLabel: 'Book',
           tabBarIcon: ({ focused }) => (

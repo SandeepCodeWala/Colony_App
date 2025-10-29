@@ -20,7 +20,7 @@ import * as Yup from 'yup';
 import { postApi } from '../services/network/api';
 import { SignUpSchema } from '../schema/SignUpSchema';
 import { useDispatch } from 'react-redux';
-import { setMembershipNumber } from '../redux/slices/userSlice';
+import { setMembershipNumber } from '../redux/slices/authSlice';
 // Yup schema
 
 

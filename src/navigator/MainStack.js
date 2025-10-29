@@ -11,6 +11,9 @@ import EditProfile from '../screens/EditProfile';
 import ManageConsents from '../screens/ManageConsents';
 import HelpSupport from '../screens/ChangePassword';
 import TermsConditions from '../screens/TermsConditions';
+import ReserveTable from '../screens/ReserveTable1';
+import ReserveTable2 from '../screens/ReserveTable2';
+import ReserveLounge from '../screens/ReserveLounge';
 
 
 const Stack = createNativeStackNavigator();
@@ -45,6 +48,9 @@ function MainStack() {
       <Stack.Screen name="Signup" component={Signup} />
       <Stack.Screen name="RestaurantList" component={RestaurantList} />
        <Stack.Screen name="RightArrow" component={RightArrow} />
+         <Stack.Screen name="ReserveTable" component={ReserveTable} />
+            <Stack.Screen name="ReserveTable2" component={ReserveTable2} />
+         <Stack.Screen name="ReserveLounge" component={ReserveLounge} />
 
       {/* <Stack.Screen name="BottomTabs" component={BottomTabs} /> */}
     </Stack.Navigator>

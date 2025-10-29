@@ -4,11 +4,12 @@ const initialState = {
   loginField: '',
   membershipNumber: '',
   isLoggedIn: false,
-  userData: null,
+  user: null,      // ✅ renamed from userData → user
+  token: null,     // ✅ added token field
 };
 
-export const userSlice = createSlice({
-  name: 'user',
+export const authSlice = createSlice({
+  name: 'auth',
   initialState,
   reducers: {
     setLoginField: (state, action) => {
@@ -18,22 +19,24 @@ export const userSlice = createSlice({
       state.membershipNumber = action.payload;
     },
     setUserData: (state, action) => {
-      state.userData = action.payload;
+      state.user = action.payload.user;   // expecting object like { user, token }
+      state.token = action.payload.token; // store token separately
       state.isLoggedIn = true;
     },
     logout: (state) => {
       state.loginField = '';
       state.membershipNumber = '';
       state.isLoggedIn = false;
-      state.userData = null;
+      state.user = null;
+      state.token = null;
     },
-     clearUser: (state) => {
+    clearUser: (state) => {
       state.membershipNumber = '';
       state.loginField = '';
     },
   },
 });
 
-export const { setLoginField, setMembershipNumber, setUserData, logout } = userSlice.actions;
+export const { setLoginField, setMembershipNumber, setUserData, logout, clearUser } = authSlice.actions;
 
-export default userSlice.reducer;
+export default authSlice.reducer;

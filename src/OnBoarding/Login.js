@@ -16,7 +16,7 @@ import React, { Component, useEffect, useState } from 'react';
 // import { Icons, Button, InputText, ErrorView,ActivityIndicator } from '@beverages/common';
 import { colors, family, fonts, metrics, styles } from '../themes';
 import { useDispatch, useSelector } from 'react-redux';
-import { setLoginField } from '../redux/slices/userSlice';
+import { setLoginField } from '../redux/slices/authSlice';
 import {
   validateName,
   validateEmail,

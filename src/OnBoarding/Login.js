@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   Text,
   StyleSheet,
@@ -7,99 +8,64 @@ import {
   TouchableOpacity,
   Alert,
   KeyboardAvoidingView,
-  Keyboard,
   ScrollView,
   Platform,
-  Linking,
+  Keyboard,
 } from 'react-native';
-import React, { Component, useEffect, useState } from 'react';
-// import { Icons, Button, InputText, ErrorView,ActivityIndicator } from '@beverages/common';
-import { colors, family, fonts, metrics, styles } from '../themes';
 import { useDispatch, useSelector } from 'react-redux';
-import { setLoginField } from '../redux/slices/authSlice';
-import {
-  validateName,
-  validateEmail,
-  validatePhone,
-  checkNormalData,
-  checkName,
-  checkEmail,
-  checkMobile,
-  checkPassword,
-  checkConfirmPassword,
-} from '../components/Validation';
+import { setLoginField, setMembershipNumber } from '../redux/slices/authSlice';
+import { checkNormalData } from '../components/Validation';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { AppImages } from '../res';
 import InputText from '../components/InputText';
 import ErrorView from '../components/ErrorView';
 import Button from '../components/Button';
 import { postApi } from '../services/network/api';
+import { colors, fonts, styles as commonStyles } from '../themes';
+import { showToast } from '../services/Toast';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // ✅ correct import
 
 export default function SignIn(props) {
   const dispatch = useDispatch();
-
-  // Get membership number from Redux if exists
   const membershipNumber = useSelector(state => state.user.membershipNumber);
+
   const [loginField, setUserName] = useState(membershipNumber || '');
   const [password, setPassword] = useState('');
   const [hidePassword, setHidePassword] = useState(true);
-
   const [userNameError, setUserNameError] = useState({
     status: false,
-    string: '',
+    text: '',
   });
   const [passwordError, setPasswordError] = useState({
     status: false,
-    string: '',
+    text: '',
   });
   const [isLoading, setIsLoading] = useState(false);
-  // useEffect(() => {
-  //   console.log('jjjjjjjj----', props?.route?.params.membership);
-  //   setUserName(props?.route?.params?.membership);
-  // }, [props.route]);
-//   useEffect(() => {
-//   // const membership = props?.route?.params?.membership;
-//   // if (membership) {
-//   //   console.log('Membership received:', membership);
-//   //   setUserName(membership);
-//   // }
-// }, [props.route]);
+
   const setErrorState = () => {
-    if (loginField === '') {
-      setUserNameError(checkNormalData(loginField, 'Please enter Email ID.'));
-    }
-    if (password == '') {
+    if (password === '') {
       setPasswordError(checkNormalData(password, 'Please enter password'));
     }
   };
 
   const signIn = async () => {
-    const data = {
-      loginField: loginField,
-      password: password,
-    };
-
+    const data = { loginField, password };
     setIsLoading(true);
     const response = await postApi('login', data);
     setIsLoading(false);
-    console.log('data----', data);
 
     if (response.success) {
-       dispatch(setLoginField(loginField));
-      props.navigation.navigate('RestaurantList');
-      Alert.alert('Colony', response.message, [
-        {
-          text: 'OK',
-          onPress: () => {},
-        },
-      ]);
+      dispatch(setLoginField(loginField));
+      await AsyncStorage.setItem('token', response.data.access_token);
+      await AsyncStorage.setItem('phone', response.data.phone);
+      await AsyncStorage.setItem('name', response.data.name);
+      dispatch(setMembershipNumber(loginField));
+      await AsyncStorage.setItem('membershipNumber', loginField);
+      props.navigation.navigate('BottomTabs', { screen: 'Book' });
+
+      showToast('success', response.message);
     } else {
-      Alert.alert('Colony', response.message, [
-        {
-          text: 'OK',
-          onPress: () => {},
-        },
-      ]);
+      showToast('error', response.message);
     }
   };
 
@@ -116,207 +82,235 @@ export default function SignIn(props) {
     }
   };
 
-  const hideOnPress = () => {
-    setHidePassword(!hidePassword);
-  };
-
   return (
-    <ImageBackground style={style.container} source={AppImages.ccc}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : null}
-        style={[styles.container, { flex: 1 }]}
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
+      {/* Fixed Background */}
+      <ImageBackground
+        source={AppImages.ccc}
+        style={styles.bgImage}
+        resizeMode="cover"
       >
+        <View style={styles.overlay} />
+        {/* Back Button */}
         <TouchableOpacity
           onPress={() =>
             props.navigation.navigate('BottomTabs', { screen: 'Explore' })
           }
-          style={{ marginTop: 50, marginLeft: 20 }}
+          style={styles.backBtn}
         >
-          <Image source={AppImages.Back} style={{ height: 25, width: 25 }} />
-        </TouchableOpacity>
-        <View style={{ marginTop: '20%', alignSelf: 'center' }}>
           <Image
-            style={{ height: 150, width: 200, resizeMode: 'contain' }}
+            source={AppImages.Back}
+            style={{ height: 25, width: 25, tintColor: 'white' }}
+          />
+        </TouchableOpacity>
+
+        {/* Logo */}
+        <View style={styles.logoContainer}>
+          <Image
             source={AppImages.logo}
+            style={styles.logo}
+            resizeMode="contain"
           />
         </View>
+      </ImageBackground>
+
+      {/* Bottom Sheet (Moves with Keyboard) */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : null}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+        style={styles.bottomSheetWrapper}
+      >
         <ScrollView
-          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.bottomSheet}
           keyboardShouldPersistTaps="handled"
-          style={{
-            marginBottom: 0,
-            height: 'auto',
-            width: '100%',
-            backgroundColor: 'white',
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-          }}
+          showsVerticalScrollIndicator={false}
         >
-          {/* <View
-            style={{
-              height: '80%',
-              width: '100%',
-              backgroundColor: 'white',
-              justifyContent: 'flex-end',
-            }}
-          > */}
-          <Text style={style.getStart}>{`SIGN IN`}</Text>
-          <Text style={style.getStart1}>{`Your Colony Account`}</Text>
+          <Text style={styles.title}>SIGN IN</Text>
+          <Text style={styles.subtitle}>Your Colony Account</Text>
 
           <InputText
-            placeholder="Enter email / membership no."
-            label={'Email / Membership number'}
-            placeholderTextColor={'#6D6D6D'}
-            containerStyle={{ marginTop: 30 }}
-            inputStyle={[
-              {
-                fontSize: fonts.fs_16,
-                width: '100%',
-                // marginLeft: 5,
-                color: colors.black,
-                fontFamily: 'InstrumentSans_Condensed-medium',
-              },
-            ]}
+            placeholder="Enter membership no."
+            label="Membership number"
+            placeholderTextColor="#6D6D6D"
+            containerStyle={{ marginTop: 30, marginBottom: 0 }}
+            inputStyle={styles.inputText}
             value={loginField}
             onChangeText={value => {
-              setUserName(value),
-                setUserNameError(
-                  checkNormalData(value, 'Please enter Email ID.'),
-                );
+              setUserName(value);
+              setUserNameError(
+                checkNormalData(value, 'Please enter Email ID.'),
+              );
             }}
           />
           <ErrorView text={userNameError.text} show={userNameError.status} />
-          <View
-            style={{
-              flexDirection: 'row',
-              width: '100%',
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginTop: 10,
-            }}
-          >
+
+          {/* Password Field */}
+          <View style={styles.passwordContainer}>
             <InputText
               placeholder="Enter Password"
               label="Password"
-              placeholderTextColor={'#6D6D6D'}
-              containerStyle={{ marginTop: 0 }}
+              placeholderTextColor="#6D6D6D"
               secureTextEntry={hidePassword}
-              inputStyle={[
-                {
-                  fontSize: fonts.fs_16,
-                  width: '100%',
-                  fontFamily: 'InstrumentSans_Condensed-medium',
-                  color: colors.black,
-                },
-              ]}
               value={password}
+              containerStyle={{ flex: 1, marginBottom: 0 }}
+              inputStyle={styles.inputText}
               onChangeText={value => {
-                setPassword(value),
-                  setPasswordError(
-                    checkNormalData(value, 'Please enter password'),
-                  );
+                setPassword(value);
+                setPasswordError(
+                  checkNormalData(value, 'Please enter password'),
+                );
               }}
             />
             <TouchableOpacity
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                right: 35,
-                position: 'absolute',
-              }}
+              style={styles.eyeIcon}
               activeOpacity={0.3}
-              onPress={() => hideOnPress()}
+              onPress={() => setHidePassword(!hidePassword)}
             >
               <Image
-                style={{
-                  height: 25,
-                  width: 25,
-                  marginTop: 15,
-                  resizeMode: 'contain',
-                  tintColor: colors.black,
-                }}
+                style={styles.eyeImg}
                 source={hidePassword ? AppImages.closeeye : AppImages.openeye}
               />
             </TouchableOpacity>
           </View>
-          <ErrorView text={passwordError.text} show={passwordError.status} />
-          <Text
-            style={style.forgot}
-            onPress={() => props.navigation.push('ForgotPassword')}
-          >{`Forgot Password?`}</Text>
 
+          <ErrorView text={passwordError.text} show={passwordError.status} />
           <Button
             title="Sign In"
-            style={{ alignSelf: 'center', marginTop: 25 }}
-            textTitle={{
-              fontFamily: 'InstrumentSans_Condensed-medium',
-              fontSize: fonts.fs_16,
-              color: colors.white,
-            }}
-            onPress={() => submit()}
+            style={styles.signInBtn}
+            textTitle={styles.signInBtnText}
+            onPress={submit}
           />
-          {/* </View> */}
+          <Text
+            style={styles.forgot}
+            onPress={() => props.navigation.navigate('ForgotPassword')}
+          >
+            Forgot Password?
+          </Text>
+
+          <View style={{ height: 50 }} />
         </ScrollView>
-        <ActivityIndicator onRequestClose={false} isLoading={isLoading} />
       </KeyboardAvoidingView>
-      <View style={{ position: 'absolute', bottom: 20, alignSelf: 'center' }}>
-        <Text style={style.already}>
+
+      {/* Footer (Fixed) */}
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>
           Don't have an account?{' '}
           <Text
-            style={{ color: '#2E43C5' }}
+            style={styles.signUpText}
             onPress={() => props.navigation.push('Signup')}
           >
             Sign Up.
           </Text>
         </Text>
       </View>
-    </ImageBackground>
+
+      <ActivityIndicator onRequestClose={false} isLoading={isLoading} />
+    </View>
   );
 }
 
-const style = StyleSheet.create({
-  container: { ...styles.container },
-  getStart: {
-    fontFamily: 'InstrumentSans_Condensed-medium',
+const styles = StyleSheet.create({
+  bgImage: {
+    height: '70%',
+    width: '100%',
+    // justifyContent: 'center',
+  },
+  backBtn: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    zIndex: 10,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // semi-transparent black overlay
+  },
+  logoContainer: {
+    alignSelf: 'center',
+    marginTop: 100,
+  },
+  logo: {
+    height: 140,
+    width: 200,
+    tintColor: colors.white,
+  },
+  bottomSheetWrapper: {
+    flex: 1,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+  },
+  bottomSheet: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    paddingHorizontal: 0,
+    paddingBottom: 30,
+    paddingTop: 25,
+  },
+  title: {
     textAlign: 'center',
-    fontSize: Platform.OS == 'ios' ? fonts.fs_32 : fonts.fs_32,
+    fontSize: fonts.fs_32,
     color: '#1A1A1A',
-    marginTop: 30,
-  },
-  getStart1: {
     fontFamily: 'InstrumentSans_Condensed-medium',
-    textAlign: 'center',
-    fontSize: Platform.OS == 'ios' ? fonts.fs_22 : fonts.fs_22,
-    color: colors.txtColor,
   },
-  information: {
-    ...family.Montserrat_Regular,
-    fontSize: fonts.fs_15,
-    marginLeft: 20,
-    color: colors.white,
-    fontWeight: Platform.OS == 'ios' ? '600' : null,
+  subtitle: {
+    textAlign: 'center',
+    fontSize: fonts.fs_22,
+    color: colors.txtColor,
+    fontFamily: 'InstrumentSans_Condensed-medium',
+  },
+  inputText: {
+    fontSize: fonts.fs_16,
+    color: colors.black,
+    fontFamily: 'InstrumentSans_Condensed-medium',
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 30,
+    top: 32,
+  },
+  eyeImg: {
+    height: 24,
+    width: 24,
+    tintColor: colors.black,
+    marginTop: 15,
   },
   forgot: {
-    fontFamily: 'InstrumentSans_Condensed-medium',
-    fontSize: fonts.fs_18,
-    marginLeft: 20,
-    marginTop: 15,
-    color: colors.txtColor,
     textAlign: 'center',
+    marginTop: 15,
+    fontSize: fonts.fs_18,
+    color: colors.txtColor,
+    fontFamily: 'InstrumentSans_Condensed-medium',
+    // marginBottom: 20,
   },
-  already: {
+  signInBtn: {
+    alignSelf: 'center',
+    marginTop: 25,
+    backgroundColor: '#b49b5e', // golden brown tone
+    borderRadius: 25,
+  },
+  signInBtnText: {
+    fontFamily: 'InstrumentSans_Condensed-medium',
+    fontSize: fonts.fs_16,
+    color: colors.white,
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 20,
+    alignSelf: 'center',
+  },
+  footerText: {
     fontSize: fonts.fs_16,
     fontFamily: 'InstrumentSans_Condensed-regular',
     color: colors.txtColor,
-    textAlign: 'center',
-    // shadowColor: '#000',
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 4,
-    // },
-    // shadowOpacity: 0.3,
-    // shadowRadius: 4.65,
-
-    // elevation: 8,
+  },
+  signUpText: {
+    color: '#2E43C5',
   },
 });

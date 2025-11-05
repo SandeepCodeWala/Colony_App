@@ -4,7 +4,8 @@ apply plugin: "com.facebook.react"
 
 project.ext.react = [
     entryFile: "index.js",
-    nodeExecutableAndArgs: ["/opt/homebrew/bin/node"]
+    nodeExecutableAndArgs: ["/opt/homebrew/bin/node"],
+      enableHermes: true
 ]
 
 /**

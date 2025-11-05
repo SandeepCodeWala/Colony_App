@@ -1,246 +1,263 @@
 import React, { useState } from 'react';
 import {
-  Text,
-  StyleSheet,
   View,
-  ImageBackground,
+  Text,
   Image,
   TouchableOpacity,
+  ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   Alert,
-  Keyboard,
+  StyleSheet,
 } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useDispatch } from 'react-redux';
 import InputText from '../components/InputText';
-import ActivityIndicator from '../components/ActivityIndicator';
 import Button from '../components/Button';
 import ErrorView from '../components/ErrorView';
-import { colors, fonts, styles } from '../themes';
+import ActivityIndicator from '../components/ActivityIndicator';
+import { colors, fonts } from '../themes';
 import { AppImages } from '../res';
-import * as Yup from 'yup';
 import { postApi } from '../services/network/api';
 import { SignUpSchema } from '../schema/SignUpSchema';
-import { useDispatch } from 'react-redux';
 import { setMembershipNumber } from '../redux/slices/authSlice';
-// Yup schema
-
+import { showToast } from '../services/Toast';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignUp({ navigation }) {
-   const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const [name, setUserName] = useState('');
   const [phone, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
+  const [hidePassword, setHidePassword] = useState(true);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [hidePassword, setHidePassword] = useState(true);
 
-  // const handleSignUp = async () => {
-  //   Keyboard.dismiss();
-
-  //   try {
-  //     // Validate form
-  //     await SignUpSchema.validate({ name, phone, password }, { abortEarly: false });
-
-  //     // Clear previous errors
-  //     setErrors({});
-
-  //     // API call
-  //     setIsLoading(true);
-  //     const response = await postApi('register', { name: name, phone, password });
-  //     setIsLoading(false);
-
-  //     if (response.success) {
-  //       Alert.alert('Colony', response.message, [
-  //         { text: 'OK', onPress: () => navigation.navigate('Login') },
-  //       ]);
-  //     } else {
-  //       Alert.alert('Colony', response.message);
-  //     }
-  //   } catch (validationError) {
-  //     if (validationError.inner) {
-  //       const formErrors = {};
-  //       validationError.inner.forEach(err => {
-  //         formErrors[err.path] = err.message;
-  //       });
-  //       setErrors(formErrors);
-  //     }
-  //   }
-  // };
+  const randomOTP = Math.floor(1000 + Math.random() * 9000);
 
   const handleSignUp = async () => {
-  Keyboard.dismiss();
-  console.log('Sign Up pressed'); // <-- log button press
+    try {
+      // await SignUpSchema.validate(
+      //   { name, phone, password },
+      //   { abortEarly: false },
+      // );
+      setErrors({});
+      setIsLoading(true);
+      const response = await postApi('register', { name, phone, password });
+      console.log('THIS IS SINGUP API RESPONSE==', response);
+      setIsLoading(false);
 
-  try {
-    // Validate form
-    console.log('Validating form...', { name, phone, password });
-    await SignUpSchema.validate({ name: name, phone, password }, { abortEarly: false });
-
-    // Clear previous errors
-    setErrors({});
-
-    // API call
-    setIsLoading(true);
-    console.log('Calling API...');
-    const response = await postApi('register', { name: name, phone, password });
-    setIsLoading(false);
-
-    console.log('API response:', response);
-
-    if (response.success) {
-       const membershipNumber = response?.data?.memberShipNumber || '';
-       console.log("mmem",membershipNumber)
+      if (response?.success) {
+        const membershipNumber = response?.data?.memberShipNumber || '';
         dispatch(setMembershipNumber(membershipNumber));
-      Alert.alert('Colony', response.message, [
-        { text: 'OK',  onPress: () =>
-            navigation.navigate('Login', 
-              // membership: membershipNumber || '', // pass membership to login
-            ), },
-      ]);
-    } else {
-      Alert.alert('Colony', response.message);
-    }
-  } catch (err) {
-    console.log('Error caught:', err);
+      await AsyncStorage.setItem('membershipNumber', membershipNumber);
 
-    if (err.inner) {
-      const formErrors = {};
-      err.inner.forEach(e => {
-        console.log('Validation error:', e.path, e.message);
-        formErrors[e.path] = e.message;
-      });
-      setErrors(formErrors);
-    } else {
-      Alert.alert('Error', err.message || 'Something went wrong');
-    }
-  }
-};
+        showToast(
+          'success',
+          'Please verify your OTP sent to your phone number.',
+        );
+        const sendOTP = await postApi('send-otp', { phone });
+        console.log("THIS IS SENPOTP API RESPONSE==+++",sendOTP)
+        if (sendOTP?.success) {
+          navigation.navigate('OTPValidate',{phone});
+        } else {
+          showToast('error', sendOTP.message || 'Failed to send OTP.');
+        }
+      } else {
+        showToast(
+          'error',
+          response.message || 'Registration failed. Please try again.',
+        );
+      }
+    } catch (err) {
+      console.log('THIS IS ERRORS===', err);
+      showToast('error', 'Registration failed. Please try again.');
+    } finally {
+      setIsLoading(false);
 
+      console.log('THIS IS ERRORS', errors);
+    }
+  };
 
   return (
-    <ImageBackground style={style.container} source={AppImages.ccc}>
-      <View style={{ flex: 1 }}>
-        {/* Header */}
-        <View style={{ alignItems: 'center' }}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('BottomTabs', { screen: 'Explore' })}
-            style={{ alignSelf: 'flex-start', marginTop: 50, marginLeft: 20 }}
-          >
-            <Image source={AppImages.Back} style={{ height: 25, width: 25 }} />
-          </TouchableOpacity>
-
-          <Image
-            style={{ height: 150, width: 200, resizeMode: 'contain', marginTop: 40 }}
-            source={AppImages.logo}
-          />
-        </View>
-
-        {/* Form */}
-        <KeyboardAwareScrollView
-          enableOnAndroid
-          extraScrollHeight={20}
+    <ImageBackground
+      source={AppImages.ccc}
+      style={{ flex: 1 }}
+      resizeMode="cover"
+    >
+      <View
+        style={{
+          ...StyleSheet.absoluteFillObject,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        }}
+      />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : null}
+        style={{ flex: 1 }}
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end' }}
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
-          style={{
-            flex: 1,
-            backgroundColor: 'white',
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            marginTop: 20,
-            paddingHorizontal: 20,
-          }}
         >
-          <Text style={style.getStart}>SIGN UP</Text>
-          <Text style={style.getStart1}>Your Colony Account</Text>
-
-          {/* Name */}
-          <InputText
-            placeholder="Enter your full name"
-            label="Name"
-            value={name}
-            onChangeText={setUserName}
-            containerStyle={{ marginTop: 30 }}
-          />
-          <ErrorView text={errors.name} show={!!errors.name} />
-
-          {/* Phone */}
-          <InputText
-            placeholder="Enter your phone number"
-            label="Phone Number"
-            keyboardType="phone-pad"
-            maxLength={10}
-            value={phone}
-            onChangeText={setPhoneNumber}
-            containerStyle={{ marginTop: 15 }}
-          />
-          <ErrorView text={errors.phone} show={!!errors.phone} />
-
-          {/* Password */}
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 15 }}>
-            <InputText
-              placeholder="Enter Password"
-              label="Password"
-              secureTextEntry={hidePassword}
-              value={password}
-              onChangeText={setPassword}
-              containerStyle={{ flex: 1 }}
-            />
+          {/* Back button + logo */}
+          <View style={{ position: 'absolute', top: 40, left: 20 }}>
             <TouchableOpacity
-              style={{ position: 'absolute', right: 10 }}
-              onPress={() => setHidePassword(!hidePassword)}
+              onPress={() =>
+                navigation.navigate('BottomTabs', { screen: 'Explore' })
+              }
             >
               <Image
-                style={{ height: 25, width: 25, tintColor: colors.black }}
-                source={hidePassword ? AppImages.closeeye : AppImages.openeye}
+                source={AppImages.Back}
+                style={{ height: 25, width: 25, tintColor: colors.white }}
               />
             </TouchableOpacity>
           </View>
-          <ErrorView text={errors.password} show={!!errors.password} />
 
-          {/* Sign Up Button */}
-          <Button
-            title="Sign Up"
-            style={{ alignSelf: 'center', marginTop: 25 }}
-            onPress={handleSignUp}
-          />
-
-          {/* Footer */}
-          <View style={{ alignSelf: 'center', marginTop: 15 }}>
-            <Text style={style.already}>
-              Already have an account?{' '}
-              <Text style={{ color: '#FF0007' }} onPress={() => navigation.navigate('Login')}>
-                Sign In.
-              </Text>
-            </Text>
+          <View
+            style={{
+              alignItems: 'center',
+              position: 'absolute',
+              top: 70,
+              width: '100%',
+            }}
+          >
+            <Image
+              source={AppImages.logo}
+              style={{
+                height: 150,
+                width: 200,
+                resizeMode: 'contain',
+                tintColor: colors.white,
+              }}
+            />
           </View>
-        </KeyboardAwareScrollView>
 
-        {/* Loader */}
-        <ActivityIndicator onRequestClose={false} isLoading={isLoading} />
-      </View>
+          {/* White rounded form area */}
+          <View
+            style={{
+              backgroundColor: 'white',
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              paddingHorizontal: 0,
+              paddingBottom: 40,
+              paddingTop: 20,
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: 'InstrumentSans_Condensed-medium',
+                textAlign: 'center',
+                fontSize: fonts.fs_32,
+                color: '#1A1A1A',
+              }}
+            >
+              SIGN UP
+            </Text>
+            <Text
+              style={{
+                fontFamily: 'InstrumentSans_Condensed-medium',
+                textAlign: 'center',
+                fontSize: fonts.fs_22,
+                color: colors.txtColor,
+                marginTop: 5,
+              }}
+            >
+              Your Colony Account
+            </Text>
+
+            {/* Name Input */}
+            <InputText
+              placeholder="Enter your full name"
+              label="Name"
+              value={name}
+              onChangeText={setUserName}
+              containerStyle={{ marginTop: 30, marginBottom: 0 }}
+            />
+            <ErrorView text={errors.name} show={!!errors.name} />
+
+            {/* Phone Input */}
+            <InputText
+              placeholder="Enter your phone number"
+              label="Phone Number"
+              keyboardType="phone-pad"
+              maxLength={13}
+              value={phone}
+              onChangeText={setPhoneNumber}
+              containerStyle={{ marginTop: 15, marginBottom: 0 }}
+            />
+            <ErrorView text={errors.phone} show={!!errors.phone} />
+
+            {/* Password Input */}
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginTop: 5,
+              }}
+            >
+              <InputText
+                placeholder="Enter Password"
+                label="Password"
+                secureTextEntry={hidePassword}
+                value={password}
+                onChangeText={setPassword}
+                containerStyle={{ flex: 1, marginBottom: 0 }}
+              />
+              <TouchableOpacity
+                style={{
+                  position: 'absolute',
+                  right: 10,
+                  marginTop: 30,
+                  marginRight: 25,
+                }}
+                onPress={() => setHidePassword(!hidePassword)}
+              >
+                <Image
+                  style={{
+                    height: 25,
+                    width: 25,
+                    tintColor: colors.black,
+                  }}
+                  source={hidePassword ? AppImages.closeeye : AppImages.openeye}
+                />
+              </TouchableOpacity>
+            </View>
+            <ErrorView text={errors.password} show={!!errors.password} />
+
+            {/* Sign Up Button */}
+            <Button
+              title="Sign Up"
+              style={{
+                alignSelf: 'center',
+                marginTop: 25,
+              }}
+              onPress={handleSignUp}
+            />
+
+            {/* Footer */}
+            <View style={{ alignSelf: 'center', marginTop: 15 }}>
+              <Text
+                style={{
+                  fontSize: fonts.fs_16,
+                  fontFamily: 'InstrumentSans_Condensed-regular',
+                  color: colors.txtColor,
+                  textAlign: 'center',
+                }}
+              >
+                Already have an account?{' '}
+                <Text
+                  style={{ color: colors.blue }}
+                  onPress={() => navigation.navigate('Login')}
+                >
+                  Sign In.
+                </Text>
+              </Text>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+
+      <ActivityIndicator onRequestClose={false} isLoading={isLoading} />
     </ImageBackground>
   );
 }
-
-const style = StyleSheet.create({
-  container: { ...styles.container },
-  getStart: {
-    fontFamily: 'InstrumentSans_Condensed-medium',
-    textAlign: 'center',
-    fontSize: fonts.fs_32,
-    color: '#1A1A1A',
-    marginTop: 30,
-  },
-  getStart1: {
-    fontFamily: 'InstrumentSans_Condensed-medium',
-    textAlign: 'center',
-    fontSize: fonts.fs_22,
-    color: colors.txtColor,
-    marginTop: 5,
-  },
-  already: {
-    fontSize: fonts.fs_16,
-    fontFamily: 'InstrumentSans_Condensed-regular',
-    color: colors.txtColor,
-    textAlign: 'center',
-  },
-});

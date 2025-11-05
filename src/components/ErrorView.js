@@ -16,9 +16,9 @@ const styles = StyleSheet.create({
         width: '90%'
     },
     text: {
-        color: 'gray',
+        color: '#FF8488',
         fontSize: 14,
-        marginLeft:20,marginTop:5,
+        marginLeft:20,
         fontFamily: 'Poppins-Medium'
     }
 })

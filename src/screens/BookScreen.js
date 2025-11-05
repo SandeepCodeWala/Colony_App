@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,41 +8,58 @@ import {
   Image,
   ScrollView,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {Colors, Fonts, AppImages} from '../res';
+import { useNavigation } from '@react-navigation/native';
+import { Colors, Fonts, AppImages } from '../res';
 import Button from '../components/Button'; // 👈 Reusable button
+import ReserveHeader from '../components/ReserveHeader';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const BookScreen = () => {
   const navigation = useNavigation();
+  const [UserName, setUserName] = React.useState('');
+  const [membership, setMembershipNumber] = React.useState('');
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  const fetchUser = async () => {
+    const UserName = await AsyncStorage.getItem('name');
+    console.log('Fetched User Name:', UserName);
+    const membershipNum = await AsyncStorage.getItem('membershipNumber');
+    setUserName(UserName);
+    setMembershipNumber(membershipNum);
+
+    // Fetch user data logic here
+  };
+
+  const handleReserveTable = () => {
+    if (UserName && membership) {
+      navigation.navigate('ReserveLounge');
+    } else {
+      navigation.navigate('Login');
+      showToast('error', 'User details not found. Please log in again.');
+    }
+  };
 
   return (
     <View style={styles.container}>
       {/* ---------- Header ---------- */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}>
-          <Image source={AppImages.Back} style={styles.backIcon} />
-        </TouchableOpacity>
-
-        <Text style={styles.headerTitle}>Book</Text>
-
-        <TouchableOpacity>
-          <Image source={AppImages.Bell} style={styles.bellIcon} />
-        </TouchableOpacity>
-      </View>
+      <ReserveHeader title={'Book'} onBack={() => navigation.goBack()} />
 
       {/* ---------- Content ---------- */}
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom: 40}}>
-        <View style={{marginTop: 10}}>
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
+        <View style={{ marginTop: 10 }}>
           {/* ---------- Lounge Section ---------- */}
           <View style={styles.card}>
             <ImageBackground
-              source={AppImages.Lounge}
-              imageStyle={{borderRadius: 16}}
-              style={styles.imageCard}>
+              source={AppImages.lounge}
+              imageStyle={{ borderRadius: 16 }}
+              style={styles.imageCard}
+            >
               <View style={styles.overlay} />
               <View style={styles.textContainer}>
                 <Text style={styles.title}>LOUNGE</Text>
@@ -64,11 +81,12 @@ const BookScreen = () => {
           </View>
 
           {/* ---------- Restaurant Section ---------- */}
-          <View style={[styles.card, {marginTop: 24}]}>
+          <View style={[styles.card, { marginTop: 24 }]}>
             <ImageBackground
-              source={AppImages.Restaurant}
-              imageStyle={{borderRadius: 16}}
-              style={styles.imageCard}>
+              source={AppImages.restaurant}
+              imageStyle={{ borderRadius: 16 }}
+              style={styles.imageCard}
+            >
               <View style={styles.overlay} />
               <View style={styles.textContainer}>
                 <Text style={styles.title}>RESTAURANT</Text>
@@ -83,7 +101,7 @@ const BookScreen = () => {
                   title="Reserve a Table"
                   style={styles.reserveButton}
                   textStyle={styles.reserveText}
-                  onPress={() => navigation.navigate('ReserveTable')}
+                  onPress={() => handleReserveTable()}
                 />
               </View>
             </ImageBackground>
@@ -141,7 +159,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   textContainer: {
     padding: 20,

@@ -1,26 +1,28 @@
 import React from 'react';
-import {
-  NavigationContainer,
-  useNavigationContainerRef,
-} from '@react-navigation/native';
+import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { Provider } from 'react-redux';
 import { store } from './src/redux/store';
-import { StripeProvider } from '@stripe/stripe-react-native'; // ✅ ADD THIS LINE
-import { STRIPE_PUBLISHABLE_KEY } from '@env'; // ✅ import from .env
+import { StripeProvider } from '@stripe/stripe-react-native';
+import { STRIPE_PUBLISHABLE_KEY } from '@env';
 import MainStack from './src/navigator/MainStack';
+import Toast from 'react-native-toast-message';
+import { toastConfig } from './src/services/Toast';
 
 const App = () => {
   const navigationRef = useNavigationContainerRef();
+
+  console.log('🟢 Stripe Key:', STRIPE_PUBLISHABLE_KEY);
 
   return (
     <Provider store={store}>
       <StripeProvider
         publishableKey={STRIPE_PUBLISHABLE_KEY}
-        merchantIdentifier="merchant.com.colony.app" // for Apple Pay (optional)
-        urlScheme="colony" // for 3D Secure (optional)
+        merchantIdentifier="merchant.com.colony.app"
+        urlScheme="colony"
       >
         <NavigationContainer ref={navigationRef}>
           <MainStack />
+          <Toast config={toastConfig} />
         </NavigationContainer>
       </StripeProvider>
     </Provider>

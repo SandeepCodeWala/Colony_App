@@ -1,3 +1,5 @@
+
+ 
 import React, { useState } from 'react';
 import {
   View,
@@ -13,26 +15,26 @@ import { useNavigation } from '@react-navigation/native';
 import { Colors, Fonts, AppImages } from '../res';
 import { Dropdown } from 'react-native-element-dropdown';
 import Button from '../components/Button';
-
-const ReserveLoungeScreen = () => {
+ 
+const ReserveLoungeScreen1 = () => {
   const navigation = useNavigation();
-
+ 
   const [guests, setGuests] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useState(new Date());
   const [selectedSlot, setSelectedSlot] = useState(null);
-
+ 
   const guestOptions = Array.from({ length: 10 }, (_, i) => ({
     label: `${i + 1}`,
     value: i + 1,
   }));
-
+ 
   // Generate time slots dynamically
   const generateTimeSlots = (start = '17:00', end = '22:00', interval = 30) => {
     const slots = [];
     let current = new Date(`1970-01-01T${start}:00`);
     const endTime = new Date(`1970-01-01T${end}:00`);
-
+ 
     while (current <= endTime) {
       const hours = String(current.getHours()).padStart(2, '0');
       const minutes = String(current.getMinutes()).padStart(2, '0');
@@ -41,15 +43,15 @@ const ReserveLoungeScreen = () => {
     }
     return slots;
   };
-
+ 
   const timeSlots = generateTimeSlots();
-
+ 
   const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShowDatePicker(false);
     setDate(currentDate);
   };
-
+ 
   return (
     <View style={styles.container}>
       {/* ---------- Header ---------- */}
@@ -59,11 +61,11 @@ const ReserveLoungeScreen = () => {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Reserve Lounge</Text>
       </View>
-
+ 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
         {/* ---------- Lounge Image ---------- */}
-        <Image source={AppImages.Lounge} style={styles.image} />
-
+        <Image source={AppImages.lounge} style={styles.image} />
+ 
         {/* ---------- Details ---------- */}
         <View style={styles.detailsContainer}>
           <Text style={styles.label}>Guests</Text>
@@ -78,13 +80,13 @@ const ReserveLoungeScreen = () => {
             placeholderStyle={styles.dropdownText}
             selectedTextStyle={styles.dropdownText}
           />
-
+ 
           {/* ---------- Date Picker ---------- */}
           <TouchableOpacity style={styles.dateBox} onPress={() => setShowDatePicker(true)}>
             <Text style={styles.dateText}>{date.toDateString().slice(4, 10)}</Text>
             <Text style={styles.subLabel}>Date</Text>
           </TouchableOpacity>
-
+ 
           {showDatePicker && (
             <DateTimePicker
               value={date}
@@ -93,7 +95,7 @@ const ReserveLoungeScreen = () => {
               onChange={onChangeDate}
             />
           )}
-
+ 
           {/* ---------- Time Slots ---------- */}
           <Text style={[styles.label, { marginTop: 20 }]}>Select Time</Text>
           <FlatList
@@ -115,7 +117,7 @@ const ReserveLoungeScreen = () => {
               </TouchableOpacity>
             )}
           />
-
+ 
           {/* ---------- Confirm Button ---------- */}
           <Button
             title="Confirm Reservation"
@@ -135,9 +137,9 @@ const ReserveLoungeScreen = () => {
     </View>
   );
 };
-
-export default ReserveLoungeScreen;
-
+ 
+export default ReserveLoungeScreen1;
+ 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -239,3 +241,5 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
 });
+ 
+ 

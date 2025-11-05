@@ -107,3 +107,30 @@ export async function postApi(method, data, authKey) {
   return response;
 }
 
+
+export async function CreateRestaurant(data) {
+  console.log('➡️ API Request:', baseURL.base_url + method);
+  let response = {};
+
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    // ✅ Add token if available
+    if (authKey) {
+      headers['Authorization'] = `Bearer ${authKey}`;
+    }
+
+    const res = await axios.post(baseURL.base_url + method, data, { headers });
+
+    console.log('✅ API Response:', res.data);
+    response = res.data;
+  } catch (e) {
+    console.log('❌ API Error:', e?.response?.data || e.message);
+    response = e?.response?.data || { success: false, message: e.message };
+  }
+
+  return response;
+}
+

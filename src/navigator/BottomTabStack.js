@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Image, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AppImages, Colors } from '../res';
@@ -6,10 +6,41 @@ import Home from '../Dashboard/Home';
 import Settings from '../Dashboard/settings';
 import BookScreen from '../screens/BookScreen';
 import Loyalty from '../Dashboard/Loyalty';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import MemberScreen from '../screens/MemberScreen';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabs = () => {
+  // const [userName, setUserName] = useState('');
+  // const [memberShip, setMembershipNumber] = useState('');
+  let screen = 'Loyalty';
+  const fetchUser = async () => {
+    try {
+      const userName = await AsyncStorage.getItem('name');
+      const membershipNum = await AsyncStorage.getItem('membershipNumber');
+
+      console.log('🟢 Fetched user:', { userName, membershipNum });
+
+      // ✅ Check if userName is missing or empty
+      if (!userName || userName === 'null' || userName === 'undefined') {
+        console.log('🔴 No user found, navigating to Loyalty screen...=====');
+        screen = 'Loyalty';
+      } else {
+        screen = 'MemberScreen';
+      }
+    } catch (error) {
+      console.log('❌ Error fetching user:', error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUser();
+    }, []),
+  );
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -21,7 +52,7 @@ const BottomTabs = () => {
       })}
     >
       <Tab.Screen
-        name='Explore'
+        name="Explore"
         component={Home}
         options={{
           tabBarLabel: 'Explore',
@@ -38,7 +69,7 @@ const BottomTabs = () => {
         }}
       />
       <Tab.Screen
-        name='Book'
+        name="Book"
         component={BookScreen}
         options={{
           tabBarLabel: 'Book',
@@ -56,10 +87,10 @@ const BottomTabs = () => {
           ),
         }}
       />
-
+{console.log("WHAT IS THIS SCREEN",screen)}
       <Tab.Screen
-        name='Loyalty'
-        component={Loyalty}
+        name={screen}
+        component={screen == 'Loyalty' ? Loyalty : MemberScreen}
         options={{
           tabBarLabel: 'Loyalty',
           tabBarIcon: ({ focused }) => (
@@ -75,7 +106,7 @@ const BottomTabs = () => {
         }}
       />
       <Tab.Screen
-        name='Account'
+        name="Account"
         component={Settings}
         options={{
           tabBarLabel: 'Account',

@@ -1,138 +1,20 @@
-
-
-// import React from 'react';
-// import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, Dimensions, StatusBar } from 'react-native';
-// import { AppImages } from '../res';
-
-// const { width, height } = Dimensions.get('window');
-
-// const DATA = [
-//   {
-//     id: '1',
-//     title: 'Card Title 1',
-//     subtitle: 'This is a short description',
-//     image: AppImages.cc,
-//   },
-//   {
-//     id: '2',
-//     title: 'Card Title 2',
-//     subtitle: 'Another description here',
-//     image: AppImages.ccc,
-//   },
-//   {
-//     id: '3',
-//     title: 'Card Title 3',
-//     subtitle: 'Some more details here',
-//     image: AppImages.cc,
-//   },
-// ];
-
-// const Home = () => {
-//   const renderItem = ({ item }) => (
-//     <View style={styles.card}>
-//       <Image source={item.image} style={styles.image} />
-//       <View style={styles.overlay}>
-//         <Text style={styles.title}>{item.title}</Text>
-//         <Text style={styles.subtitle}>{item.subtitle}</Text>
-
-//         <View style={styles.buttonRow}>
-//           <TouchableOpacity style={styles.button}>
-//             <Text style={styles.buttonText}>Action 1</Text>
-//           </TouchableOpacity>
-//           <TouchableOpacity style={styles.button}>
-//             <Text style={styles.buttonText}>Action 2</Text>
-//           </TouchableOpacity>
-//         </View>
-//       </View>
-//     </View>
-//   );
-
-//   return (
-//     <View style={{ flex: 1, backgroundColor: '#000' }}>
-//       <StatusBar translucent backgroundColor='transparent' barStyle='light-content' />
-//       <FlatList
-//         data={DATA}
-//         keyExtractor={(item) => item.id}
-//         renderItem={renderItem}
-//         showsVerticalScrollIndicator={false}
-//         decelerationRate='normal'
-//         bounces={false}
-//         contentInsetAdjustmentBehavior='never'
-//       />
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   card: {
-//     width,
-//     height, // full screen card
-//   },
-//   image: {
-//     width,
-//     height,
-//     resizeMode: 'cover',
-//   },
-//   overlay: {
-//     position: 'absolute',
-//     top: 0,
-//     left: 0,
-//     right: 0,
-//     bottom: 0,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     paddingHorizontal: 20,
-//     backgroundColor: 'rgba(0,0,0,0.3)',
-//   },
-//   title: {
-//     fontSize: 26,
-//     fontWeight: '700',
-//     marginBottom: 8,
-//     color: '#fff',
-//     textAlign: 'center',
-//   },
-//   subtitle: {
-//     fontSize: 16,
-//     color: '#eee',
-//     marginBottom: 20,
-//     textAlign: 'center',
-//   },
-//   buttonRow: {
-//     flexDirection: 'row',
-//     gap: 12,
-//   },
-//   button: {
-//     backgroundColor: '#007AFF',
-//     paddingVertical: 10,
-//     paddingHorizontal: 20,
-//     borderRadius: 12,
-//   },
-//   buttonText: {
-//     color: '#fff',
-//     fontWeight: '600',
-//   },
-// });
-
-// export default Home;
-
-
-
-import React from 'react';
-import { 
-  View, 
-  Text, 
-  FlatList, 
-  Image, 
-  TouchableOpacity, 
-  StyleSheet, 
-  Dimensions, 
-  StatusBar 
+import React, { useRef, useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+  StatusBar,
 } from 'react-native';
 import { AppImages, Colors, Fonts } from '../res';
 import { useNavigation } from '@react-navigation/native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+ 
 const { width, height } = Dimensions.get('window');
-
+ 
 const DATA = [
   {
     id: '1',
@@ -140,7 +22,7 @@ const DATA = [
     subtitle: 'Experience fine dining with exquisite cuisines.',
     image: AppImages.restaurant,
     buttonText: 'Reserve a Table',
-    screen: 'RightArrow',   // 👈 must match the name in your navigator
+    screen: 'RightArrow',
   },
   {
     id: '2',
@@ -159,42 +41,117 @@ const DATA = [
     screen: 'Event',
   },
 ];
-
+ 
 const Home = () => {
   const navigation = useNavigation();
+  const flatListRef = useRef(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [UserName, setUserName] = React.useState('');
+  const [membership, setMembershipNumber] = React.useState('');
 
+    useEffect(() => {
+    fetchUser();
+    // Any side effects if needed
+  }, []);
+
+  const fetchUser = async () => {
+    const UserName = await AsyncStorage.getItem('name');
+    console.log('Fetched User Name:', UserName);
+    const membershipNum = await AsyncStorage.getItem('membershipNumber');
+    setUserName(UserName);
+    setMembershipNumber(membershipNum);
+
+    // Fetch user data logic here
+  };
+ 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const nextIndex = (currentIndex + 1) % DATA.length;
+      flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
+      setCurrentIndex(nextIndex);
+    }, 5000);
+ 
+    return () => clearInterval(interval);
+  }, [currentIndex]);
+ 
+  const onViewableItemsChanged = useRef(({ viewableItems }) => {
+    if (viewableItems.length > 0) {
+      setCurrentIndex(viewableItems[0].index);
+    }
+  }).current;
+ 
+  const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 50 });
+
+    const handleReserveTable = () => {
+      console.log("UserName && membership || UserName",UserName && membership || UserName)
+    if (UserName && membership || UserName != null) {
+      navigation.navigate('ReserveLounge');
+    } else {
+      navigation.navigate('Login');
+      // showToast('error', 'User details not found. Please log in again.');
+    }
+  };
+ 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <Image source={item.image} style={styles.image} />
       <View style={styles.overlay}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.subtitle}>{item.subtitle}</Text>
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate(item.screen)} // 👈 navigate to screen
+        <View
+          style={{
+            position: 'absolute',
+            bottom: '5%',
+            width: '100%',
+            alignItems: 'center',
+          }}
         >
-          <Text style={styles.buttonText}>{item.buttonText}</Text>
-        </TouchableOpacity>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.subtitle}>{item.subtitle}</Text>
+ 
+          <View style={styles.paginationContainer}>
+            {DATA.map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.dot,
+                  currentIndex === index ? styles.activeDot : null,
+                ]}
+              />
+            ))}
+          </View>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() =>handleReserveTable()}
+          >
+            <Text style={styles.buttonText}>{item.buttonText}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
-
+ 
   return (
     <View style={{ flex: 1, backgroundColor: '#000' }}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="light-content"
+      />
       <FlatList
+        ref={flatListRef}
         data={DATA}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
         renderItem={renderItem}
         pagingEnabled
+        horizontal
         showsHorizontalScrollIndicator={false}
         bounces={false}
+        onViewableItemsChanged={onViewableItemsChanged}
+        viewabilityConfig={viewConfigRef.current}
       />
     </View>
   );
 };
-
+ 
 const styles = StyleSheet.create({
   card: {
     width,
@@ -213,7 +170,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
     backgroundColor: 'rgba(0,0,0,0.35)',
   },
   title: {
@@ -236,22 +192,43 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: Colors.Muted_Gold,
-    width: 300,
-    height: 50,
+    width: '95%',
+    height: 40,
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 25,
   },
   buttonText: {
     fontFamily: Fonts.instrumentSansMedium,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
     textAlign: 'center',
     color: Colors.WHITE,
   },
+ 
+  paginationContainer: {
+    // position: 'absolute',
+    // bottom: 40,
+    // left: 0,
+    // right: 0,
+    paddingVertical: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: Colors.WHITE,
+    marginHorizontal: 3,
+  },
+  activeDot: {
+    width: 25,
+    height: 7,
+    backgroundColor: Colors.Muted_Gold,
+  },
 });
-
+ 
 export default Home;
-
-
-

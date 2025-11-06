@@ -14,9 +14,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { showToast } from '../services/Toast';
 import baseURL from '../services/network/base_url';
 
-const ReserveLoungeScreen = () => {
+const ReserveLoungeScreen = ({ route }) => {
   const navigation = useNavigation();
-
+  const { screen } = route?.params;
+  console.log('screen screen', screen);
   const [guests, setGuests] = useState(null);
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
@@ -111,11 +112,11 @@ const ReserveLoungeScreen = () => {
         guests,
         token,
       });
-      let data =  {
-          date: date1,
-          time: time1,
-          partySize: guests,
-        }
+      let data = {
+        date: date1,
+        time: time1,
+        partySize: guests,
+      };
       const response = await axios.post(
         `${baseURL.base_url1}reservations/createRes`,
         data,
@@ -132,7 +133,93 @@ const ReserveLoungeScreen = () => {
       showToast('success', 'Your table has been reserved successfully.');
       if (navigation && navigation.navigate) {
         if (UserName && membership) {
-          navigation.navigate('ReserveTableScreen',{userData :response?.data,selectedData:data});
+          navigation.navigate('ReserveTableScreen', {
+            userData: response?.data,
+            selectedData: data,
+            screen:'Lounge'
+          });
+        } else {
+          showToast('error', 'User details not found. Please log in again.');
+        }
+      } else {
+        console.warn('⚠️ Navigation object is missing or invalid.');
+      }
+    } catch (error) {
+      console.error(
+        '❌ Error creating reservation:',
+        error.response?.data || error.message,
+      );
+
+      // ✅ 6. Handle known & unknown errors gracefully
+      if (error.code === 'ECONNABORTED') {
+        showToast(
+          'error',
+          'Request timed out. Please check your internet and try again.',
+        );
+      } else if (error.response?.status === 401) {
+        showToast('error', 'Session expired. Please log in again.');
+      } else {
+        showToast(
+          'error',
+          error.response?.data?.message ||
+            'Something went wrong while creating your reservation. Please try again.',
+        );
+      }
+    } finally {
+      setLoding(false);
+    }
+  };
+
+  const ContinueLounge = async () => {
+        try {
+      if (!date1 || !time1 || !guests) {
+        showToast('error', 'Please select date, time, and number of guests.');
+        return;
+      }
+      // if (!token) {
+      //   showToast('error', 'Authentication error. Please log in again.');
+      //   return;
+      // }
+
+      setLoding(true);
+      console.log('🟢 Reserving table with details:', {
+        date1,
+        time1,
+        guests,
+        token,
+      });
+      let data = {
+        date: date1,
+        time: time1,
+        partySize: guests,
+      };
+
+        navigation.navigate('ReserveTableScreen', {
+            userData: response?.data,
+            selectedData: data,
+            screen:'Lounge'
+          });
+
+      const response = await axios.post(
+        `${baseURL.base_url1}reservations/createRes`,
+        data,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          timeout: 10000, // optional: handle slow network timeout (10s)
+        },
+      );
+
+      console.log('✅ Reservation created successfully:', response.data);
+      showToast('success', 'Your table has been reserved successfully.');
+      if (navigation && navigation.navigate) {
+        if (UserName && membership) {
+          navigation.navigate('ReserveTableScreen', {
+            userData: response?.data,
+            selectedData: data,
+          });
         } else {
           showToast('error', 'User details not found. Please log in again.');
         }
@@ -241,7 +328,9 @@ const ReserveLoungeScreen = () => {
           title="Continue"
           style={styles.confirmButton}
           textStyle={styles.confirmText}
-          onPress={() => Continue()}
+          onPress={() => {
+            screen == 'Lounge' ? ContinueLounge() : Continue();
+          }}
         />
       </View>
     </View>

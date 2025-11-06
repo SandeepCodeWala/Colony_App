@@ -75,7 +75,7 @@ const fetchPaymentIntentClientSecret = async (amountInCents, phone, token) => {
 
 const ReserveTableScreen = ({ route }) => {
   const navigation = useNavigation();
-  const { userData, selectedData } = route?.params ?? {};
+  const { userData, selectedData, screen } = route?.params ?? {};
   console.log('THIS IS USERDATA==', userData);
   const [token, setToken] = useState('');
 
@@ -387,86 +387,95 @@ const ReserveTableScreen = ({ route }) => {
               <Text style={styles.addChipText}>＋</Text>
             </TouchableOpacity> */}
           </View>
+          {screen != 'Lounge' ? (
+            <>
+              <Text style={[styles.subSectionTitle, { marginTop: 14 }]}>
+                Do you have any dietary restrictions?
+              </Text>
+              <View style={styles.checkboxGrid}>
+                {dietaryList &&
+                  dietaryList.map(item => (
+                    <TouchableOpacity
+                      key={item}
+                      style={styles.checkboxRow}
+                      onPress={() => toggleDietary(item)}
+                    >
+                      <View
+                        style={[
+                          styles.checkboxBox,
+                          dietary[item] && {
+                            backgroundColor: Colors.WHITE,
+                            borderColor: Colors.Muted_Gold,
+                          },
+                        ]}
+                      >
+                        {dietary[item] && (
+                          <Text
+                            style={[styles.checkboxLabel, { color: '#fff' }]}
+                          >
+                            ✔️
+                          </Text>
+                        )}
+                      </View>
 
-          <Text style={[styles.subSectionTitle, { marginTop: 14 }]}>
-            Do you have any dietary restrictions?
-          </Text>
-          <View style={styles.checkboxGrid}>
-            {dietaryList &&
-              dietaryList.map(item => (
-                <TouchableOpacity
-                  key={item}
-                  style={styles.checkboxRow}
-                  onPress={() => toggleDietary(item)}
-                >
-                  <View
-                    style={[
-                      styles.checkboxBox,
-                      dietary[item] && {
-                        backgroundColor: Colors.WHITE,
-                        borderColor: Colors.Muted_Gold,
-                      },
-                    ]}
-                  >
-                    {dietary[item] && (
-                      <Text style={[styles.checkboxLabel, { color: '#fff' }]}>
-                        ✔️
+                      <Text style={[styles.checkboxLabel, { marginLeft: 8 }]}>
+                        {item}
                       </Text>
-                    )}
-                  </View>
+                    </TouchableOpacity>
+                  ))}
+              </View>
 
-                  <Text style={[styles.checkboxLabel, { marginLeft: 8 }]}>
-                    {item}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-          </View>
+              <Text style={[styles.subSectionTitle, { marginTop: 14 }]}>
+                Dietary restrictions by Party!
+              </Text>
+              <View style={styles.checkboxGrid}>
+                {dietaryListbyParty &&
+                  dietaryListbyParty.map(item => (
+                    <TouchableOpacity
+                      key={item}
+                      style={styles.checkboxRow}
+                      onPress={() => toggleDietaryByParty(item)}
+                    >
+                      <View
+                        style={[
+                          styles.checkboxBox,
+                          dietaryByParty[item] && {
+                            backgroundColor: Colors.WHITE,
+                            borderColor: Colors.Muted_Gold,
+                          },
+                        ]}
+                      >
+                        {dietaryByParty[item] && (
+                          <Text
+                            style={[styles.checkboxLabel, { color: '#fff' }]}
+                          >
+                            ✔️
+                          </Text>
+                        )}
+                      </View>
 
-          <Text style={[styles.subSectionTitle, { marginTop: 14 }]}>
-            Dietary restrictions by Party!
-          </Text>
-          <View style={styles.checkboxGrid}>
-            {dietaryListbyParty &&
-              dietaryListbyParty.map(item => (
-                <TouchableOpacity
-                  key={item}
-                  style={styles.checkboxRow}
-                  onPress={() => toggleDietaryByParty(item)}
-                >
-                  <View
-                    style={[
-                      styles.checkboxBox,
-                      dietaryByParty[item] && {
-                        backgroundColor: Colors.WHITE,
-                        borderColor: Colors.Muted_Gold,
-                      },
-                    ]}
-                  >
-                    {dietaryByParty[item] && (
-                      <Text style={[styles.checkboxLabel, { color: '#fff' }]}>
-                        ✔️
+                      <Text style={[styles.checkboxLabel, { marginLeft: 8 }]}>
+                        {item}
                       </Text>
-                    )}
-                  </View>
+                    </TouchableOpacity>
+                  ))}
+              </View>
 
-                  <Text style={[styles.checkboxLabel, { marginLeft: 8 }]}>
-                    {item}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-          </View>
-
-          <Text style={[styles.subSectionTitle, { marginTop: 14 }]}>
-            Anything else we should know?
-          </Text>
-          <TextInput
-            value={notes}
-            onChangeText={setNotes}
-            style={[styles.textInput, { height: 90, textAlignVertical: 'top' }]}
-            placeholder="Write anything else"
-            multiline
-          />
-
+              <Text style={[styles.subSectionTitle, { marginTop: 14 }]}>
+                Anything else we should know?
+              </Text>
+              <TextInput
+                value={notes}
+                onChangeText={setNotes}
+                style={[
+                  styles.textInput,
+                  { height: 90, textAlignVertical: 'top' },
+                ]}
+                placeholder="Write anything else"
+                multiline
+              />
+            </>
+          ) : null}
           <View
             style={{
               flexDirection: 'row',

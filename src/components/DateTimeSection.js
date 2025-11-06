@@ -50,7 +50,7 @@ const DateTimeSection = ({
 };
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', justifyContent: 'space-between' },
+  row: { flexDirection: 'row', justifyContent: 'space-between',marginTop:20 },
   boxContainer: { width: '48%' },
   label: {
     fontFamily: Fonts.instrumentSansMedium,

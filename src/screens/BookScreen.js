@@ -13,6 +13,7 @@ import { Colors, Fonts, AppImages } from '../res';
 import Button from '../components/Button'; // 👈 Reusable button
 import ReserveHeader from '../components/ReserveHeader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { showToast } from '../services/Toast';
 
 const BookScreen = () => {
   const navigation = useNavigation();
@@ -35,11 +36,20 @@ const BookScreen = () => {
 
   const handleReserveTable = () => {
     if (UserName && membership) {
-      navigation.navigate('ReserveLounge');
+      navigation.navigate('ReserveLounge',{screen:'table'});
     } else {
       navigation.navigate('Login');
       showToast('error', 'User details not found. Please log in again.');
     }
+  };
+
+    const handleReserveLounge = () => {
+    // if (UserName && membership) {
+      navigation.navigate('ReserveLounge',{screen:'Lounge'});
+    // } else {
+    //   navigation.navigate('Login');
+    //   showToast('error', 'User details not found. Please log in again.');
+    // }
   };
 
   return (
@@ -74,7 +84,7 @@ const BookScreen = () => {
                   title="Reserve a Lounge"
                   style={styles.reserveButton}
                   textStyle={styles.reserveText}
-                  onPress={() => navigation.navigate('ReserveLounge')}
+                  onPress={() => handleReserveLounge()}
                 />
               </View>
             </ImageBackground>

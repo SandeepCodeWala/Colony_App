@@ -12,9 +12,9 @@ import {
 import { AppImages, Colors, Fonts } from '../res';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
- 
+
 const { width, height } = Dimensions.get('window');
- 
+
 const DATA = [
   {
     id: '1',
@@ -41,7 +41,7 @@ const DATA = [
     screen: 'Event',
   },
 ];
- 
+
 const Home = () => {
   const navigation = useNavigation();
   const flatListRef = useRef(null);
@@ -49,7 +49,7 @@ const Home = () => {
   const [UserName, setUserName] = React.useState('');
   const [membership, setMembershipNumber] = React.useState('');
 
-    useEffect(() => {
+  useEffect(() => {
     fetchUser();
     // Any side effects if needed
   }, []);
@@ -63,35 +63,46 @@ const Home = () => {
 
     // Fetch user data logic here
   };
- 
+
   useEffect(() => {
     const interval = setInterval(() => {
       const nextIndex = (currentIndex + 1) % DATA.length;
       flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
       setCurrentIndex(nextIndex);
     }, 5000);
- 
+
     return () => clearInterval(interval);
   }, [currentIndex]);
- 
+
   const onViewableItemsChanged = useRef(({ viewableItems }) => {
     if (viewableItems.length > 0) {
       setCurrentIndex(viewableItems[0].index);
     }
   }).current;
- 
+
   const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 50 });
 
-    const handleReserveTable = () => {
-      console.log("UserName && membership || UserName",UserName && membership || UserName)
-    if (UserName && membership || UserName != null) {
+  const handleReserveTable = screen => {
+    console.log(
+      'UserName && membership || UserName',
+      (UserName && membership) || UserName,
+    );
+    if (screen == 'Event') {
+      navigation.navigate('BookEvent');
+      return;
+    }
+    if (screen == 'Lounge') {
+      navigation.navigate('ReserveLounge', { screen: 'Lounge' });
+      return;
+    }
+    if ((UserName && membership) || UserName != null) {
       navigation.navigate('ReserveLounge');
     } else {
       navigation.navigate('Login');
       // showToast('error', 'User details not found. Please log in again.');
     }
   };
- 
+
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <Image source={item.image} style={styles.image} />
@@ -106,7 +117,7 @@ const Home = () => {
         >
           <Text style={styles.title}>{item.title}</Text>
           <Text style={styles.subtitle}>{item.subtitle}</Text>
- 
+
           <View style={styles.paginationContainer}>
             {DATA.map((_, index) => (
               <View
@@ -120,7 +131,7 @@ const Home = () => {
           </View>
           <TouchableOpacity
             style={styles.button}
-            onPress={() =>handleReserveTable()}
+            onPress={() => handleReserveTable(item?.screen)}
           >
             <Text style={styles.buttonText}>{item.buttonText}</Text>
           </TouchableOpacity>
@@ -128,7 +139,7 @@ const Home = () => {
       </View>
     </View>
   );
- 
+
   return (
     <View style={{ flex: 1, backgroundColor: '#000' }}>
       <StatusBar
@@ -151,7 +162,7 @@ const Home = () => {
     </View>
   );
 };
- 
+
 const styles = StyleSheet.create({
   card: {
     width,
@@ -206,7 +217,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: Colors.WHITE,
   },
- 
+
   paginationContainer: {
     // position: 'absolute',
     // bottom: 40,
@@ -230,5 +241,5 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.Muted_Gold,
   },
 });
- 
+
 export default Home;

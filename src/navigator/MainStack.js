@@ -20,6 +20,7 @@ import PaymentScreen from '../screens/PaymentScreen';
 import ReserveLoungeScreen from '../screens/ReserveTable1';
 import ForgotPassword from '../OnBoarding/ForgotPassword'
 import MemberScreen from '../screens/MemberScreen'
+import BookEventScreen from '../screens/BookEventScreen'
  
 const Stack = createNativeStackNavigator();
 function MainStack() {
@@ -63,6 +64,8 @@ function MainStack() {
          <Stack.Screen name="ReserveTableScreen" component={ReserveTableScreen} />
          <Stack.Screen name="OTPValidate" component={OTPValidate} />
          <Stack.Screen name="Payment" component={PaymentScreen} />
+         <Stack.Screen name="BookEvent" component={BookEventScreen} />
+
 
 
 

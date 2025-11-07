@@ -2,13 +2,13 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { Colors, Fonts } from '../res';
-const ic_pin = require('../res/images/icons/pin.png');
+// const ic_pin = require('../res/images/icons/pin.png');
 
 const LoungeDetails = () => {
   return (
     <View style={styles.container}>
       <View style={styles.locationRow}>
-        <Image source={ic_pin} style={styles.pinIcon} />
+        {/* <Image source={ic_pin} style={styles.pinIcon} /> */}
         <Text style={styles.location}>UK</Text>
       </View>
       <Text style={styles.restaurantName}>Colony Restaurant</Text>

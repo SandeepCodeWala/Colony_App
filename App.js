@@ -7,7 +7,8 @@ import { STRIPE_PUBLISHABLE_KEY } from '@env';
 import MainStack from './src/navigator/MainStack';
 import Toast from 'react-native-toast-message';
 import { toastConfig } from './src/services/Toast';
-import PaymentScreen from './src/screens/PaymentScreen';
+import CardDetailsScreen from './src/screens/PaymentScreen';
+import ReservationsHistory from './src/screens/ReservationHistory';
 
 const App = () => {
   const navigationRef = useNavigationContainerRef();
@@ -23,7 +24,8 @@ const App = () => {
       >
         <NavigationContainer ref={navigationRef}>
           <MainStack />
-          {/* <PaymentScreen/> */}
+          {/* CardDetailsScreen */}
+          {/* <ReservationsHistory/> */}
           <Toast config={toastConfig} />
         </NavigationContainer>
       </StripeProvider>

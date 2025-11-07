@@ -87,7 +87,6 @@ const BottomTabs = () => {
           ),
         }}
       />
-{console.log("WHAT IS THIS SCREEN",screen)}
       <Tab.Screen
         name={screen}
         component={screen == 'Loyalty' ? Loyalty : MemberScreen}

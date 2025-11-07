@@ -21,6 +21,18 @@ export default function ProfileScreen() {
   const [UserName, setUserName] = React.useState('');
   const [membership, setMembershipNumber] = React.useState('');
   console.log('Membership Number from Redux:', membershipNumber);
+  const menuItems = [
+  { id: 1, title: 'Edit Profile',onPress:()=>navigation.navigate("EditProfile") },
+   { id: 10, title: 'My Reservations',onPress:()=>navigation.navigate("ReservationHistory") },
+  { id: 2, title: 'My Statement',onPress:()=>navigation.navigate("MyStatement")  },
+  { id: 3, title: 'My Benefits',onPress:()=>navigation.navigate("ReservationHistory")  },
+  { id: 4, title: 'Registered Offers',onPress:()=>navigation.navigate("ReservationHistory") },
+  { id: 5, title: 'Change Password',onPress:()=>navigation.navigate("ChangePassword") },
+  { id: 6, title: 'Manage Your Consent',onPress:()=>navigation.navigate("ReservationHistory") },
+  { id: 7, title: 'Settings',onPress:()=>navigation.navigate("ReservationHistory") },
+  { id: 8, title: 'Terms & Conditions',onPress:()=>navigation.navigate("ReservationHistory") },
+  { id: 9, title: 'Help & Support',onPress:()=>navigation.navigate("ReservationHistory") },
+];
 
   useEffect(() => {
     fetchUser();
@@ -72,7 +84,7 @@ export default function ProfileScreen() {
         <View style={{ flex: 1 }}>
           {/* Menu Options */}
           {menuItems.map(item => (
-            <TouchableOpacity key={item.id} style={styles.menuRow}>
+            <TouchableOpacity key={item.id} onPress={onPress} style={styles.menuRow}>
               <Text style={styles.menuText}>{item.title}</Text>
               <Text style={styles.arrow}>›</Text>
             </TouchableOpacity>
@@ -88,17 +100,7 @@ export default function ProfileScreen() {
   );
 }
 
-const menuItems = [
-  { id: 1, title: 'Edit Profile' },
-  { id: 2, title: 'My Statement' },
-  { id: 3, title: 'My Benefits' },
-  { id: 4, title: 'Registered Offers' },
-  { id: 5, title: 'Change Password' },
-  { id: 6, title: 'Manage Your Consent' },
-  { id: 7, title: 'Settings' },
-  { id: 8, title: 'Terms & Conditions' },
-  { id: 9, title: 'Help & Support' },
-];
+
 
 const styles = StyleSheet.create({
   container: {

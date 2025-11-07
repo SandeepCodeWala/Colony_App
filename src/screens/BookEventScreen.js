@@ -9,17 +9,17 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
-  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { AppImages } from '../res'; // Assuming these paths are correct
-import { colors, fonts } from '../themes'; // Assuming these paths are correct
-import InputText from '../components/InputText'; // Assuming this component is correct
-import Button from '../components/Button'; // Assuming this component is correct
-import ActivityIndicator from '../components/ActivityIndicator'; // Assuming this component is correct
-import { postApi } from '../services/network/api'; // Assuming this function is correct
-import { showToast } from '../services/Toast'; // Assuming this function is correct
+import axios from 'axios';
+import { AppImages } from '../res';
+import { colors, fonts } from '../themes';
+import InputText from '../components/InputText';
+import Button from '../components/Button';
+import ActivityIndicator from '../components/ActivityIndicator';
+import { showToast } from '../services/Toast';
+import { baseURL } from '../services/network/baseURL'; // ✅ Make sure you have this file
 
 export default function BookEventScreen({ navigation }) {
   const [name, setName] = useState('');
@@ -30,36 +30,39 @@ export default function BookEventScreen({ navigation }) {
   const [note, setNote] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  // Load user data from AsyncStorage
   useEffect(() => {
     const getUserData = async () => {
-      const storedName = await AsyncStorage.getItem('name');
-      const storedMobile = await AsyncStorage.getItem('phone');
-      if (storedName) setName(storedName);
-      if (storedMobile) setMobile(storedMobile);
+      try {
+        const storedName = await AsyncStorage.getItem('name');
+        const storedMobile = await AsyncStorage.getItem('phone');
+        if (storedName) setName(storedName);
+        if (storedMobile) setMobile(storedMobile);
+      } catch (error) {
+        console.error('Error retrieving user data:', error);
+      }
     };
     getUserData();
   }, []);
 
-  // Format the date and time for display in the input field
+  // Format date + time display
   const formattedDateTime = useMemo(() => {
-    // Only display a time if the date is not the default unselected value (or similar logic)
-    // For simplicity, we assume 'date' always holds a valid Date object.
+    if (!date) return '';
     const datePart = date.toDateString();
-    const timePart = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const timePart = date.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
     return `${datePart} at ${timePart}`;
   }, [date]);
 
-  const openDateTimePicker = () => {
-    // Start with the date picker
-    setShowDatePicker(true);
-  };
+  // Date picker logic
+  const openDateTimePicker = () => setShowDatePicker(true);
 
   const handleDateChange = (event, selectedDate) => {
     setShowDatePicker(false);
     if (selectedDate) {
-      // Set the selected date, but keep the current time initially
       setDate(selectedDate);
-      // Immediately show the time picker after date selection
       setShowTimePicker(true);
     }
   };
@@ -67,85 +70,96 @@ export default function BookEventScreen({ navigation }) {
   const handleTimeChange = (event, selectedTime) => {
     setShowTimePicker(false);
     if (selectedTime) {
-      // The selectedTime argument for mode='time' on iOS is actually a Date object
-      // with the selected time components, but possibly an old date component.
-      // We must only update the hour and minute of the existing 'date' state.
       const updatedDate = new Date(date);
       updatedDate.setHours(selectedTime.getHours());
       updatedDate.setMinutes(selectedTime.getMinutes());
-      // Set seconds and milliseconds to 0 for consistency
       updatedDate.setSeconds(0);
       updatedDate.setMilliseconds(0);
       setDate(updatedDate);
     }
   };
 
+  // Submit booking
   const submitBooking = async () => {
-    // Check if the current date is in the past (only compare date part, not time)
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time to 00:00 for comparison
-    const eventDay = new Date(date);
-    eventDay.setHours(0, 0, 0, 0);
-
-    if (eventDay < today || !note.trim()) {
-     showToast(
-        'error',
-        'Please select a future date and time, and enter a note.'
-      );
+    if (!name.trim() || !mobile.trim() || !date) {
+      showToast('error', 'Please fill all required fields.');
       return;
     }
 
     const bookingData = {
       name,
       mobile,
-      eventDate: date.toISOString(), // Send combined date and time
+      eventDate: date.toISOString(),
       note,
     };
 
-    setIsLoading(true);
-    // Replace with your actual postApi call
-    // const response = await postApi('bookEvent', bookingData); 
-    
-    // Mock response for testing until postApi is available
-    const response = { success: true, message: 'Booking successful!' }; 
+    console.log("bookingData",bookingData)
 
-    setIsLoading(false);
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        showToast('error', 'User not authenticated. Please login again.');
+        return;
+      }
 
-    if (response.success) {
-      showToast('success', 'Your event has been booked successfully!');
-      navigation.goBack();
-    } else {
-      showToast('error', response.message || 'Booking failed, please try again.');
+      setIsLoading(true);
+
+      const response = await axios.post(
+        `${baseURL.base_url1}reservations/create_event`,
+        bookingData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          timeout: 10000,
+        }
+      );
+
+      if (response?.data?.success) {
+        showToast(
+          'success',
+          '🎉 Thanks for booking!'
+        );
+        navigation.goBack();
+      } else {
+        showToast(
+          'error',
+          response?.data?.message || 'Booking failed. Please try again later.'
+        );
+      }
+    } catch (error) {
+      console.error('Booking Error:', error);
+      showToast(
+        'error',
+        error.response?.data?.message || 'Something went wrong. Try again.'
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Determine the keyboard offset for better positioning
-  // Using a higher offset like 150 often provides a good balance across devices
-  const keyboardOffset = Platform.select({
-    ios: 150, 
-    android: 0, 
-  });
+  // Keyboard offset (iOS only)
+  const keyboardOffset = Platform.select({ ios: 150, android: 0 });
 
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
-      {/* Background Image */}
+      {/* Background Header */}
       <ImageBackground source={AppImages.ccc} style={styles.bgImage} resizeMode="cover">
         <View style={styles.overlay} />
 
-        {/* Back Button */}
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Image source={AppImages.Back} style={{ height: 25, width: 25, tintColor: 'white' }} />
+          <Image source={AppImages.Back} style={styles.backIcon} />
         </TouchableOpacity>
 
-        {/* Logo */}
         <View style={styles.logoContainer}>
           <Image source={AppImages.logo} style={styles.logo} resizeMode="contain" />
         </View>
       </ImageBackground>
 
-      {/* Bottom Sheet and Keyboard Avoiding View */}
+      {/* Form Section */}
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Use 'height' for Android might be better
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={keyboardOffset}
         style={styles.bottomSheetWrapper}
       >
@@ -156,24 +170,26 @@ export default function BookEventScreen({ navigation }) {
         >
           <Text style={styles.title}>BOOK AN EVENT</Text>
 
-          {/* Name - Made editable=false as per initial thought, but can be changed */}
+          {/* Name Input */}
           <InputText
             label="Name"
             value={name}
-            // editable={false}
+            onChangeText={setName}
             inputStyle={styles.inputText}
             containerStyle={{ marginTop: 25 }}
           />
 
-          {/* Mobile - Made editable=false as per initial thought, but can be changed */}
+          {/* Mobile Input */}
           <InputText
             label="Mobile Number"
             value={mobile}
-            // editable={false}
+            maxLength={13}
+            onChangeText={setMobile}
+            keyboardType="phone-pad"
             inputStyle={styles.inputText}
           />
 
-          {/* Combined Date & Time Picker */}
+          {/* Date & Time */}
           <TouchableOpacity onPress={openDateTimePicker} style={{ marginTop: 10 }}>
             <InputText
               label="Event Date & Time"
@@ -191,13 +207,11 @@ export default function BookEventScreen({ navigation }) {
             multiline
             value={note}
             onChangeText={setNote}
-            // Use a specific reference for keyboard avoidance focus (optional, but good practice)
-            // ref={noteRef} 
             containerStyle={{ marginTop: 10 }}
             inputStyle={[styles.inputText, { height: 100, textAlignVertical: 'top' }]}
           />
 
-          {/* Submit Button */}
+          {/* Submit */}
           <Button
             title="Submit"
             style={styles.submitBtn}
@@ -205,18 +219,16 @@ export default function BookEventScreen({ navigation }) {
             onPress={submitBooking}
             disabled={isLoading}
           />
-
-          <View style={{ height: 0 }} />
         </ScrollView>
       </KeyboardAvoidingView>
 
-      {/* Date & Time Pickers */}
+      {/* Date Pickers */}
       {showDatePicker && (
         <DateTimePicker
           mode="date"
           value={date}
           onChange={handleDateChange}
-          minimumDate={new Date()} // Ensure future dates only
+          minimumDate={new Date()}
           display={Platform.OS === 'ios' ? 'spinner' : 'default'}
         />
       )}
@@ -229,14 +241,18 @@ export default function BookEventScreen({ navigation }) {
         />
       )}
 
-      <ActivityIndicator isLoading={isLoading} />
+      {isLoading && (
+        <View style={styles.loaderOverlay}>
+          <ActivityIndicator isLoading={true} />
+        </View>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   bgImage: {
-    height: '65%', // Keeping the height reasonable
+    height: '60%',
     width: '100%',
   },
   overlay: {
@@ -247,9 +263,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 50,
     left: 20,
-    zIndex: 10,
-    // Add padding for larger hit area
-    padding: 5, 
+    padding: 5,
+  },
+  backIcon: {
+    height: 25,
+    width: 25,
+    tintColor: 'white',
   },
   logoContainer: {
     alignSelf: 'center',
@@ -261,13 +280,11 @@ const styles = StyleSheet.create({
     tintColor: colors.white,
   },
   bottomSheetWrapper: {
-    // This wrapper takes up the remaining space and positions the sheet correctly
     flex: 1,
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    // Adjust max height to leave space for the top header if needed, or let it scroll
-    maxHeight: '80%', 
+    maxHeight: '80%',
   },
   bottomSheet: {
     backgroundColor: 'white',
@@ -276,7 +293,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingTop: 25,
     paddingBottom: 30,
-    // minHeight: '100%', // Removed to allow scrollview content to determine height
   },
   title: {
     textAlign: 'center',
@@ -284,19 +300,11 @@ const styles = StyleSheet.create({
     color: '#1A1A1A',
     fontFamily: 'InstrumentSans_Condensed-medium',
   },
-  subtitle: {
-    textAlign: 'center',
-    fontSize: fonts.fs_18,
-    color: colors.txtColor,
-    fontFamily: 'InstrumentSans_Condensed-medium',
-    marginBottom: 10,
-  },
   inputText: {
     fontSize: fonts.fs_16,
     color: colors.black,
     fontFamily: 'InstrumentSans_Condensed-medium',
-    // Ensure sufficient height for text inside InputText
-    minHeight: 40, 
+    minHeight: 40,
   },
   submitBtn: {
     alignSelf: 'center',
@@ -304,11 +312,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#b49b5e',
     borderRadius: 25,
     paddingHorizontal: 30,
-    minHeight: 50, // Added minHeight for better touch target
+    minHeight: 50,
   },
   submitBtnText: {
     fontFamily: 'InstrumentSans_Condensed-medium',
     fontSize: fonts.fs_16,
     color: colors.white,
+  },
+  loaderOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

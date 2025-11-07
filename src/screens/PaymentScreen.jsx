@@ -1,214 +1,379 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-  ImageBackground,
   ScrollView,
+  TouchableOpacity,
+  TextInput,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Platform,
+  ImageBackground,
+  Alert,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import CheckBox from '@react-native-community/checkbox';
 import axios from 'axios';
-import { CardField, useStripe } from '@stripe/stripe-react-native';
-import { AppImages } from '../res';
+import { AppImages, Colors } from '../res';
+import ReserveHeader from '../components/ReserveHeader';
+import { showToast } from '../services/Toast';
+import baseURL from '../services/network/base_url';
+import CustomModal from '../components/ModalComponent';
+import { useNavigation } from '@react-navigation/native';
 
-const PaymentScreen = () => {
-  const { confirmPayment } = useStripe();
+const CardDetailsScreen = ({ route }) => {
+  const { reservationId, NoOfGuest } = route?.params || '';
+  const navigation = useNavigation();
   const [name, setName] = useState('');
-  const [mobile, setMobile] = useState('');
-  const [guests, setGuests] = useState('');
-  const [note, setNote] = useState('');
-  const [date, setDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [number, setNumber] = useState('');
+  const [expiry, setExpiry] = useState('');
+  const [cvv, setCvv] = useState('');
+  const [accepted, setAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [bookingConfirmModal, setBookingConfirmModal] = useState(false);
 
-  useEffect(() => {
-    const loadUser = async () => {
-      const storedName = await AsyncStorage.getItem('userName');
-      const storedMobile = await AsyncStorage.getItem('userMobile');
-      if (storedName) setName(storedName);
-      if (storedMobile) setMobile(storedMobile);
-    };
-    loadUser();
-  }, []);
-
-  const handleBooking = async () => {
-    if (!guests || !date) {
-      Alert.alert('Missing Details', 'Please fill all required fields.');
+  const handleSubmit = async () => {
+    if (!accepted) {
+      Alert.alert('OOPs!', 'Please accept the cancellation policy.');
+      return;
+    }
+    if (!name || !number || !expiry || !cvv) {
+      Alert.alert('OOPs!', 'Please fill in all card details.');
       return;
     }
 
+    let data = {
+      reservationId: reservationId,
+      amount: NoOfGuest ? NoOfGuest * 12 : 12,
+      cardDetails: {
+        cardNumber: number,
+        cardExpiry: expiry,
+        CVV: cvv,
+      },
+      isAcceptCancellation: true,
+    };
+
     try {
       setLoading(true);
-      // 1️⃣ Call backend to create booking intent
-      const response = await axios.post(
-        'https://your-backend-url.com/api/bookings/create',
-        {
-          amount: 500, // $5 in cents
-          bookingDateTime: date.toISOString(),
-          userId: mobile,
-        }
-      );
-
-      const { clientSecret, bookingId } = response.data;
-
-      // 2️⃣ Confirm card authorization
-      const { paymentIntent, error } = await confirmPayment(clientSecret, {
-        paymentMethodType: 'Card',
+      // Send details to your API
+      await axios.put(`${baseURL.base_url1}reservations/save_card_details`, {
+        data,
       });
 
-      if (error) {
-        console.log(error);
-        Alert.alert('Payment failed', error.message);
-      } else if (paymentIntent) {
-        console.log('✅ Authorized:', paymentIntent.id);
-        Alert.alert(
-          'Booking Successful',
-          `Booking created! ID: ${bookingId}\nFunds are held and not yet charged.`
-        );
-      }
-    } catch (err) {
-      console.error(err);
-      Alert.alert('Error', 'Booking failed. Please try again.');
+      setBookingConfirmModal(true);
+    } catch (error) {
+      console.error(error);
+      showToast('error', 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-   <View>
-    {/* <Text>ss</Text> */}
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.logo}>🍽️ Book a Table</Text>
-
-        <TextInput
-          style={styles.input}
-          placeholder="Full Name"
-          value={name}
-          onChangeText={setName}
+    <ImageBackground
+      source={AppImages.ccc}
+      style={styles.bg}
+      resizeMode="cover"
+    >
+      <View style={{ backgroundColor: 'white', justifyContent: 'center' }}>
+        <ReserveHeader
+          containerStyle={{ top: -20, height: 25 }}
+          title={'Confirm Your Reservation'}
+          onBack={() => navigation.goBack()}
         />
+      </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Mobile Number"
-          value={mobile}
-          onChangeText={setMobile}
-          keyboardType="phone-pad"
-        />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.overlay}>
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          >
+            <ScrollView
+              contentContainerStyle={styles.container}
+              showsVerticalScrollIndicator={false}
+            >
+              {/* Card Preview */}
 
-        <TextInput
-          style={styles.input}
-          placeholder="Number of Guests"
-          value={guests}
-          onChangeText={setGuests}
-          keyboardType="numeric"
-        />
+              {/* Cancellation Policy */}
+              <View style={styles.policyBox}>
+                <Text style={[styles.header, { color: '#000' }]}>
+                  Cancellation Policy
+                </Text>
+                <Text style={styles.policyText}>
+                  Please enter your card details below to confirm your
+                  reservation. Your card will not be charged. In the event of a
+                  late cancellation or no-show, the following fee may be
+                  applied.
+                </Text>
+                <View style={styles.feeBox}>
+                  <Text style={styles.feeTitle}>Cancellation Fee</Text>
+                  <Text style={styles.feeAmount}>
+                    £{NoOfGuest ? NoOfGuest * 12 : 12}
+                  </Text>
+                  <Text style={styles.feeNote}>(£12 per person)</Text>
+                  <Text style={styles.feeDetail}>
+                    £24 fee for a no-show or a cancellation done less than 24
+                    hours prior to the reservation.
+                  </Text>
+                </View>
+              </View>
 
-        <TouchableOpacity
-          style={styles.dateButton}
-          onPress={() => setShowDatePicker(true)}>
-          <Text style={styles.dateText}>
-            {`Booking Date: ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`}
-          </Text>
-        </TouchableOpacity>
+              {/* Form */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Card Holder Name</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="John Doe"
+                  placeholderTextColor="#999"
+                  value={name}
+                  onChangeText={setName}
+                />
 
-        {showDatePicker && (
-          <DateTimePicker
-            value={date}
-            mode="datetime"
-            display="default"
-            onChange={(e, selectedDate) => {
-              setShowDatePicker(false);
-              if (selectedDate) setDate(selectedDate);
-            }}
-          />
-        )}
+                <Text style={styles.label}>Card Number</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="4242 4242 4242 4242"
+                  placeholderTextColor="#999"
+                  keyboardType="numeric"
+                  maxLength={19}
+                  value={number}
+                  onChangeText={text => {
+                    const formatted = text
+                      .replace(/\s?/g, '')
+                      .replace(/(\d{4})/g, '$1 ')
+                      .trim();
+                    setNumber(formatted);
+                  }}
+                />
 
-        <TextInput
-          style={[styles.input, { height: 100 }]}
-          placeholder="Note (optional)"
-          multiline
-          value={note}
-          onChangeText={setNote}
-        />
+                <View style={styles.row}>
+                  <View style={[styles.rowItem, { marginRight: 10 }]}>
+                    <Text style={styles.label}>Expiry Date</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="MM/YY"
+                      placeholderTextColor="#999"
+                      keyboardType="numeric"
+                      maxLength={5}
+                      value={expiry}
+                      onChangeText={text => {
+                        let formatted = text.replace(/\D/g, '');
+                        if (formatted.length >= 3) {
+                          formatted =
+                            formatted.slice(0, 2) + '/' + formatted.slice(2, 4);
+                        }
+                        setExpiry(formatted);
+                      }}
+                    />
+                  </View>
+                  <View style={styles.rowItem}>
+                    <Text style={styles.label}>CVV</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="123"
+                      placeholderTextColor="#999"
+                      keyboardType="numeric"
+                      secureTextEntry
+                      maxLength={4}
+                      value={cvv}
+                      onChangeText={setCvv}
+                    />
+                  </View>
+                </View>
+              </View>
+              <View style={styles.checkboxContainer}>
+                <CheckBox
+                  value={accepted}
+                  onValueChange={setAccepted}
+                  tintColors={{ true: Colors.Muted_Gold, false: '#aaa' }}
+                />
+                <Text style={styles.checkboxLabel}>
+                  I accept the cancellation policy and agree to the terms.
+                </Text>
+              </View>
 
-        <Text style={styles.cardLabel}>Card Details</Text>
-        <CardField
-          postalCodeEnabled={false}
-          placeholders={{ number: '4242 4242 4242 4242' }}
-          cardStyle={{
-            backgroundColor: '#fff',
-            textColor: '#000',
-          }}
-          style={{ width: '100%', height: 50, marginVertical: 10 }}
-        />
-
-        <TouchableOpacity
-          style={[styles.button, loading && { opacity: 0.7 }]}
-          onPress={handleBooking}
-          disabled={loading}>
-          <Text style={styles.buttonText}>
-            {loading ? 'Processing...' : 'Book & Hold Card'}
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
- </View>
+              {/* Button */}
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  (!accepted || loading) && { opacity: 0.7 },
+                ]}
+                onPress={handleSubmit}
+                disabled={!accepted || loading}
+              >
+                <Text style={styles.buttonText}>
+                  {loading ? 'Submitting...' : 'Confirm Reservation'}
+                </Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </View>
+      </TouchableWithoutFeedback>
+      <CustomModal
+        visible={bookingConfirmModal}
+        onClose={() => setBookingConfirmModal(false)}
+        title=""
+        titleAlign="center"
+        imageSource={require('../res/images/icons/confirm.png')}
+        description="Thank you for your booking! You can view all the details in your Profile → Bookings section."
+        buttonText="Share"
+        onButtonPress={() => {
+          setBookingConfirmModal(false),
+            navigation.navigate('BottomTabs', { screen: 'Account' });
+        }}
+        modalStyle={{ backgroundColor: '#fafafa' }}
+        titleStyle={{ color: '#e63946' }}
+        buttonStyle={{ backgroundColor: Colors.Muted_Gold, marginBottom: 20 }}
+        showCloseIcon={true}
+        description1="Booking Successful!"
+        // Optional custom close image
+        // closeIconImage={require('../assets/close.png')}
+      />
+    </ImageBackground>
   );
 };
-
-export default PaymentScreen;
 
 const styles = StyleSheet.create({
   bg: {
     flex: 1,
-    resizeMode: 'cover',
   },
   container: {
     padding: 20,
+    paddingBottom: 60,
   },
-  logo: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#d71b6b',
+  header: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#fffe',
     textAlign: 'center',
-    marginVertical: 20,
+    marginBottom: 20,
+  },
+
+  chip: {
+    width: 40,
+    height: 30,
+    backgroundColor: '#f1c40f',
+    borderRadius: 6,
+  },
+  cardNumber: {
+    fontSize: 20,
+    color: '#fff',
+    letterSpacing: 2,
+  },
+  cardBottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  overlay: {
+    // position: 'absolute',
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)', // semi-transparent dark overlay
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
+  },
+
+  cardName: {
+    color: '#fff',
+    fontSize: 14,
+    textTransform: 'uppercase',
+  },
+  cardExpiry: {
+    color: '#fff',
+    fontSize: 14,
+  },
+  policyBox: {
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 20,
+  },
+  policyText: {
+    fontSize: 14,
+    color: '#444',
+    marginBottom: 10,
+  },
+  feeBox: {
+    backgroundColor: '#f9f1f5',
+    borderRadius: 10,
+    padding: 12,
+    alignItems: 'center',
+  },
+  feeTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#d71b6b',
+  },
+  feeAmount: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#d71b6b',
+    marginVertical: 4,
+  },
+  feeNote: {
+    fontSize: 13,
+    color: '#777',
+  },
+  feeDetail: {
+    fontSize: 13,
+    color: '#444',
+    textAlign: 'center',
+    marginTop: 6,
+  },
+  inputGroup: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 13,
+    color: '#fff',
+    marginBottom: 5,
   },
   input: {
-    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderWidth: 1,
+    borderColor: '#ddd',
     borderRadius: 10,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    marginVertical: 8,
-    fontSize: 16,
-  },
-  dateButton: {
+    paddingHorizontal: 14,
+    paddingVertical: Platform.OS === 'ios' ? 12 : 10,
+    marginBottom: 12,
     backgroundColor: '#fff',
-    padding: 12,
-    borderRadius: 10,
-    marginVertical: 8,
+    fontSize: 15,
+    color: '#000',
   },
-  dateText: {
-    color: '#333',
-    fontSize: 16,
+  row: {
+    flexDirection: 'row',
   },
-  cardLabel: {
-    marginTop: 15,
-    fontWeight: '600',
-    color: '#333',
+  rowItem: {
+    flex: 1,
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 25,
+  },
+  checkboxLabel: {
+    flex: 1,
+    fontSize: 13.5,
+    color: '#fff',
+    lineHeight: 20,
+    marginTop: 5,
   },
   button: {
-    backgroundColor: '#d71b6b',
-    borderRadius: 10,
+    backgroundColor: Colors.Muted_Gold,
     paddingVertical: 14,
-    marginTop: 25,
+    borderRadius: 30,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 3,
   },
   buttonText: {
     color: '#fff',
     fontSize: 17,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
 });
+
+export default CardDetailsScreen;

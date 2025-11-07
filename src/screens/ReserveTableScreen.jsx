@@ -85,7 +85,6 @@ const ReserveTableScreen = ({ route }) => {
   const guestOptions = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10+'];
   const [modalVisible, setModalVisible] = useState(false);
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
-  const [bookingConfirmModal, setBookingConfirmModal] = useState(false);
 
   const [name, setName] = useState(
     userData?.obj?.userObj?.name || 'Ankit Sharma',
@@ -181,7 +180,10 @@ const ReserveTableScreen = ({ route }) => {
 
       console.log('THIS IS API RESPONSE TO STORE IN DB', response.data);
       showToast('success', response.data?.message);
-      setModalVisible(true);
+      navigation.navigate('Payment', {
+        reservationId: userData?.obj?.reservation?.reservationId,
+        NoOfGuest:selectedData?.partySize
+      });
     } catch (err) {
       console.log('THIS IS API ERROR', err?.response?.data || err);
       showToast('error', 'Something went wrong, Try Again!');
@@ -273,7 +275,6 @@ const ReserveTableScreen = ({ route }) => {
         'success',
         'Your payment was successfully processed and booking is confirmed.',
       );
-      setBookingConfirmModal(true);
       // Navigate to the success screen
     }
   };
@@ -476,7 +477,7 @@ const ReserveTableScreen = ({ route }) => {
               />
             </>
           ) : null}
-          <View
+          {/* <View
             style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -508,9 +509,9 @@ const ReserveTableScreen = ({ route }) => {
               Cancellation Policy*
             </Text>
             <Text onPress={() => setCancelModalVisible(true)}>ⓘ</Text>
-          </View>
+          </View> */}
 
-          <View
+          {/* <View
             style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -541,7 +542,7 @@ const ReserveTableScreen = ({ route }) => {
             <Text style={[styles.checkboxLabel, { marginLeft: 8 }]}>
               I certify I am above the age of 21
             </Text>
-          </View>
+          </View> */}
 
           <Text style={styles.terms}>
             By clicking "submit" you agree to SevenRooms{' '}
@@ -587,7 +588,7 @@ const ReserveTableScreen = ({ route }) => {
         description="To confirm your booking, a booking confirmation payment of ₹500 is required. Bookings without payment will not be considered confirmed."
         buttonText="OK"
         onButtonPress={() => {
-          setModalVisible(false), initializePaymentSheet(1000); // Pass the amount in cents (49.00 AED * 100)
+          setModalVisible(false); // Pass the amount in cents (49.00 AED * 100)
         }}
         modalStyle={{ backgroundColor: '#fafafa' }}
         titleStyle={{ color: '#e63946' }}
@@ -596,26 +597,7 @@ const ReserveTableScreen = ({ route }) => {
         // Optional custom close image
         // closeIconImage={require('../assets/close.png')}
       />
-      <CustomModal
-        visible={bookingConfirmModal}
-        onClose={() => setBookingConfirmModal(false)}
-        title=""
-        titleAlign="center"
-        imageSource={require('../res/images/icons/confirm.png')}
-        description="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-        buttonText="Share"
-        onButtonPress={() => {
-          setBookingConfirmModal(false),
-            navigation.navigate('BottomTabs', { screen: 'Loyalty' });
-        }}
-        modalStyle={{ backgroundColor: '#fafafa' }}
-        titleStyle={{ color: '#e63946' }}
-        buttonStyle={{ backgroundColor: Colors.Muted_Gold, marginBottom: 20 }}
-        showCloseIcon={true}
-        description1="Booking Successful!"
-        // Optional custom close image
-        // closeIconImage={require('../assets/close.png')}
-      />
+    
       <Modal visible={cancelModalVisible} transparent animationType="fade">
         <View style={styles.modalBackdrop}>
           <View style={styles.modalCard}>

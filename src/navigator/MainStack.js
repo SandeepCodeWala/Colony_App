@@ -21,6 +21,8 @@ import ReserveLoungeScreen from '../screens/ReserveTable1';
 import ForgotPassword from '../OnBoarding/ForgotPassword'
 import MemberScreen from '../screens/MemberScreen'
 import BookEventScreen from '../screens/BookEventScreen'
+import ReservationHistory from '../screens/ReservationHistory'
+import MyStatement from '../screens/MyStatement'
  
 const Stack = createNativeStackNavigator();
 function MainStack() {
@@ -45,7 +47,7 @@ function MainStack() {
       <Stack.Screen name="EditProfile" component={EditProfile} />
       <Stack.Screen name="HelpSupport" component={HelpSupport} />
       <Stack.Screen name="ManageConsents" component={ManageConsents} />
-      {/* <Stack.Screen name="MyStatement" component={MyStatement} /> */}
+      <Stack.Screen name="MyStatement" component={MyStatement} />
     
       {/* <Stack.Screen name="RegisteredOffice" component={RegisteredOffice} /> */}
       <Stack.Screen name="TermsConditions" component={TermsConditions} />
@@ -65,6 +67,8 @@ function MainStack() {
          <Stack.Screen name="OTPValidate" component={OTPValidate} />
          <Stack.Screen name="Payment" component={PaymentScreen} />
          <Stack.Screen name="BookEvent" component={BookEventScreen} />
+         <Stack.Screen name="ReservationHistory" component={ReservationHistory} />
+
 
 
 

@@ -3,9 +3,9 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { AppImages, Colors, Fonts } from '../res';
 
-const ReserveHeader = ({ onBack,title }) => {
+const ReserveHeader = ({ onBack, title, containerStyle }) => {
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, containerStyle]}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
         <Image source={AppImages.Back} style={styles.backIcon} />
       </TouchableOpacity>
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 10,
-    paddingRight:20,
+    paddingRight: 20,
     marginTop: 45,
   },
   backButton: {

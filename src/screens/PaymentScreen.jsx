@@ -86,14 +86,17 @@ const CardDetailsScreen = ({ route }) => {
         isAcceptCancellation: true,
       };
 
+      console.log('WHAT IS data====data data', data);
+
+
       const endpoint = 'reservations/save_card_details';
 
       // 3. Use the putApiWithBase1 helper with the retrieved token
       // The payload structure { data } is preserved to match the original requirement.
-      const response = await putApiWithBase1(endpoint, { data }, authKey);
+      const response = await putApiWithBase1(endpoint, data , authKey);
       console.log('WHAT IS RESPONSE====', response);
       // Check the response for API-specific errors before confirming
-      if (response?.data && response.success === true) {
+      if (response && response.success === true) {
         setBookingConfirmModal(true);
       } else {
         showToast('error', response.message || 'Payment processing failed.');

@@ -19,7 +19,7 @@ import InputText from '../components/InputText';
 import Button from '../components/Button';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { showToast } from '../services/Toast';
-import { baseURL } from '../services/network/baseURL'; // ✅ Make sure you have this file
+import baseURL from '../services/network/base_url';
 
 export default function BookEventScreen({ navigation }) {
   const [name, setName] = useState('');
@@ -105,7 +105,7 @@ export default function BookEventScreen({ navigation }) {
       setIsLoading(true);
 
       const response = await axios.post(
-        `${baseURL.base_url1}reservations/create_event`,
+        `${baseURL.base_url1}event/add`,
         bookingData,
         {
           headers: {

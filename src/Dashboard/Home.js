@@ -96,7 +96,7 @@ const Home = () => {
       return;
     }
     if ((UserName && membership) || UserName != null) {
-      navigation.navigate('ReserveLounge');
+      navigation.navigate('ReserveLounge', { screen: 'table' });
     } else {
       navigation.navigate('Login');
       // showToast('error', 'User details not found. Please log in again.');

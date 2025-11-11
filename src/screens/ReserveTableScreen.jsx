@@ -76,7 +76,7 @@ const fetchPaymentIntentClientSecret = async (amountInCents, phone, token) => {
 const ReserveTableScreen = ({ route }) => {
   const navigation = useNavigation();
   const { userData, selectedData, screen } = route?.params ?? {};
-  console.log('THIS IS USERDATA==', userData);
+  console.log('THIS IS screen screen==', screen);
   const [token, setToken] = useState('');
 
   const arrayToObject = (arr = []) =>
@@ -558,8 +558,8 @@ const ReserveTableScreen = ({ route }) => {
 
       <View style={styles.footer}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.totalLabel}>Booking Total</Text>
-          <Text style={styles.totalValue}>10.00 EUR</Text>
+          {/* <Text style={styles.totalLabel}>Booking Total</Text>
+          <Text style={styles.totalValue}>10.00 EUR</Text> */}
         </View>
         <Button
           title="Proceed to Pay"

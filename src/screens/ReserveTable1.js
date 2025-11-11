@@ -136,7 +136,7 @@ const ReserveLoungeScreen = ({ route }) => {
           navigation.navigate('ReserveTableScreen', {
             userData: response?.data,
             selectedData: data,
-            screen:'Lounge'
+            screen:screen =='Lounge'?screen:'Restaurant'
           });
         } else {
           showToast('error', 'User details not found. Please log in again.');

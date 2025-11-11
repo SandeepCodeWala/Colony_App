@@ -189,7 +189,7 @@ const ReservationCard = ({
 
   // Helper for Array details
   const renderArrayDetails = (title, items) =>
-    items.length > 0 && (
+    items?.length > 0 && (
       <View style={cardStyles.arrayContainer}>
         <Text style={cardStyles.arrayTitle}>{title}:</Text>
         <Text style={cardStyles.arrayValue}>{items.join(', ')}</Text>
@@ -233,7 +233,7 @@ const ReservationCard = ({
         <View style={cardStyles.guestOccasionContainer}>
           <DetailRow
             label="No. of Guests"
-            value={reservation.numOfGuests.toString()}
+            value={reservation.numOfGuests}
             valueStyle={{ fontSize: 20, fontWeight: 'bold' }}
           />
           {renderArrayDetails('Occasion(s)', reservation.occasion)}
@@ -265,9 +265,7 @@ const ReservationCard = ({
 
           <View style={cardStyles.paymentRow}>
             <Text style={cardStyles.paymentLabel}>Total Amount:</Text>
-            <Text style={cardStyles.paymentValue}>
-              ₹{reservation.amount.toFixed(2)}
-            </Text>
+            <Text style={cardStyles.paymentValue}>₹{reservation.amount}</Text>
           </View>
           <View style={cardStyles.paymentRow}>
             <Text style={cardStyles.paymentLabel}>Payment Status:</Text>
@@ -335,6 +333,7 @@ const ReservationsHistory = ({ navigation }) => {
     try {
       const savedToken = await AsyncStorage.getItem('token');
       setToken(savedToken);
+
       if (savedToken) {
         fetchReservations(savedToken);
       }
@@ -346,6 +345,8 @@ const ReservationsHistory = ({ navigation }) => {
 
   // ✅ GET all reservations
   const fetchReservations = async (authToken = token) => {
+    // console.log("ARE YOU CALLING",authToken)
+
     setLoading(true);
     try {
       const response = await axios.get(
@@ -356,11 +357,13 @@ const ReservationsHistory = ({ navigation }) => {
           },
         },
       );
-      setReservations(response.data || []);
+      console.log('WHAT IS GET RESERVATION API RESPONSE++', response);
+      setReservations(response.data?.data || []);
     } catch (error) {
-      console.error('Error fetching reservations:', error);
+      console.log('Error fetching reservations:', error);
       showToast('error', 'Failed to fetch reservations.');
     } finally {
+      console.log('ARE YOU CALLING');
       setLoading(false);
     }
   };
@@ -411,7 +414,7 @@ const ReservationsHistory = ({ navigation }) => {
   return (
     <SafeAreaView style={screenStyles.container}>
       <ReserveHeader
-        containerStyle={{ top: -20, paddingHorizontal: 0 }}
+        containerStyle={{ top: 0, paddingHorizontal: 0 }}
         title={'My Bookings'}
         onBack={() => navigation.goBack()}
       />
@@ -432,22 +435,21 @@ const ReservationsHistory = ({ navigation }) => {
             onRefresh={onRefresh}
             tintColor={Colors.Muted_Gold}
           />
-        }>
-        {reservations.length > 0 ? (
-          reservations.map(res => (
-            <ReservationCard
-              key={res.id}
-              reservation={res}
-              handleCancellation={handleCancellation}
-            />
-          ))
-        ) : (
-          !loading && (
-            <Text style={screenStyles.noReservationsText}>
-              You have no active reservations.
-            </Text>
-          )
-        )}
+        }
+      >
+        {reservations.length > 0
+          ? reservations.map(res => (
+              <ReservationCard
+                key={res.id}
+                reservation={res}
+                handleCancellation={handleCancellation}
+              />
+            ))
+          : !loading && (
+              <Text style={screenStyles.noReservationsText}>
+                You have no active reservations.
+              </Text>
+            )}
         <View style={{ height: 50 }} />
       </ScrollView>
     </SafeAreaView>

@@ -108,6 +108,39 @@ export async function postApi(method, data, authKey) {
 }
 
 
+////////////
+export async function putApiWithBase1(method, data, authKey) {
+  // ⭐ Key Change: Using baseURL.base_url1
+  const fullUrl = baseURL.base_url1 + method;
+  console.log('➡️ API Request (PUT/Base1):', fullUrl);
+  let response = {};
+
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    // ✅ Add token if available
+    if (authKey) {
+      headers['Authorization'] = `Bearer ${authKey}`;
+    }
+
+    // ⭐ Constructing the request using the new full URL
+    const res = await axios.put(fullUrl, data, { headers });
+
+    console.log('✅ API Response (PUT/Base1):', res.data);
+    response = res.data;
+  } catch (e) {
+    // Handle both Axios error with response data and generic JS errors
+    console.log('❌ API Error (PUT/Base1):', e?.response?.data || e.message);
+    response = e?.response?.data || { success: false, message: e.message };
+  }
+
+  return response;
+}
+
+
+
 export async function CreateRestaurant(data) {
   console.log('➡️ API Request:', baseURL.base_url + method);
   let response = {};

@@ -21,6 +21,8 @@ import { showToast } from '../services/Toast';
 import baseURL from '../services/network/base_url';
 import CustomModal from '../components/ModalComponent';
 import { useNavigation } from '@react-navigation/native';
+import { putApiWithBase1} from '../services/network/api';
+
 
 const CardDetailsScreen = ({ route }) => {
   const { reservationId, NoOfGuest } = route?.params || '';
@@ -33,7 +35,50 @@ const CardDetailsScreen = ({ route }) => {
   const [loading, setLoading] = useState(false);
   const [bookingConfirmModal, setBookingConfirmModal] = useState(false);
 
-  const handleSubmit = async () => {
+  // const handleSubmit = async () => {
+  //   if (!accepted) {
+  //     Alert.alert('OOPs!', 'Please accept the cancellation policy.');
+  //     return;
+  //   }
+  //   if (!name || !number || !expiry || !cvv) {
+  //     Alert.alert('OOPs!', 'Please fill in all card details.');
+  //     return;
+  //   }
+
+  //   let data = {
+  //     reservationId: reservationId,
+  //     amount: NoOfGuest ? NoOfGuest * 12 : 12,
+  //     cardDetails: {
+  //       cardNumber: number,
+  //       cardExpiry: expiry,
+  //       CVV: cvv,
+  //     },
+  //     isAcceptCancellation: true,
+  //   };
+
+  //   try {
+  //     setLoading(true);
+  //     // Send details to your API
+  //     await axios.put(`${baseURL.base_url1}reservations/save_card_details`, {
+  //       data,
+  //     });
+
+  //     setBookingConfirmModal(true);
+  //   } catch (error) {
+  //     console.error(error);
+  //     showToast('error', 'Something went wrong. Please try again.');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
+  ////////////
+  // Ensure putApiWithBase1 and AsyncStorage are imported
+// import { putApiWithBase1 } from './yourApiFile';
+// import AsyncStorage from '@react-native-async-storage/async-storage'; 
+
+const handleSubmit = async () => {
     if (!accepted) {
       Alert.alert('OOPs!', 'Please accept the cancellation policy.');
       return;
@@ -43,32 +88,51 @@ const CardDetailsScreen = ({ route }) => {
       return;
     }
 
-    let data = {
-      reservationId: reservationId,
-      amount: NoOfGuest ? NoOfGuest * 12 : 12,
-      cardDetails: {
-        cardNumber: number,
-        cardExpiry: expiry,
-        CVV: cvv,
-      },
-      isAcceptCancellation: true,
-    };
-
     try {
       setLoading(true);
-      // Send details to your API
-      await axios.put(`${baseURL.base_url1}reservations/save_card_details`, {
-        data,
-      });
 
-      setBookingConfirmModal(true);
+      // ⭐ 1. Asynchronously retrieve the token
+      const authKey = await AsyncStorage.getItem('token');
+      
+      if (!authKey) {
+          Alert.alert('Error', 'Authentication token not found. Please log in again.');
+          setLoading(false);
+          return;
+      }
+
+      // 2. Prepare the data payload
+      let data = {
+        reservationId: reservationId,
+        amount: NoOfGuest ? NoOfGuest * 12 : 12,
+        cardDetails: {
+          cardNumber: number,
+          cardExpiry: expiry,
+          CVV: cvv,
+        },
+        isAcceptCancellation: true,
+      };
+
+      const endpoint = 'reservations/save_card_details'; 
+
+      // 3. Use the putApiWithBase1 helper with the retrieved token
+      // The payload structure { data } is preserved to match the original requirement.
+      const response = await putApiWithBase1(endpoint, { data }, authKey);
+
+      // Check the response for API-specific errors before confirming
+      if (response && response.success === false) { 
+        showToast('error', response.message || 'Payment processing failed.');
+      } else {
+        setBookingConfirmModal(true);
+      }
+
     } catch (error) {
       console.error(error);
+      // Display a generic error if the network request itself fails
       showToast('error', 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
-  };
+};
 
   return (
     <ImageBackground

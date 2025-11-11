@@ -226,7 +226,7 @@ export default function SignUp({ navigation }) {
 
             {/* Sign Up Button */}
             <Button
-              title="Sign Up"
+            title={isLoading ? "Loading .." :"sign-up"}
               style={{
                 alignSelf: 'center',
                 marginTop: 25,

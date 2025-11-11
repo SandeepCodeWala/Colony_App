@@ -17,6 +17,7 @@ import axios from 'axios';
 import baseURL from '../services/network/base_url';
 import { showToast } from '../services/Toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ActivityIndicator from '../components/ActivityIndicator';
 
 const { width } = Dimensions.get('window');
 
@@ -367,7 +368,7 @@ const ReservationsHistory = ({ navigation }) => {
   // ✅ Refresh control logic
   const onRefresh = async () => {
     setRefreshing(true);
-    await fetchReservations();
+    await fetchReservations(token);
     setRefreshing(false);
   };
 

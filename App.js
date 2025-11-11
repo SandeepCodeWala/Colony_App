@@ -24,7 +24,7 @@ const App = () => {
       >
         <NavigationContainer ref={navigationRef}>
           <MainStack />
-          {/* CardDetailsScreen */}
+       {/* <   CardDetailsScreen /> */}
           {/* <ReservationsHistory/> */}
           <Toast config={toastConfig} />
         </NavigationContainer>

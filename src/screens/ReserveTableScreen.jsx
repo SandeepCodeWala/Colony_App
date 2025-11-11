@@ -187,6 +187,10 @@ const ReserveTableScreen = ({ route }) => {
     } catch (err) {
       console.log('THIS IS API ERROR', err?.response?.data || err);
       showToast('error', 'Something went wrong, Try Again!');
+        navigation.navigate('Payment', {
+        reservationId: userData?.obj?.reservation?.reservationId,
+        NoOfGuest:selectedData?.partySize
+      });
     }
   };
 
@@ -833,7 +837,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingHorizontal: 16,
     paddingVertical: 10,
-    width: '38%',
+    width: '45%',
     height: 40,
   },
   payText: {

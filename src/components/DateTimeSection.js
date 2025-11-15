@@ -1,32 +1,39 @@
 // components/DateTimeSection.js
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DatePicker from 'react-native-date-picker';
 import { Colors, Fonts } from '../res';
+
 const ic_calender = require('../res/images/icons/calendar.png');
 const ic_down = require('../res/images/icons/downArrow.png');
 
 const DateTimeSection = ({
   date,
   time,
-  showDatePicker,
-  showTimePicker,
+  openDatePicker,
+  openTimePicker,
   onPressDate,
   onPressTime,
   onChangeDate,
   onChangeTime,
+  setOpenDatePicker,
+  setOpenTimePicker,
 }) => {
   return (
     <View>
       <View style={styles.row}>
+        {/* DATE */}
         <View style={styles.boxContainer}>
           <Text style={styles.label}>Date</Text>
           <TouchableOpacity style={styles.dateBox} onPress={onPressDate}>
-            <Text style={styles.dateText}>{date.toDateString().slice(4, 10)}</Text>
+            <Text style={styles.dateText}>
+              {date.toDateString().slice(4, 10)}
+            </Text>
             <Image source={ic_calender} style={styles.icon} />
           </TouchableOpacity>
         </View>
 
+        {/* TIME */}
         <View style={styles.boxContainer}>
           <Text style={styles.label}>Time</Text>
           <TouchableOpacity style={styles.dateBox} onPress={onPressTime}>
@@ -38,19 +45,37 @@ const DateTimeSection = ({
         </View>
       </View>
 
-      {showDatePicker && (
-        <DateTimePicker value={date} mode="date" display="default" onChange={onChangeDate} />
-      )}
+      {/* DATE PICKER MODAL */}
+      <DatePicker
+        modal
+        open={openDatePicker}
+        date={date}
+        mode="date"
+        onConfirm={(selectedDate) => {
+          setOpenDatePicker(false);
+          onChangeDate(selectedDate);
+        }}
+        onCancel={() => setOpenDatePicker(false)}
+      />
 
-      {showTimePicker && (
-        <DateTimePicker value={time} mode="time" display="default" onChange={onChangeTime} />
-      )}
+      {/* TIME PICKER MODAL */}
+      <DatePicker
+        modal
+        open={openTimePicker}
+        date={time}
+        mode="time"
+        onConfirm={(selectedTime) => {
+          setOpenTimePicker(false);
+          onChangeTime(selectedTime);
+        }}
+        onCancel={() => setOpenTimePicker(false)}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', justifyContent: 'space-between',marginTop:20 },
+  row: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 },
   boxContainer: { width: '48%' },
   label: {
     fontFamily: Fonts.instrumentSansMedium,

@@ -150,7 +150,7 @@ const ReservationCard = ({
   const [reservationID, setReservationID] = useState('');
 
   // --- Date & Time Calculations ---
-  const reservationTime = moment(reservation.dateTime);
+  const reservationTime = moment(reservation.date);
   const currentTime = moment();
   const isPastReservation = reservationTime.isBefore(currentTime);
   const hoursUntilReservation = reservationTime.diff(currentTime, 'hours');
@@ -225,7 +225,7 @@ const ReservationCard = ({
             {reservationTime.format('dddd, MMM Do YYYY')}
           </Text>
           <Text style={cardStyles.dateTimeText}>
-            {reservationTime.format('h:mm A')}
+            {reservation.time}
           </Text>
         </View>
 
@@ -233,7 +233,7 @@ const ReservationCard = ({
         <View style={cardStyles.guestOccasionContainer}>
           <DetailRow
             label="No. of Guests"
-            value={reservation.numOfGuests}
+            value={reservation.partySize}
             valueStyle={{ fontSize: 20, fontWeight: 'bold' }}
           />
           {renderArrayDetails('Occasion(s)', reservation.occasion)}

@@ -18,8 +18,13 @@ import { postApi } from '../services/network/api';
 import { showToast } from '../services/Toast';
 import { colors, fonts } from '../themes';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoginField, setMembershipNumber } from '../redux/slices/authSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
 export default function ForgotPassword({ navigation }) {
+   const dispatch = useDispatch();
+  const membershipNumber = useSelector(state => state.user.membershipNumber);
   const [phone, setPhone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -34,25 +39,67 @@ export default function ForgotPassword({ navigation }) {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
 
+  useEffect(() => {
+  async function loadData() {
+    const stored = await AsyncStorage.getItem('membershipNumber');
+    if (stored) {
+      dispatch(setMembershipNumber(stored));
+    }
+  }
+  loadData();
+}, []);
+
   // 1️⃣ ✅ SEND OTP API
+  // const sendOtp = async () => {
+  //   if (!phone || phone.length < 10) {
+  //     showToast('error', 'Please enter valid mobile number');
+  //     return;
+  //   }
+
+  //   setIsLoading(true);
+  //   const res = await postApi('send-otp', { phone });
+  //   setIsLoading(false);
+
+  //   if (res?.success) {
+  //     showToast('success', 'OTP Sent Successfully');
+  //     otpSheetRef.current.open(); // ✅ OPEN OTP SHEET
+  //   } else {
+  //     showToast('error', res?.message || 'Failed to send OTP');
+  //     otpSheetRef.current.open();
+  //   }
+  // };
+
   const sendOtp = async () => {
-    if (!phone || phone.length < 10) {
-      showToast('error', 'Please enter valid mobile number');
-      return;
-    }
+  if (!phone || phone.length < 10) {
+    showToast('error', 'Please enter valid mobile number');
+    return;
+  }
 
-    setIsLoading(true);
-    const res = await postApi('send-otp', { phone });
-    setIsLoading(false);
+  // Get membership number from Redux
+  const storedMembership = membershipNumber;
 
-    if (res?.success) {
-      showToast('success', 'OTP Sent Successfully');
-      otpSheetRef.current.open(); // ✅ OPEN OTP SHEET
-    } else {
-      showToast('error', res?.message || 'Failed to send OTP');
-      otpSheetRef.current.open();
-    }
-  };
+  if (!storedMembership) {
+    showToast('error', 'Membership number not found. Please login again.');
+    return;
+  }
+
+  setIsLoading(true);
+
+  const res = await postApi('send-otp', {
+    phone,
+    membership_number: storedMembership, // ✅ Auto from Redux
+  });
+
+  setIsLoading(false);
+
+  if (res?.success) {
+    showToast('success', 'OTP Sent Successfully');
+    otpSheetRef.current.open();
+  } else {
+    showToast('error', res?.message || 'Failed to send OTP');
+  }
+};
+
 
   // 2️⃣ ✅ VERIFY OTP
   const verifyOtp = async () => {
@@ -173,7 +220,7 @@ export default function ForgotPassword({ navigation }) {
           draggableIcon: { backgroundColor: '#ccc' },
         }}
       >
-        <Text style={styles.sheetTitle}>Verify OTP</Text>
+        <Text style={styles.sheetTitle}>Verify OTP====</Text>
 
         <OTPTextView
           handleTextChange={setOtp}
@@ -188,7 +235,7 @@ export default function ForgotPassword({ navigation }) {
         />
 
         <Button
-          title="Verify OTP"
+          title="Verify OTP===="
           onPress={verifyOtp}
           style={styles.verifyBtn}
           textTitle={styles.verifyBtnText}

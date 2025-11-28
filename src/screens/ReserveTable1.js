@@ -16,7 +16,7 @@ import baseURL from '../services/network/base_url';
 
 const ReserveLoungeScreen = ({ route }) => {
   const navigation = useNavigation();
-  const { screen } = route?.params;
+  const { screen } = route?.params || '';
   console.log('screen screen', screen);
   const [guests, setGuests] = useState(null);
   const [date, setDate] = useState(new Date());
@@ -83,6 +83,12 @@ const ReserveLoungeScreen = ({ route }) => {
   };
 
   const Continue = async () => {
+      console.log('🟢 Reserving table with details:', {
+        date1,
+        time1,
+        guests,
+        token,
+      });
     if (
       (!UserName && !membership) ||
       UserName === null ||
@@ -136,7 +142,7 @@ const ReserveLoungeScreen = ({ route }) => {
           navigation.navigate('ReserveTableScreen', {
             userData: response?.data,
             selectedData: data,
-            screen:'Lounge'
+            screen: screen == 'Lounge' ? screen : 'Restaurant',
           });
         } else {
           showToast('error', 'User details not found. Please log in again.');
@@ -171,7 +177,7 @@ const ReserveLoungeScreen = ({ route }) => {
   };
 
   const ContinueLounge = async () => {
-        try {
+    try {
       if (!date1 || !time1 || !guests) {
         showToast('error', 'Please select date, time, and number of guests.');
         return;
@@ -194,11 +200,11 @@ const ReserveLoungeScreen = ({ route }) => {
         partySize: guests,
       };
 
-        navigation.navigate('ReserveTableScreen', {
-            userData: response?.data,
-            selectedData: data,
-            screen:'Lounge'
-          });
+      navigation.navigate('ReserveTableScreen', {
+        userData: response?.data,
+        selectedData: data,
+        screen: 'Lounge',
+      });
 
       const response = await axios.post(
         `${baseURL.base_url1}reservations/createRes`,
@@ -280,37 +286,32 @@ const ReserveLoungeScreen = ({ route }) => {
           <DateTimeSection
             date={date}
             time={time}
-            showDatePicker={showDatePicker}
-            showTimePicker={showTimePicker}
-            onPressDate={() => setShowDatePicker(true)}
-            onPressTime={() => setShowTimePicker(true)}
-            onChangeDate={(event, selectedDate) => {
-              setShowDatePicker(false);
-              if (selectedDate) {
-                const formattedDate = `${selectedDate.getFullYear()}-${
-                  selectedDate.getMonth() + 1
-                }-${selectedDate.getDate()}`;
-                setDate(selectedDate);
-                setDate1(formattedDate);
-                console.log('Formatted Date:', formattedDate);
-              }
+            openDatePicker={showDatePicker}
+            openTimePicker={showTimePicker}
+            setOpenDatePicker={setShowDatePicker}
+            setOpenTimePicker={setShowTimePicker}
+            onChangeDate={selectedDate => {
+              const formattedDate = `${selectedDate.getFullYear()}-${
+                selectedDate.getMonth() + 1
+              }-${selectedDate.getDate()}`;
+
+              setDate(selectedDate);
+              setDate1(formattedDate);
+
+              console.log('Formatted Date:', formattedDate);
             }}
-            onChangeTime={(event, selectedTime) => {
-              setShowTimePicker(false);
-              if (selectedTime) {
-                const hours = selectedTime
-                  .getHours()
-                  .toString()
-                  .padStart(2, '0');
-                const minutes = selectedTime
-                  .getMinutes()
-                  .toString()
-                  .padStart(2, '0');
-                const formattedTime = `${hours}:${minutes}`;
-                setTime(selectedTime);
-                setTime1(formattedTime);
-                console.log('Formatted Time:', formattedTime);
-              }
+            onChangeTime={selectedTime => {
+              const hours = selectedTime.getHours().toString().padStart(2, '0');
+              const minutes = selectedTime
+                .getMinutes()
+                .toString()
+                .padStart(2, '0');
+              const formattedTime = `${hours}:${minutes}`;
+
+              setTime(selectedTime);
+              setTime1(formattedTime);
+
+              console.log('Formatted Time:', formattedTime);
             }}
           />
 

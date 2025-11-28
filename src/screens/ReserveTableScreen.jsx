@@ -76,7 +76,7 @@ const fetchPaymentIntentClientSecret = async (amountInCents, phone, token) => {
 const ReserveTableScreen = ({ route }) => {
   const navigation = useNavigation();
   const { userData, selectedData, screen } = route?.params ?? {};
-  console.log('THIS IS USERDATA==', userData);
+  console.log('THIS IS screen screen==', screen);
   const [token, setToken] = useState('');
 
   const arrayToObject = (arr = []) =>
@@ -182,11 +182,15 @@ const ReserveTableScreen = ({ route }) => {
       showToast('success', response.data?.message);
       navigation.navigate('Payment', {
         reservationId: userData?.obj?.reservation?.reservationId,
-        NoOfGuest:selectedData?.partySize
+        NoOfGuest: selectedData?.partySize,
       });
     } catch (err) {
       console.log('THIS IS API ERROR', err?.response?.data || err);
       showToast('error', 'Something went wrong, Try Again!');
+      navigation.navigate('Payment', {
+        reservationId: userData?.obj?.reservation?.reservationId,
+        NoOfGuest: selectedData?.partySize,
+      });
     }
   };
 
@@ -299,7 +303,9 @@ const ReserveTableScreen = ({ route }) => {
             style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6 }}
           >
             <Text style={styles.summaryText}>
-              {`${selectedData?.date} | ${selectedData?.time} | ${selectedData?.partySize}`}
+              {`${selectedData?.date1 || selectedData?.date} | ${
+                selectedData?.time1 || selectedData?.time
+              } | ${selectedData?.guests || selectedData?.partySize} Guests`}
             </Text>
             <View
               style={{
@@ -554,8 +560,8 @@ const ReserveTableScreen = ({ route }) => {
 
       <View style={styles.footer}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.totalLabel}>Booking Total</Text>
-          <Text style={styles.totalValue}>10.00 EUR</Text>
+          {/* <Text style={styles.totalLabel}>Booking Total</Text>
+          <Text style={styles.totalValue}>10.00 EUR</Text> */}
         </View>
         <Button
           title="Proceed to Pay"
@@ -597,7 +603,7 @@ const ReserveTableScreen = ({ route }) => {
         // Optional custom close image
         // closeIconImage={require('../assets/close.png')}
       />
-    
+
       <Modal visible={cancelModalVisible} transparent animationType="fade">
         <View style={styles.modalBackdrop}>
           <View style={styles.modalCard}>
@@ -833,7 +839,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingHorizontal: 16,
     paddingVertical: 10,
-    width: '38%',
+    width: '45%',
     height: 40,
   },
   payText: {

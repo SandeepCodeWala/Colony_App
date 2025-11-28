@@ -35,49 +35,121 @@ export default function SignUp({ navigation }) {
 
   const randomOTP = Math.floor(1000 + Math.random() * 9000);
 
-  const handleSignUp = async () => {
-    try {
-      // await SignUpSchema.validate(
-      //   { name, phone, password },
-      //   { abortEarly: false },
-      // );
-      setErrors({});
-      setIsLoading(true);
-      const response = await postApi('register', { name, phone, password });
-      console.log('THIS IS SINGUP API RESPONSE==', response);
-      setIsLoading(false);
+//   const handleSignUp = async () => {
+//     try {
+//       // await SignUpSchema.validate(
+//       //   { name, phone, password },
+//       //   { abortEarly: false },
+//       // );
+//       setErrors({});
+//       setIsLoading(true);
+//       const response = await postApi('register', { name, phone, password });
+//       console.log('THIS IS SINGUP API RESPONSE==', response);
+//       setIsLoading(false);
 
-      if (response?.success) {
-        const membershipNumber = response?.data?.memberShipNumber || '';
-        dispatch(setMembershipNumber(membershipNumber));
+//       // if (response?.success) {
+//       //   const membershipNumber = response?.data?.memberShipNumber || '';
+//       //   dispatch(setMembershipNumber(membershipNumber));
+//       // await AsyncStorage.setItem('membershipNumber', membershipNumber);
+
+//       //   showToast(
+//       //     'success',
+//       //     'Please verify your OTP sent to your phone number.',
+//       //   );
+//       //   const sendOTP = await postApi('send-otp', { phone });
+//       //   console.log("THIS IS SENPOTP API RESPONSE==+++",sendOTP)
+//       //   if (sendOTP?.success) {
+//       //     navigation.navigate('OTPValidate',{phone});
+//       //   } else {
+//       //     showToast('error', sendOTP.message || 'Failed to send OTP.');
+//       //   }
+//       // } else {
+//       //   showToast(
+//       //     'error',
+//       //     response.message || 'Registration failed. Please try again.',
+//       //   );
+//       // }
+
+//       if (response?.success) {
+//   const membershipNumber = response?.data?.memberShipNumber || '';
+
+//   // Store in redux + async storage
+//   dispatch(setMembershipNumber(membershipNumber));
+//   await AsyncStorage.setItem('membershipNumber', membershipNumber);
+
+//   showToast('success', 'Please verify your OTP sent to your phone number.');
+
+//   // ✅ FIXED — send phone + membership_number
+//   const sendOTP = await postApi('send-otp', { 
+//     phone, 
+//     membership_number: membershipNumber 
+//   });
+
+//   console.log("THIS IS SENDOTP API RESPONSE==+++", sendOTP);
+
+//   if (sendOTP?.success) {
+//     navigation.navigate('OTPValidate', { 
+//       phone, 
+//       membership_number: membershipNumber 
+//     });
+//   } else {
+//     showToast('error', sendOTP.message || 'Failed to send OTP.');
+//   }
+// }
+
+//     } catch (err) {
+//       console.log('THIS IS ERRORS===', err);
+//       showToast('error', 'Registration failed. Please try again.');
+//     } finally {
+//       setIsLoading(false);
+
+//       console.log('THIS IS ERRORS', errors);
+//     }
+//   };
+
+
+
+
+const handleSignUp = async () => {
+  try {
+    setIsLoading(true);
+    const response = await postApi('register', { name, phone, password });
+    setIsLoading(false);
+
+    if (response?.success) {
+      const membershipNumber = response?.data?.memberShipNumber;
+      if (!membershipNumber) {
+        showToast('error', 'Membership number not received from server');
+        return;
+      }
+
+      // ✅ Save to Redux
+      dispatch(setMembershipNumber(membershipNumber));
+
+      // ✅ Save to AsyncStorage if needed
       await AsyncStorage.setItem('membershipNumber', membershipNumber);
 
-        showToast(
-          'success',
-          'Please verify your OTP sent to your phone number.',
-        );
-        const sendOTP = await postApi('send-otp', { phone });
-        console.log("THIS IS SENPOTP API RESPONSE==+++",sendOTP)
-        if (sendOTP?.success) {
-          navigation.navigate('OTPValidate',{phone});
-        } else {
-          showToast('error', sendOTP.message || 'Failed to send OTP.');
-        }
-      } else {
-        showToast(
-          'error',
-          response.message || 'Registration failed. Please try again.',
-        );
-      }
-    } catch (err) {
-      console.log('THIS IS ERRORS===', err);
-      showToast('error', 'Registration failed. Please try again.');
-    } finally {
-      setIsLoading(false);
+      showToast('success', 'Please verify your OTP sent to your phone number.');
 
-      console.log('THIS IS ERRORS', errors);
+      // ✅ Send OTP with membership_number
+      const sendOTP = await postApi('send-otp', { phone, membership_number: membershipNumber });
+      if (sendOTP?.success) {
+        // ✅ Navigate to OTP screen
+        navigation.navigate('OTPValidate', { phone });
+      } else {
+        showToast('error', sendOTP?.message || 'Failed to send OTP.');
+      }
+    } else {
+      showToast('error', response?.message || 'Registration failed');
     }
-  };
+  } catch (err) {
+    console.log('Signup error:', err);
+    showToast('error', 'Something went wrong during signup');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <ImageBackground

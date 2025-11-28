@@ -21,6 +21,7 @@ export default function ProfileScreen() {
   const [UserName, setUserName] = React.useState('');
   const [membership, setMembershipNumber] = React.useState('');
   console.log('Membership Number from Redux:', membershipNumber);
+
   const menuItems = [
   { id: 1, title: 'Edit Profile',onPress:()=>navigation.navigate("EditProfile") },
    { id: 10, title: 'My Reservations',onPress:()=>navigation.navigate("ReservationHistory") },
@@ -84,7 +85,7 @@ export default function ProfileScreen() {
         <View style={{ flex: 1 }}>
           {/* Menu Options */}
           {menuItems.map(item => (
-            <TouchableOpacity key={item.id} onPress={onPress} style={styles.menuRow}>
+            <TouchableOpacity key={item.id} onPress={item?.onPress} style={styles.menuRow}>
               <Text style={styles.menuText}>{item.title}</Text>
               <Text style={styles.arrow}>›</Text>
             </TouchableOpacity>

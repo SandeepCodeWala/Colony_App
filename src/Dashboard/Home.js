@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Dimensions,
   StatusBar,
+  Platform,
 } from 'react-native';
 import { AppImages, Colors, Fonts } from '../res';
 import { useNavigation } from '@react-navigation/native';
@@ -96,7 +97,7 @@ const Home = () => {
       return;
     }
     if ((UserName && membership) || UserName != null) {
-      navigation.navigate('ReserveLounge');
+      navigation.navigate('ReserveLounge', { screen: 'table' });
     } else {
       navigation.navigate('Login');
       // showToast('error', 'User details not found. Please log in again.');
@@ -209,6 +210,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 25,
+    marginBottom: Platform.OS === 'ios' ? 60 : 0,
   },
   buttonText: {
     fontFamily: Fonts.instrumentSansMedium,
@@ -223,7 +225,7 @@ const styles = StyleSheet.create({
     // bottom: 40,
     // left: 0,
     // right: 0,
-    paddingVertical: 10,
+    // paddingVertical: 10,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',

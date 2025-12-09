@@ -27,9 +27,9 @@ const App = () => {
         urlScheme="colony"
       >
         <NavigationContainer ref={navigationRef}>
-          <MainStack />
+          {/* <MainStack /> */}
           {/* <ReserveLoungeScreen /> */}
-          {/* <   CardDetailsScreen /> */}
+          <   CardDetailsScreen />
           {/* <ReservationsHistory/> */}
           <Toast config={toastConfig} />
         </NavigationContainer>

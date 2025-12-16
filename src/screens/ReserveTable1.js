@@ -10,11 +10,16 @@ import LoungeDetails from '../components/LoungeDetails';
 import DateTimeSection from '../components/DateTimeSection';
 import TimeSlotList from '../components/TimeSlotList';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { showToast } from '../services/Toast';
 import baseURL from '../services/network/base_url';
+import { useDispatch, useSelector } from 'react-redux';
 
 const ReserveLoungeScreen = ({ route }) => {
+   const tokenR  = useSelector(state => state.auth?.token)
+     const membershipNumR = useSelector(state => state.auth.membershipNumber);
+       const userR = useSelector(state => state.auth?.user);
+          console.log('Fetched redux in reser page:', userR);
   const navigation = useNavigation();
   const { screen } = route?.params || '';
   console.log('screen screen', screen);
@@ -27,9 +32,10 @@ const ReserveLoungeScreen = ({ route }) => {
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [loading, setLoding] = useState(false);
-  const [token, setToken] = useState('');
+  const [token, setToken] = useState(tokenR);
   const [UserName, setUserName] = React.useState('');
   const [membership, setMembershipNumber] = React.useState('');
+  
 
   const guestOptions = Array.from({ length: 10 }, (_, i) => ({
     label: `${i + 1}`,
@@ -42,8 +48,8 @@ const ReserveLoungeScreen = ({ route }) => {
 
   const getToken = async () => {
     try {
-      const token = await AsyncStorage.getItem('token');
-      setToken(token);
+   
+      setToken(tokenR);
     } catch (error) {
       console.error('Error retrieving token:', error);
       return null;
@@ -73,11 +79,9 @@ const ReserveLoungeScreen = ({ route }) => {
   }, []);
 
   const fetchUser = async () => {
-    const UserName = await AsyncStorage.getItem('name');
-    console.log('Fetched User Name:', UserName);
-    const membershipNum = await AsyncStorage.getItem('membershipNumber');
-    setUserName(UserName);
-    setMembershipNumber(membershipNum);
+ 
+    setUserName(userR);
+    setMembershipNumber(membershipNumR);
 
     // Fetch user data logic here
   };

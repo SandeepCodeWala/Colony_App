@@ -13,7 +13,7 @@ import {
   Keyboard,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { setLoginField, setMembershipNumber } from '../redux/slices/authSlice';
+import { setLoginField, setMembershipNumber,setUserData } from '../redux/slices/authSlice';
 import { checkNormalData } from '../components/Validation';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { AppImages } from '../res';
@@ -27,7 +27,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'; // ✅ cor
 
 export default function SignIn(props) {
   const dispatch = useDispatch();
-  const membershipNumber = useSelector(state => state.user.membershipNumber);
+  const membershipNumber = useSelector(state => state.auth.membershipNumber);
 
   const [loginField, setUserName] = useState(membershipNumber || '');
   const [password, setPassword] = useState('');
@@ -48,26 +48,55 @@ export default function SignIn(props) {
     }
   };
 
+  // const signIn = async () => {
+  //   const data = { loginField, password };
+  //   setIsLoading(true);
+  //   const response = await postApi('login', data);
+  //   setIsLoading(false);
+
+  //   if (response.success) {
+  //     dispatch(setLoginField(loginField));
+  //     await AsyncStorage.setItem('token', response.data.access_token);
+  //     await AsyncStorage.setItem('phone', response.data.phone);
+  //     await AsyncStorage.setItem('name', response.data.name);
+  //     dispatch(setMembershipNumber(loginField));
+  //     await AsyncStorage.setItem('membershipNumber', loginField);
+  //     props.navigation.navigate('BottomTabs', { screen: 'Book' });
+
+  //     showToast('success', response.message);
+  //   } else {
+  //     showToast('error', response.message);
+  //   }
+  // };
+
   const signIn = async () => {
-    const data = { loginField, password };
-    setIsLoading(true);
-    const response = await postApi('login', data);
-    setIsLoading(false);
+  const data = { loginField, password };
+  console.log(data,"=====>data fathima")
+  setIsLoading(true);
 
-    if (response.success) {
-      dispatch(setLoginField(loginField));
-      await AsyncStorage.setItem('token', response.data.access_token);
-      await AsyncStorage.setItem('phone', response.data.phone);
-      await AsyncStorage.setItem('name', response.data.name);
-      dispatch(setMembershipNumber(loginField));
-      await AsyncStorage.setItem('membershipNumber', loginField);
-      props.navigation.navigate('BottomTabs', { screen: 'Book' });
+  const response = await postApi('login', data);
+  setIsLoading(false);
 
-      showToast('success', response.message);
-    } else {
-      showToast('error', response.message);
-    }
-  };
+  if (response.success) {
+    // Save everything in Redux
+    dispatch(setUserData({
+      user: {
+        name: response.data.name,
+        phone: response.data.phone,
+        membership_number: response.data.membership_number
+      },
+      token: response.data.access_token
+    }));
+
+    // Navigation
+    props.navigation.navigate('BottomTabs', { screen: 'Book' });
+
+    showToast('success', response.message);
+  } else {
+    showToast('error', response.message);
+  }
+};
+
 
   const submit = () => {
     Keyboard.dismiss();

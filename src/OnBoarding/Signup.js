@@ -127,7 +127,7 @@ const handleSignUp = async () => {
       dispatch(setMembershipNumber(membershipNumber));
 
       // ✅ Save to AsyncStorage if needed
-      await AsyncStorage.setItem('membershipNumber', membershipNumber);
+      // await AsyncStorage.setItem('membershipNumber', membershipNumber);
 
       showToast('success', 'Please verify your OTP sent to your phone number.');
 

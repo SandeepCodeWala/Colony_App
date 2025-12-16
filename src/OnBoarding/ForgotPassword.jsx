@@ -24,7 +24,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ForgotPassword({ navigation }) {
    const dispatch = useDispatch();
-  const membershipNumber = useSelector(state => state.user.membershipNumber);
+  const membershipNumber = useSelector(state => state.auth.membershipNumber);
   const [phone, setPhone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -197,7 +197,7 @@ export default function ForgotPassword({ navigation }) {
           />
 
           <Button
-            title="Send OTP"
+            title="Send OTP===="
             style={styles.verifyBtn}
             textTitle={styles.verifyBtnText}
             onPress={sendOtp}

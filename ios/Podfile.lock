@@ -2400,7 +2400,7 @@ PODS:
   - RNCCheckbox (0.5.20):
     - BEMCheckBox (~> 1.4)
     - React-Core
-  - RNDateTimePicker (8.5.0):
+  - RNDateTimePicker (8.5.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3040,7 +3040,7 @@ SPEC CHECKSUMS:
   ReactCommon: ce5d4226dfaf9d5dacbef57b4528819e39d3a120
   RNCAsyncStorage: 29f0230e1a25f36c20b05f65e2eb8958d6526e82
   RNCCheckbox: 33b44487ca8008394ce658cc32b26eab04f426ef
-  RNDateTimePicker: 776fed1b26cfd8d7fff6dd382d6291546fdbe755
+  RNDateTimePicker: 243cc82889368422dab234d73dec63d6cdb1e70f
   RNScreens: d821082c6dd1cb397cc0c98b026eeafaa68be479
   RNVectorIcons: 791f13226ec4a3fd13062eda9e892159f0981fae
   RNWorklets: 88b4f0eb7d19cbc07d19274ee66b15200e206d38

@@ -25,6 +25,7 @@ export default function OTPValidate({ navigation, route }) {
   
   // Redux membership number
   const reduxMembership = useSelector(state => state.auth?.membership_number || '');
+  console.log(reduxMembership,"reduxMembershipreduxMembershipreduxMembership=====>")
 
   const [membershipNumber, setMembershipNumber] = useState(reduxMembership);
   const [otp, setOtp] = useState('');

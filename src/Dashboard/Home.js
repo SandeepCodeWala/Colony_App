@@ -13,6 +13,7 @@ import {
 import { AppImages, Colors, Fonts } from '../res';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch, useSelector } from 'react-redux';
 
 const { width, height } = Dimensions.get('window');
 
@@ -49,6 +50,7 @@ const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [UserName, setUserName] = React.useState('');
   const [membership, setMembershipNumber] = React.useState('');
+   const dispatch = useDispatch();
 
   useEffect(() => {
     fetchUser();
@@ -56,9 +58,12 @@ const Home = () => {
   }, []);
 
   const fetchUser = async () => {
-    const UserName = await AsyncStorage.getItem('name');
-    console.log('Fetched User Name:', UserName);
-    const membershipNum = await AsyncStorage.getItem('membershipNumber');
+    // const UserName = await AsyncStorage.getItem('name');
+   const UserName  = useSelector(state => state.auth?.user?.name);
+    console.log('redux User Name:', UserName);
+   
+      const membershipNum = useSelector(state => state.auth.membershipNumber);
+    // const membershipNum = await AsyncStorage.getItem('membershipNumber');
     setUserName(UserName);
     setMembershipNumber(membershipNum);
 

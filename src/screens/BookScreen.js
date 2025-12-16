@@ -14,44 +14,42 @@ import Button from '../components/Button'; // 👈 Reusable button
 import ReserveHeader from '../components/ReserveHeader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { showToast } from '../services/Toast';
+import { useSelector } from 'react-redux';
 
 const BookScreen = () => {
   const navigation = useNavigation();
+
+  // ✅ Get stored user and membership number from Redux correctly
+const user = useSelector(state => state.auth?.user);
+const membershipNumber = useSelector(state => state.auth?.membershipNumber);
+const fullState = useSelector(state => state);
+console.log("FULL REDUX STATE:", fullState);
+
+  // Local UI states
   const [UserName, setUserName] = React.useState('');
-  const [membership, setMembershipNumber] = React.useState('');
+  const [membership, setMembership] = React.useState('');
 
-  useEffect(() => {
-    fetchUser();
-  }, []);
+  // When Redux updates → update UI
+useEffect(() => {
+  if (user?.name) {
+    setUserName(user.name);
+  }
+  
+  if (membershipNumber) {
+    setMembership(membershipNumber);
+  }
+}, [user, membershipNumber]);
 
-  const fetchUser = async () => {
-    const UserName = await AsyncStorage.getItem('name');
-    console.log('Fetched User Name:', UserName);
-    const membershipNum = await AsyncStorage.getItem('membershipNumber');
-    setUserName(UserName);
-    setMembershipNumber(membershipNum);
+ 
 
-    // Fetch user data logic here
-  };
-
-  const handleReserveTable = () => {
-    if (UserName && membership) {
-      navigation.navigate('ReserveLounge',{screen:'table'});
-    } else {
-      navigation.navigate('Login');
-      showToast('error', 'User details not found. Please log in again.');
-    }
-  };
-
-    const handleReserveLounge = () => {
-    // if (UserName && membership) {
-      navigation.navigate('ReserveLounge',{screen:'Lounge'});
-    // } else {
-    //   navigation.navigate('Login');
-    //   showToast('error', 'User details not found. Please log in again.');
-    // }
-  };
-
+ const handleReserveTable = () => {
+  if (user?.membership_number || membershipNumber) {
+    navigation.navigate('ReserveLounge', { screen: 'table' });
+  } else {
+    navigation.navigate('Login');
+    showToast('error', 'User details not found. Please log in again.');
+  }
+};
   return (
     <View style={styles.container}>
       {/* ---------- Header ---------- */}

@@ -12,12 +12,12 @@ import ReserveHeader from '../components/ReserveHeader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-
+ 
 const { width } = Dimensions.get('window');
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
-  const membershipNumber = useSelector(state => state.user.membershipNumber);
+  const membershipNumber = useSelector(state => state.auth.membershipNumber);
   const [UserName, setUserName] = React.useState('');
   const [membership, setMembershipNumber] = React.useState('');
   console.log('Membership Number from Redux:', membershipNumber);

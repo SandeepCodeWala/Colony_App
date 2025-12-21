@@ -218,7 +218,7 @@ const ReserveTableScreen = ({ route }) => {
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Button title="Proceed to Pay" style={styles.payButton} textStyle={styles.payText} onPress={proceed} />
+        <Button title="Proceed to Pay=======>>>>>>>" style={styles.payButton} textStyle={styles.payText} onPress={proceed} />
       </View>
     </View>
   );

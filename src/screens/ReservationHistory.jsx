@@ -18,6 +18,7 @@ import baseURL from '../services/network/base_url';
 import { showToast } from '../services/Toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ActivityIndicator from '../components/ActivityIndicator';
+import { useSelector } from 'react-redux';
 
 const { width } = Dimensions.get('window');
 
@@ -265,7 +266,7 @@ const ReservationCard = ({
 
           <View style={cardStyles.paymentRow}>
             <Text style={cardStyles.paymentLabel}>Total Amount:</Text>
-            <Text style={cardStyles.paymentValue}>₹{reservation.amount}</Text>
+            <Text style={cardStyles.paymentValue}>£{reservation.amount}</Text>
           </View>
           <View style={cardStyles.paymentRow}>
             <Text style={cardStyles.paymentLabel}>Payment Status:</Text>
@@ -324,49 +325,37 @@ const ReservationsHistory = ({ navigation }) => {
   const [token, setToken] = useState('');
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const membershipNum = useSelector(state => state.auth.membershipNumber);
+  const tokenR  = useSelector(state => state.auth?.token)
 
-  useEffect(() => {
-    getTokenAndFetch();
-  }, []);
-
-  const getTokenAndFetch = async () => {
-    try {
-      const savedToken = await AsyncStorage.getItem('token');
-      setToken(savedToken);
-
-      if (savedToken) {
-        fetchReservations(savedToken);
-      }
-    } catch (error) {
-      console.error('Error retrieving token:', error);
-      showToast('error', 'Failed to load user token.');
-    }
-  };
+ useEffect(() => {
+  if (tokenR) {
+    fetchReservations(tokenR);
+  }
+}, [tokenR]);
 
   // ✅ GET all reservations
-  const fetchReservations = async (authToken = token) => {
-    // console.log("ARE YOU CALLING",authToken)
+ const fetchReservations = async (authToken) => {
+  setLoading(true);
 
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `${baseURL.base_url1}reservations/get_reservations`,
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
+  try {
+    const response = await axios.get(
+      `${baseURL.base_url1}reservations/get_reservations`,
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
         },
-      );
-      console.log('WHAT IS GET RESERVATION API RESPONSE++', response);
-      setReservations(response.data?.data || []);
-    } catch (error) {
-      console.log('Error fetching reservations:', error);
-      showToast('error', 'Failed to fetch reservations.');
-    } finally {
-      console.log('ARE YOU CALLING');
-      setLoading(false);
-    }
-  };
+      }
+    );
+
+    setReservations(response.data?.data || []);
+  } catch (error) {
+    console.log('Error fetching reservations:', error);
+    showToast('error', 'Failed to fetch reservations.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   // ✅ Refresh control logic
   const onRefresh = async () => {

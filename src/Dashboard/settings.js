@@ -24,7 +24,7 @@ export default function ProfileScreen() {
 
   const menuItems = [
   { id: 1, title: 'Edit Profile',onPress:()=>navigation.navigate("EditProfile") },
-   { id: 10, title: 'My Reservations',onPress:()=>navigation.navigate("ReservationHistory") },
+   { id: 10, title: 'My Reservations========',onPress:()=>navigation.navigate("ReservationHistory") },
   { id: 2, title: 'My Statement',onPress:()=>navigation.navigate("MyStatement")  },
   { id: 3, title: 'My Benefits',onPress:()=>navigation.navigate("ReservationHistory")  },
   { id: 4, title: 'Registered Offers',onPress:()=>navigation.navigate("ReservationHistory") },
@@ -58,7 +58,7 @@ export default function ProfileScreen() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <ReserveHeader title={'Profile'} onBack={() => navigation.goBack()} />
+      <ReserveHeader title={'Profile======='} onBack={() => navigation.goBack()} />
 
       {/* Background top image */}
 
@@ -74,9 +74,9 @@ export default function ProfileScreen() {
                 style={styles.profileImage}
               />
 
-              <Text style={styles.profileName}>{UserName || 'NA'}</Text>
+              <Text style={styles.profileName}>{UserName || 'NA======'}</Text>
               <Text style={styles.profileId}>
-                Membership no. {membershipNumber || membership}
+                Membership no.======= {membershipNumber || membership}
               </Text>
             </View>
           </View>

@@ -20,7 +20,7 @@ const ProfileScreen = ({ navigation }) => {
       screen: 'ChangePassword'
 
     },
-    { title: 'My Statement',
+    { title: 'My Statemen=====t',
       screen:'EditProfile'
 
      },
@@ -57,7 +57,7 @@ const ProfileScreen = ({ navigation }) => {
               resizeMode="contain"
             />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Profile</Text>
+        <Text style={styles.headerTitle}>Profile=====</Text>
         <TouchableOpacity>
      <Image
               source={bell}

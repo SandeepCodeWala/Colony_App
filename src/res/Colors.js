@@ -36,9 +36,10 @@ export default {
   APPCOLOR: '#F3ECDE',
   OFF_WHITE:'#FEFEFE',
   Muted_Gold:'#B2975E',
-  BLUE_GRAY:'#E3E9ED'
+  BLUE_GRAY:'#E3E9ED',
 
-
+  // gray light color
+  LIGHT_GRAY:"#F7F7F7"
 
 
 };

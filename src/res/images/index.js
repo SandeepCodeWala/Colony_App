@@ -21,7 +21,9 @@ export default {
   rightic: require('./icons/Right.png'),
   leftic: require('./icons/Left.png'),
    bell: require('./icons/Bell.png'),
+   exclamation: require('./icons/exclamation.png'),
 
 
   colonyGif: require('./icons/colony.gif'),
 };
+// exclamation.png

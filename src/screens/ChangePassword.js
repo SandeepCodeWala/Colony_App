@@ -13,7 +13,6 @@ const EditProfileScreen = () => {
   const navigation=useNavigation()
   return (
     <View style={styles.container}>
-      {/* ---------- Header ---------- */}
       <SettingHeader
         title={'CHANGE PASSWORD'}
         onBack={() => navigation.goBack()}

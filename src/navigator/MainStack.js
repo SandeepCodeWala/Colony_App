@@ -23,7 +23,10 @@ import MemberScreen from '../screens/MemberScreen'
 import BookEventScreen from '../screens/BookEventScreen'
 import ReservationHistory from '../screens/ReservationHistory'
 import MyStatement from '../screens/MyStatement'
- 
+import MyBenefits from "../screens/MyBenefits"
+import RegisteredOffers from "../screens/RegisteredOffers"
+
+
 const Stack = createNativeStackNavigator();
 function MainStack() {
   const [enableSplash, setEnableSplash] = useState(true);
@@ -68,6 +71,9 @@ function MainStack() {
          <Stack.Screen name="Payment" component={PaymentScreen} />
          <Stack.Screen name="BookEvent" component={BookEventScreen} />
          <Stack.Screen name="ReservationHistory" component={ReservationHistory} />
+
+          <Stack.Screen name="MyBenefits" component={MyBenefits} />
+           <Stack.Screen name="RegisteredOffers" component={RegisteredOffers} />
 
 
 

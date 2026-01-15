@@ -22,6 +22,7 @@ export default {
   leftic: require('./icons/Left.png'),
    bell: require('./icons/Bell.png'),
    exclamation: require('./icons/exclamation.png'),
+   download: require('./icons/download.png'),
 
 
   colonyGif: require('./icons/colony.gif'),

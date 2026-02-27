@@ -119,12 +119,13 @@ export const authSlice = createSlice({
     },
 
     logout: (state) => {
-      state.loginField = '';
-      state.membershipNumber = '';
-      state.membership_number = '';
-      state.isLoggedIn = false;
-      state.user = null;
-      state.token = null;
+      return initialState;
+      // state.loginField = '';
+      // state.membershipNumber = '';
+      // state.membership_number = '';
+      // state.isLoggedIn = false;
+      // state.user = null;
+      // state.token = null;
     },
 
     clearUser: (state) => {

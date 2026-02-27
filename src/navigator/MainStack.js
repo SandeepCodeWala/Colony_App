@@ -23,6 +23,9 @@ import MemberScreen from '../screens/MemberScreen'
 import BookEventScreen from '../screens/BookEventScreen'
 import ReservationHistory from '../screens/ReservationHistory'
 import MyStatement from '../screens/MyStatement'
+import LoyaltyPass from '../screens/LoyaltyPass'
+
+
  
 const Stack = createNativeStackNavigator();
 function MainStack() {
@@ -48,6 +51,7 @@ function MainStack() {
       <Stack.Screen name="HelpSupport" component={HelpSupport} />
       <Stack.Screen name="ManageConsents" component={ManageConsents} />
       <Stack.Screen name="MyStatement" component={MyStatement} />
+       <Stack.Screen name="LoyaltyPass" component={LoyaltyPass} />
     
       {/* <Stack.Screen name="RegisteredOffice" component={RegisteredOffice} /> */}
       <Stack.Screen name="TermsConditions" component={TermsConditions} />

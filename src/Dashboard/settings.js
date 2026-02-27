@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,82 +7,101 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  Alert, // Added missing import
+  ActivityIndicator, // Added missing import
 } from 'react-native';
+
 import ReserveHeader from '../components/ReserveHeader';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
- 
+import { logout } from '../redux/slices/authSlice'; 
+import { postApi } from '../utils/api';
+import { Fonts, Colors } from '../res'; // Assuming these exist in your project
+
 const { width } = Dimensions.get('window');
 
-export default function ProfileScreen() {
+export default function Settings() {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
+  
+  // Selectors from Redux
   const membershipNumber = useSelector(state => state.auth.membershipNumber);
-  const [UserName, setUserName] = React.useState('');
-  const [membership, setMembershipNumber] = React.useState('');
-  console.log('Membership Number from Redux:', membershipNumber);
+  const name = useSelector(state => state.auth.user?.name || 'Member');
+  const token = useSelector((state) => state.auth.token);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const menuItems = [
-  { id: 1, title: 'Edit Profile',onPress:()=>navigation.navigate("EditProfile") },
-   { id: 10, title: 'My Reservations========',onPress:()=>navigation.navigate("ReservationHistory") },
-  { id: 2, title: 'My Statement',onPress:()=>navigation.navigate("MyStatement")  },
-  { id: 3, title: 'My Benefits',onPress:()=>navigation.navigate("ReservationHistory")  },
-  { id: 4, title: 'Registered Offers',onPress:()=>navigation.navigate("ReservationHistory") },
-  { id: 5, title: 'Change Password',onPress:()=>navigation.navigate("ChangePassword") },
-  { id: 6, title: 'Manage Your Consent',onPress:()=>navigation.navigate("ReservationHistory") },
-  { id: 7, title: 'Settings',onPress:()=>navigation.navigate("ReservationHistory") },
-  { id: 8, title: 'Terms & Conditions',onPress:()=>navigation.navigate("ReservationHistory") },
-  { id: 9, title: 'Help & Support',onPress:()=>navigation.navigate("ReservationHistory") },
-];
+    { id: 1, title: 'Edit Profile', onPress: () => navigation.navigate("EditProfile") },
+    { id: 10, title: 'My Reservations', onPress: () => navigation.navigate("ReservationHistory") },
+    { id: 2, title: 'My Statement', onPress: () => navigation.navigate("MyStatement") },
+    { id: 3, title: 'My Benefits', onPress: () => navigation.navigate("ReservationHistory") },
+    { id: 4, title: 'Registered Offers', onPress: () => navigation.navigate("ReservationHistory") },
+    { id: 5, title: 'Change Password', onPress: () => navigation.navigate("ChangePassword") },
+    { id: 6, title: 'Manage Your Consent', onPress: () => navigation.navigate("ReservationHistory") },
+    { id: 7, title: 'Settings', onPress: () => navigation.navigate("ReservationHistory") },
+    { id: 8, title: 'Terms & Conditions', onPress: () => navigation.navigate("ReservationHistory") },
+    { id: 9, title: 'Help & Support', onPress: () => navigation.navigate("ReservationHistory") },
+  ];
 
-  useEffect(() => {
-    fetchUser();
-    // Any side effects if needed
-  }, []);
+  const handleLogout = () => {
+    // This now works because Alert is imported
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to log out of Colony?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Logout', 
+          style: 'destructive',
+          onPress: async () => {
+            setIsLoading(true);
+            try {
+              // Passing token for backend middleware identification
+              const response = await postApi('logout', {}, token); 
 
-  const fetchUser = async () => {
-    const UserName = await AsyncStorage.getItem('name');
-    console.log('Fetched User Name:', UserName);
-    const membershipNum = await AsyncStorage.getItem('membershipNumber');
-    setUserName(UserName);
-    setMembershipNumber(membershipNum);
-    // Fetch user data logic here
+              // Clear Redux state
+              dispatch(logout());
+
+              if (response?.success) {
+                console.log("Logged out from server successfully");
+              }
+            } catch (error) {
+              console.error("Logout API failed:", error);
+              // Force local logout if network fails
+              dispatch(logout()); 
+            } finally {
+              setIsLoading(false);
+            }
+          } 
+        },
+      ]
+    );
   };
-
-  const logout = async () => {
-    await AsyncStorage.clear();
-    navigation.navigate('BottomTabs', { screen: 'Explore' });
-    // Navigate to login or onboarding screen if needed
-  }
 
   return (
     <View style={styles.container}>
       {/* Header */}
-      <ReserveHeader title={'Profile======='} onBack={() => navigation.goBack()} />
+      <ReserveHeader title={'Settings'} onBack={() => navigation.goBack()} />
 
-      {/* Background top image */}
-
-      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
         {/* Profile Box */}
         <View style={{ height: 220 }}>
           <View style={styles.topBanner}>
             <View style={styles.profileBox}>
               <Image
-                source={{
-                  uri: 'https://i.pravatar.cc/150?img=45',
-                }}
+                source={{ uri: 'https://i.pravatar.cc/150?img=45' }}
                 style={styles.profileImage}
               />
-
-              <Text style={styles.profileName}>{UserName || 'NA======'}</Text>
+              <Text style={styles.profileName}>{name}</Text>
               <Text style={styles.profileId}>
-                Membership no.======= {membershipNumber || membership}
+                Membership no. {membershipNumber || 'N/A'}
               </Text>
             </View>
           </View>
         </View>
 
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, marginTop: 10 }}>
           {/* Menu Options */}
           {menuItems.map(item => (
             <TouchableOpacity key={item.id} onPress={item?.onPress} style={styles.menuRow}>
@@ -91,9 +110,20 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           ))}
 
-          {/* Logout */}
-          <TouchableOpacity onPress={()=>logout()} style={[styles.menuRow, styles.logoutRow]}>
-            <Text style={[styles.menuText, styles.logoutText]}>Logout</Text>
+          {/* Logout Button */}
+          <TouchableOpacity 
+            style={[styles.menuRow, styles.logoutRow]} 
+            onPress={handleLogout}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#D30000" />
+            ) : (
+              <View style={styles.logoutContent}>
+                <Text style={styles.logoutText}>Logout</Text>
+                <Text style={[styles.arrow, { color: '#D30000' }]}>›</Text>
+              </View>
+            )}
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -101,49 +131,26 @@ export default function ProfileScreen() {
   );
 }
 
-
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F4F4F4',
   },
-
-  // HEADER
-  header: {
-    height: 60,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  icon: {
-    fontSize: 22,
-    color: '#000',
-  },
-  headerTitle: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: '#000',
-  },
-
-  // TOP BACKGROUND BANNER
   topBanner: {
     width: width,
     height: 110,
     backgroundColor: '#E8E2D3',
   },
-
-  // PROFILE BOX
   profileBox: {
     marginTop: 50,
     alignItems: 'center',
   },
-
   profileImage: {
     width: 95,
     height: 95,
     borderRadius: 100,
+    borderWidth: 3,
+    borderColor: '#FFF',
   },
   profileName: {
     fontSize: 18,
@@ -156,8 +163,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#7A7A7A',
   },
-
-  // MENU ROWS
   menuRow: {
     backgroundColor: '#FFFFFF',
     marginHorizontal: 18,
@@ -168,30 +173,33 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-
     elevation: 2,
     shadowColor: '#000',
     shadowOpacity: 0.06,
     shadowRadius: 3,
     shadowOffset: { width: 0, height: 2 },
   },
-
   menuText: {
     fontSize: 15,
     color: '#000',
   },
-
   arrow: {
     fontSize: 22,
     color: '#B1B1B1',
   },
-
-  // LOGOUT
   logoutRow: {
-    backgroundColor: '#FFF3F3',
+    backgroundColor: '#FFF3F3', // Light red tint for logout
+    marginBottom: 20,
+  },
+  logoutContent: {
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    flex: 1, 
+    alignItems: 'center'
   },
   logoutText: {
     color: '#D30000',
-    fontWeight: '500',
+    fontWeight: '600',
+    fontSize: 15,
   },
 });

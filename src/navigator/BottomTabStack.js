@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React from 'react';
 import { Image, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AppImages, Colors } from '../res';
@@ -6,40 +6,15 @@ import Home from '../Dashboard/Home';
 import Settings from '../Dashboard/settings';
 import BookScreen from '../screens/BookScreen';
 import Loyalty from '../Dashboard/Loyalty';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import MemberScreen from '../screens/MemberScreen';
-import { useFocusEffect } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabs = () => {
-  // const [userName, setUserName] = useState('');
-  // const [memberShip, setMembershipNumber] = useState('');
-  let screen = 'Loyalty';
-  const fetchUser = async () => {
-    try {
-      const userName = await AsyncStorage.getItem('name');
-      const membershipNum = await AsyncStorage.getItem('membershipNumber');
+  const user = useSelector(state => state.auth.user);
 
-      console.log('🟢 Fetched user:', { userName, membershipNum });
-
-      // ✅ Check if userName is missing or empty
-      if (!userName || userName === 'null' || userName === 'undefined') {
-        console.log('🔴 No user found, navigating to Loyalty screen...=====');
-        screen = 'Loyalty';
-      } else {
-        screen = 'MemberScreen';
-      }
-    } catch (error) {
-      console.log('❌ Error fetching user:', error);
-    }
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchUser();
-    }, []),
-  );
+  const screen = user?.name ? 'MemberScreen' : 'Loyalty';
 
   return (
     <Tab.Navigator
@@ -89,7 +64,7 @@ const BottomTabs = () => {
       />
       <Tab.Screen
         name={screen}
-        component={screen == 'Loyalty' ? Loyalty : MemberScreen}
+        component={screen === 'Loyalty' ? Loyalty : MemberScreen}
         options={{
           tabBarLabel: 'Loyalty',
           tabBarIcon: ({ focused }) => (

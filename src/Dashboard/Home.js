@@ -50,7 +50,7 @@ const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [UserName, setUserName] = React.useState('');
   const [membership, setMembershipNumber] = React.useState('');
-   const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     fetchUser();
@@ -59,10 +59,10 @@ const Home = () => {
 
   const fetchUser = async () => {
     // const UserName = await AsyncStorage.getItem('name');
-   const UserName  = useSelector(state => state.auth?.user?.name);
+    const UserName = useSelector(state => state.auth?.user?.name);
     console.log('redux User Name:', UserName);
-   
-      const membershipNum = useSelector(state => state.auth.membershipNumber);
+
+    const membershipNum = useSelector(state => state.auth.membershipNumber);
     // const membershipNum = await AsyncStorage.getItem('membershipNumber');
     setUserName(UserName);
     setMembershipNumber(membershipNum);
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 25,
+    // marginTop: 25,
     marginBottom: Platform.OS === 'ios' ? 60 : 0,
   },
   buttonText: {

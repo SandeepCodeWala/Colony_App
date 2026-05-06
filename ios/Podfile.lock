@@ -2662,103 +2662,6 @@ PODS:
     - SocketRocket
     - Yoga
   - SocketRocket (0.7.1)
-  - Stripe (24.24.4):
-    - StripeApplePay (= 24.24.4)
-    - StripeCore (= 24.24.4)
-    - StripePayments (= 24.24.4)
-    - StripePaymentsUI (= 24.24.4)
-    - StripeUICore (= 24.24.4)
-  - stripe-react-native (0.55.1):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-    - Stripe (~> 24.24.0)
-    - stripe-react-native/NewArch (= 0.55.1)
-    - StripeApplePay (~> 24.24.0)
-    - StripeFinancialConnections (~> 24.24.0)
-    - StripePayments (~> 24.24.0)
-    - StripePaymentSheet (~> 24.24.0)
-    - StripePaymentsUI (~> 24.24.0)
-    - Yoga
-  - stripe-react-native/NewArch (0.55.1):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-    - Stripe (~> 24.24.0)
-    - StripeApplePay (~> 24.24.0)
-    - StripeFinancialConnections (~> 24.24.0)
-    - StripePayments (~> 24.24.0)
-    - StripePaymentSheet (~> 24.24.0)
-    - StripePaymentsUI (~> 24.24.0)
-    - Yoga
-  - StripeApplePay (24.24.4):
-    - StripeCore (= 24.24.4)
-  - StripeCore (24.24.4)
-  - StripeFinancialConnections (24.24.4):
-    - StripeCore (= 24.24.4)
-    - StripeUICore (= 24.24.4)
-  - StripePayments (24.24.4):
-    - StripeCore (= 24.24.4)
-    - StripePayments/Stripe3DS2 (= 24.24.4)
-  - StripePayments/Stripe3DS2 (24.24.4):
-    - StripeCore (= 24.24.4)
-  - StripePaymentSheet (24.24.4):
-    - StripeApplePay (= 24.24.4)
-    - StripeCore (= 24.24.4)
-    - StripePayments (= 24.24.4)
-    - StripePaymentsUI (= 24.24.4)
-  - StripePaymentsUI (24.24.4):
-    - StripeCore (= 24.24.4)
-    - StripePayments (= 24.24.4)
-    - StripeUICore (= 24.24.4)
-  - StripeUICore (24.24.4):
-    - StripeCore (= 24.24.4)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -2843,21 +2746,12 @@ DEPENDENCIES:
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - RNWorklets (from `../node_modules/react-native-worklets`)
   - SocketRocket (~> 0.7.1)
-  - "stripe-react-native (from `../node_modules/@stripe/stripe-react-native`)"
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
   trunk:
     - BEMCheckBox
     - SocketRocket
-    - Stripe
-    - StripeApplePay
-    - StripeCore
-    - StripeFinancialConnections
-    - StripePayments
-    - StripePaymentSheet
-    - StripePaymentsUI
-    - StripeUICore
 
 EXTERNAL SOURCES:
   boost:
@@ -3019,8 +2913,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-vector-icons"
   RNWorklets:
     :path: "../node_modules/react-native-worklets"
-  stripe-react-native:
-    :path: "../node_modules/@stripe/stripe-react-native"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -3106,15 +2998,6 @@ SPEC CHECKSUMS:
   RNVectorIcons: 791f13226ec4a3fd13062eda9e892159f0981fae
   RNWorklets: 88b4f0eb7d19cbc07d19274ee66b15200e206d38
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  Stripe: 376c3c637adc25fe2c766f9a5e133f43f71343ba
-  stripe-react-native: 9f23843db8d45d20dae87c6da1bad3eb769953ab
-  StripeApplePay: 49f323f7156b584af5d60120cffb5df4e6553439
-  StripeCore: 66da672b7afadfeed89c3d0d44fbbcfce533c955
-  StripeFinancialConnections: 552dde09eef8a67efb8429bc67c975fbb76f477f
-  StripePayments: 4bd8a8307e174592f6428b3797fe465a78856d28
-  StripePaymentSheet: 286ec3ccdc29c5e42af7afb8018078998b32e041
-  StripePaymentsUI: 7ba68d8867d2ff4f8fa51a096e8d7831e23aafff
-  StripeUICore: b9a93a422dd1f3c5d4e791a5cd0dc09808f3699f
   Yoga: 11c9686a21e2cd82a094a723649d9f4507200fb0
 
 PODFILE CHECKSUM: fbcfb06f6e1d1b3e8e3b322423afea3bbc7a8ffb

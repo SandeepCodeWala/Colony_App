@@ -47,7 +47,8 @@ const ReserveTableScreen = ({ route }) => {
   const [sheetInitialized, setSheetInitialized] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const arrayToObject = arr => Object.fromEntries(arr.map(item => [item, false]));
+const arrayToObject = arr =>
+  Object.fromEntries((arr || []).map(item => [item, false]));
 
   const [occasions, setOccasions] = useState(arrayToObject(userData?.obj?.dropdownOptions?.occasions));
   const [occasionsList] = useState(userData?.obj?.dropdownOptions?.occasions);

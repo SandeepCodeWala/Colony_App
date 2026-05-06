@@ -15,7 +15,7 @@ import ReserveHeader from '../components/ReserveHeader';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { logout } from '../redux/slices/authSlice'; 
-import { postApi } from '../utils/api';
+import { postApi } from '../services/network/api';
 import { Fonts, Colors } from '../res'; // Assuming these exist in your project
 
 const { width } = Dimensions.get('window');
@@ -72,6 +72,45 @@ export default function Settings() {
               dispatch(logout()); 
             } finally {
               setIsLoading(false);
+              // Navigate to Login screen
+              navigation.navigate('Login');
+            }
+          } 
+        },
+      ]
+    );
+  };
+
+    const handleDeleteAccount = () => {
+    // This now works because Alert is imported
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Delete', 
+          style: 'destructive',
+          onPress: async () => {
+            setIsLoading(true);
+            try {
+              // Passing token for backend middleware identification
+              const response = await postApi('logout', {}, token); 
+
+              // Clear Redux state
+              dispatch(logout());
+
+              if (response?.success) {
+                console.log("Logged out from server successfully");
+              }
+            } catch (error) {
+              console.error("Logout API failed:", error);
+              // Force local logout if network fails
+              dispatch(logout()); 
+            } finally {
+              setIsLoading(false);
+              // Navigate to Login screen
+              navigation.navigate('Login');
             }
           } 
         },
@@ -121,6 +160,20 @@ export default function Settings() {
             ) : (
               <View style={styles.logoutContent}>
                 <Text style={styles.logoutText}>Logout</Text>
+                <Text style={[styles.arrow, { color: '#D30000' }]}>›</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+             <TouchableOpacity 
+            style={[styles.menuRow, styles.logoutRow]} 
+            onPress={handleDeleteAccount}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#D30000" />
+            ) : (
+              <View style={styles.logoutContent}>
+                <Text style={styles.logoutText}>Delete Account</Text>
                 <Text style={[styles.arrow, { color: '#D30000' }]}>›</Text>
               </View>
             )}

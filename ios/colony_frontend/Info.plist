@@ -24,13 +24,28 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSAppTransportSecurity</key>
-	<dict>
+	<!-- <key>NSAppTransportSecurity</key> -->
+	<!-- <dict>
 		<key>NSAllowsArbitraryLoads</key>
-		<false/>
+		<true/>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
-	</dict>
+	</dict> -->
+	<key>NSAppTransportSecurity</key>
+<dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+    <key>NSExceptionDomains</key>
+    <dict>
+        <key>colony-backend-server.paprikaventures.com</key>
+        <dict>
+            <key>NSExceptionAllowsInsecureHTTPLoads</key>
+            <true/>
+            <key>NSIncludesSubdomains</key>
+            <true/>
+        </dict>
+    </dict>
+</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>This app requires camera access to scan loyalty member QR codes at the till system, allowing you to receive special offers based on your number of visits.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

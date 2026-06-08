@@ -249,14 +249,14 @@ import { Fonts, Colors, AppImages } from '../res';
 import AppButton from '../components/AppButton';
 
 export default function Loyalty() {
-  const navigation = useNavigation();
+  const navigation = useNavigation(); 
   const token = useSelector(state => state.auth.token);
   const loyaltyPoints = 200; 
 
   if (!token) {
     return (
       <ImageBackground source={AppImages.loginBg} style={styles.guestContainer}>
-        <Text style={styles.colonyTitle}>COLONY</Text>
+        <Text style={styles.colonyTitle}>COLONY22</Text>
         <AppButton text={'LOGIN'} onPress={() => navigation.navigate('Login')} style={styles.authBtn} />
         <AppButton text={'JOIN NOW'} onPress={() => navigation.navigate('Signup')} style={styles.authBtn} />
       </ImageBackground>
@@ -395,5 +395,5 @@ const styles = StyleSheet.create({
   // Guest View
   guestContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   colonyTitle: { fontSize: 45, color: '#FFF', fontWeight: 'bold', marginBottom: 20 },
-  authBtn: { backgroundColor: '#FFF', width: 280, marginTop: 15, borderRadius: 12 }
+  authBtn: { backgroundColor: '#B2975E', width: 280, marginTop: 15, borderRadius: 12 }
 });

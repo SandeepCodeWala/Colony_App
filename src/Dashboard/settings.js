@@ -81,11 +81,49 @@ export default function Settings() {
     );
   };
 
-    const handleDeleteAccount = () => {
-    // This now works because Alert is imported
+  //   const handleDeleteAccount = () => {
+  //   // This now works because Alert is imported
+  //   Alert.alert(
+  //     'Delete Account',
+  //     'Are you sure you want to delete your account?',
+  //     [
+  //       { text: 'Cancel', style: 'cancel' },
+  //       { 
+  //         text: 'Delete', 
+  //         style: 'destructive',
+  //         onPress: async () => {
+  //           setIsLoading(true);
+  //           try {
+  //             // Passing token for backend middleware identification
+  //             const response = await postApi('logout', {}, token); 
+
+  //             // Clear Redux state
+  //             dispatch(logout());
+
+  //             if (response?.success) {
+  //               console.log("Logged out from server successfully");
+  //             }
+  //           } catch (error) {
+  //             console.error("Logout API failed:", error);
+  //             // Force local logout if network fails
+  //             dispatch(logout()); 
+  //           } finally {
+  //             setIsLoading(false);
+  //             // Navigate to Login screen
+  //             navigation.navigate('Login');
+  //           }
+  //         } 
+  //       },
+  //     ]
+  //   );
+  // };
+
+
+
+  const handleDeleteAccount = () => {
     Alert.alert(
       'Delete Account',
-      'Are you sure you want to delete your account?',
+      'Are you sure you want to delete your account? This action cannot be undone.',
       [
         { text: 'Cancel', style: 'cancel' },
         { 
@@ -94,23 +132,26 @@ export default function Settings() {
           onPress: async () => {
             setIsLoading(true);
             try {
-              // Passing token for backend middleware identification
-              const response = await postApi('logout', {}, token); 
-
-              // Clear Redux state
-              dispatch(logout());
+              // 1. Hit the dedicated delete profile endpoint using the bearer token
+              const response = await postApi('wipe-profile', {}, token); 
 
               if (response?.success) {
-                console.log("Logged out from server successfully");
+                console.log("Account wiped from server successfully");
+                // 2. Clear Redux state only after a successful server deletion
+                dispatch(logout());
+                navigation.navigate('Signup');
+              } else {
+                // Handle case where server sent a 400/500 validation failure
+                Alert.alert("Error", response?.message || "Could not delete account. Please try again.");
               }
             } catch (error) {
-              console.error("Logout API failed:", error);
-              // Force local logout if network fails
-              dispatch(logout()); 
+              console.error("Delete Account API failed:", error);
+              Alert.alert(
+                "Connection Error", 
+                "Failed to delete your account from the server. Please check your internet connection."
+              );
             } finally {
               setIsLoading(false);
-              // Navigate to Login screen
-              navigation.navigate('Login');
             }
           } 
         },

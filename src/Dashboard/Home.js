@@ -175,8 +175,8 @@ const styles = StyleSheet.create({
     height,
   },
   image: {
-    width,
-    height,
+    width: 400,
+    height: 400,
     resizeMode: 'cover',
   },
   overlay: {
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    bottom: 0,
+    bottom: 70, // 0 in mac
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.35)',

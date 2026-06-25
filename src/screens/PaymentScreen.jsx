@@ -1,638 +1,391 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  TextInput,
-  KeyboardAvoidingView,
-  TouchableWithoutFeedback,
-  Keyboard,
-  Platform,
-  ImageBackground,
-  Alert,
+  View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput,
+  KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Platform,
+  ImageBackground, Alert, ActivityIndicator
 } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
+import { CardField, useStripe } from '@stripe/stripe-react-native';
+
 import { AppImages, Colors } from '../res';
 import ReserveHeader from '../components/ReserveHeader';
 import { showToast } from '../services/Toast';
 import baseURL from '../services/network/base_url';
 import CustomModal from '../components/ModalComponent';
-import { useNavigation } from '@react-navigation/native';
-// Assuming putApiWithBase1 is defined or imported, I'll use the definition from your prompt
-// import { putApiWithBase1 } from '../services/network/api';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// --- STATIC DATA FOR DEMONSTRATION ---
-// In a real app, this data would be fetched from an API
-const STATIC_CARDS = [
-  { id: '1', name: 'John Doe', last4: '4242', expiry: '12/26', type: 'Visa' },
-  {
-    id: '2',
-    name: 'Jane Smith',
-    last4: '0000',
-    expiry: '05/25',
-    type: 'Mastercard',
-  },
-];
-// Re-defining putApiWithBase1 locally for a runnable example
-async function putApiWithBase1(method, data, token) {
-  const fullUrl = baseURL.base_url1 + method;
-
-  try {
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    };
-
-    const res = await axios.put(fullUrl, data, { headers });
-    return res.data;
-  } catch (e) {
-    return e?.response?.data || { success: false, message: e.message };
-  }
-}
-
-// --- END STATIC DATA/HELPER ---
 
 const CardDetailsScreen = ({ route }) => {
   const token = useSelector(state => state.auth?.token);
   const { reservationId, NoOfGuest } = route?.params || {};
   const navigation = useNavigation();
+  const { createPaymentMethod } = useStripe();
 
-  // New State for Card Management
+  // State Management
   const [savedCards, setSavedCards] = useState([]);
   const [selectedCardId, setSelectedCardId] = useState(null);
-  // State to toggle between Card List and New Card Form
   const [isAddingNewCard, setIsAddingNewCard] = useState(false);
-
-  // Existing States for New Card Form
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvv, setCvv] = useState('');
-
   const [accepted, setAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [bookingConfirmModal, setBookingConfirmModal] = useState(false);
-  // const [token, setToken] = useState('');
 
+  // Stripe Form State
+  const [name, setName] = useState('');
+  const [cardDetails, setCardDetails] = useState(null);
 
-const handlefetchcardDetails = async (token=token)=>{
-  try {
-  const fullUrl = baseURL.base_url1 + "card_detail/get"
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    };
+  const headers = {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  };
 
-    const res = await axios.get(fullUrl,  { headers });
-    console.log(res,"resss handle fetch card detail")
-    setSavedCards(res.data.data)
-     return res.data.data;
-    
-  } catch (error) {
-    console.log(error," handl fetch card details")
-  }
-}
-
-useEffect(() => {
-  const init = async () => {
-    const cards = await handlefetchcardDetails(token);
-
-    if (cards && cards.length > 0) {
-      setSelectedCardId(cards[0].id);
-      setIsAddingNewCard(false);
+  useEffect(() => {
+    if (token && reservationId) {
+      fetchSavedCards();
     }
-  };
+  }, [token, reservationId]);
 
-  init();
+  const fetchSavedCards = async () => {
+    try {
+      const res = await axios.get(`${baseURL.base_url1}reservations/get_by_id`, { headers });
+     if (res.data?.success && Array.isArray(res.data.data)) {
+      const cards = res.data.data; // This is the array of {brand, last4, stripePaymentMethodId}
+      
+      console.log("Cards received from Backend:", cards);
+      
+      setSavedCards(cards);
 
-  return () => {
-    // optional cleanup (listeners, timers, abort controllers)
-  };
-}, []);
-
-  
-
-  const clearNewCardForm = () => {
-    setName('');
-    setNumber('');
-    setExpiry('');
-    setCvv('');
-  };
-
-const handleAddCardDetails = async()=>{
-  try {
-      const fullUrl = baseURL.base_url1 + "card_detail/add"
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    };
-    
-let  data = {
-          reservationId,
-  name:name,
-      cardNumber: number.replace(/\s/g, ''),
-      cardExpiry: expiry,
-      CVV: cvv,
-    };
-
-    const res = await axios.post(fullUrl, data, { headers });
-    console.log(res,"add card detail")
-handlefetchcardDetails(token)
-setSelectedCardId(savedCards[0].id);
-    setIsAddingNewCard(false);
-    // setSavedCards(res.data.data)
+      if (cards.length > 0) {
+        // Auto-select the first card in the list
+        setSelectedCardId(cards[0].stripePaymentMethodId);
+        setIsAddingNewCard(false);
+      } else {
+        setIsAddingNewCard(true);
+      }
+    }
   } catch (error) {
-    console.log(error,"error add card details")
-  }
-} 
+    console.log("Fetch Error", error);
+    setIsAddingNewCard(true); // Show form if fetch fails
+  }}
 
- const handleAddNewCard = () => {
-  handleAddCardDetails()
-  setIsAddingNewCard(true);
-  setSelectedCardId(null);
-  clearNewCardForm();
-};
-
- const handleSubmit = async () => {
-  if (!accepted) {
-    Alert.alert('OOPs!', 'Please accept the cancellation policy.');
-    return;
-  }
-
-  if (!token) {
-    Alert.alert('Error', 'Session expired. Please login again.');
-    return;
-  }
-
-  let cardDetailsToSend = null;
-
-  if (isAddingNewCard) {
-    if (!name || !number || !expiry || !cvv) {
-      Alert.alert('OOPs!', 'Please fill in all card details.');
+  // REAL STRIPE ADD CARD LOGIC
+  const handleAddCardToList = async () => {
+    if (!name || !cardDetails?.complete) {
+      Alert.alert('Error', 'Please enter your name and complete card details.');
       return;
     }
 
-    cardDetailsToSend = {
-      cardNumber: number.replace(/\s/g, ''),
-      cardExpiry: expiry,
+    try {
+      setLoading(true);
 
-      CVV: cvv,
-    };
-  }
-  //  else {
-  //   Alert.alert(
-  //     'Note',
-  //     'Saved cards require backend card-token support. Please add a new card.'
-  //   );
-  //   return;
-  // }
-if(selectedCardId==""||selectedCardId==null||Number(selectedCardId)<=0){
-    Alert.alert(
-      'Note',
-      'Select a Card'
-    );
-    return;
-}
-  const data = {
-    reservationId,
-    name:name,
-    amount: NoOfGuest ? NoOfGuest * 12 : 12,
-    cardDetailId:selectedCardId,
-    isAcceptCancellation: true,
-    cardDetails: cardDetailsToSend,
+      // 1. Get Setup Intent from Backend
+      const intentRes = await axios.post(`${baseURL.base_url1}reservations/create-setup-intent`, {}, { headers });
+      const { customer } = intentRes.data;
+
+      // 2. Create Payment Method via Stripe SDK
+      const { paymentMethod, error } = await createPaymentMethod({
+        paymentMethodType: 'Card',
+        billingDetails: { name: name },
+      });
+
+      if (error) {
+        showToast('error', error.message);
+        setLoading(false);
+        return;
+      }
+
+      // 3. Send REAL PaymentMethod ID to Backend
+      const storeData = {
+        reservationId,
+        stripeCustomerId: customer,
+        stripePaymentMethodId: paymentMethod.id, // This is now dynamic!
+        name: name,
+      };
+
+      const storeRes = await axios.post(`${baseURL.base_url1}reservations/store-card`, storeData, { headers });
+
+      if (storeRes.data.success) {
+        showToast('success', 'Card saved securely');
+        await fetchSavedCards();
+        setIsAddingNewCard(false);
+        setName('');
+      }
+    } catch (err) {
+      showToast('error', 'Failed to save card');
+    } finally {
+      setLoading(false);
+    }
   };
-  console.log(data,'data send')
 
+  // const handleFinalConfirmation = async () => {
+  //   if (!accepted) {
+  //     Alert.alert('Attention', 'Please accept the cancellation policy.');
+  //     return;
+  //   }
+  //   try {
+  //     setLoading(true);
+  //     const finalData = {
+  //       reservationId,
+  //       isAcceptCancellation: true,
+  //       stripePaymentMethodId: selectedCardId 
+  //     };
+  //     const response = await axios.put(`${baseURL.base_url1}reservations/save_card_details`, finalData, { headers });
+  //     if (response.data.success) {
+  //       setBookingConfirmModal(true);
+  //     }
+  //   } catch (err) {
+  //     showToast('error', 'Confirmation failed');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const handleFinalConfirmation = async () => {
+  if (!accepted) {
+    Alert.alert('Attention', 'Please accept the cancellation policy.');
+    return;
+  }
+  
   try {
     setLoading(true);
 
-    const response = await putApiWithBase1(
-      'reservations/save_card_details',
-      data,
-      token
+    // Find the full card object from your state to get the customer ID
+    const selectedFECard = savedCards.find(
+      (card) => card.stripePaymentMethodId === selectedCardId
     );
 
-    if (response?.success === true) {
+    const finalData = {
+      reservationId,
+      isAcceptCancellation: true,
+      stripePaymentMethodId: selectedCardId,
+      // CRITICAL: Send the Customer ID so the backend can link it to this specific reservation
+      stripeCustomerId: selectedFECard?.stripeCustomerId || null 
+    };
+
+    const response = await axios.put(
+      `${baseURL.base_url1}reservations/save_card_details`, 
+      finalData, 
+      { headers }
+    );
+
+    if (response.data.success) {
       setBookingConfirmModal(true);
-    } else {
-      showToast('error', response?.message || 'Payment failed');
     }
   } catch (err) {
-    console.error(err);
-    showToast('error', 'Something went wrong');
+    console.log("Confirmation Error:", err.response?.data);
+    showToast('error', 'Confirmation failed');
   } finally {
     setLoading(false);
   }
 };
 
-  // --- Components for Card Selection and Input ---
+////////remove card
 
-  const SavedCardList = () => (
-    <View style={styles.cardListContainer}>
-      <Text
+// Function to handle card deletion
+// 1. Add this function inside your CardDetailsScreen component
+const handleDeleteCard = async (card) => {
+  try {
+    setLoading(true);
+    const payload = {
+      id: reservationId, // This MUST match the 'id' column in your pgAdmin screenshot
+      customerId: card.stripeCustomerId,
+      paymentId: card.stripePaymentMethodId,
+    };
+
+    const res = await axios.delete(`${baseURL.base_url1}reservations/delete_data`, {
+      headers: headers,
+      data: payload
+    });
+
+    if (res.data.success) {
+      // Update UI state locally first
+      setSavedCards(prev => prev.filter(c => c.stripePaymentMethodId !== card.stripePaymentMethodId));
+      showToast('success', 'Card deleted');
+      
+      // Refresh to confirm with DB
+      await fetchSavedCards();
+    }
+  } catch (error) {
+    showToast('error', 'Delete failed');
+  } finally {
+    setLoading(false);
+  }
+};
+
+// 2. Update your SavedCardList component UI
+const SavedCardList = () => (
+  <View style={{ marginBottom: 20 }}>
+    <Text style={styles.sectionHeader}>Select Card to Use</Text>
+    {savedCards.map((card, index) => (
+      <View 
+        key={index} 
         style={[
-          styles.header,
-          { color: '#fff', textAlign: 'left', marginBottom: 15 },
+          styles.cardItem, 
+          selectedCardId === card.stripePaymentMethodId && styles.selectedCardItem,
+          { flexDirection: 'row', alignItems: 'center' } // Ensure layout is horizontal
         ]}
       >
-        Select a Card
-      </Text>
-      <TouchableOpacity
-        style={styles.addNewCardButton}
-        onPress={handleAddNewCard}
-      >
-        <Text style={styles.addNewCardButtonText}>+ Add New Card</Text>
-      </TouchableOpacity>
-      {savedCards.map(card => (
         <TouchableOpacity
-          key={card.id}
-          style={[
-            styles.cardItem,
-            selectedCardId === card.id && styles.selectedCardItem,
-          ]}
-          onPress={() => {
-            setSelectedCardId(card.id);
-            setIsAddingNewCard(false);
-          }}
+          style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+          onPress={() => setSelectedCardId(card.stripePaymentMethodId)}
         >
-          <Text style={styles.cardTypeText}>{card?.name}</Text>
-          <Text style={styles.cardText}>**** **** **** {card?.last4}</Text>
-          <Text style={styles.cardTextSmall}>Exp: {card?.cardExpiry}</Text>
+          <View>
+            <Text style={styles.cardTypeText}>{card.brand.toUpperCase()}</Text>
+            <Text style={styles.cardText}>**** **** **** {card.last4}</Text>
+            {/* Warning for null customers (Debugging only) */}
+            {!card.stripeCustomerId && (
+              <Text style={{ color: 'orange', fontSize: 10 }}>Inactive (No Customer ID)</Text>
+            )}
+          </View>
+          {selectedCardId === card.stripePaymentMethodId && <View style={styles.checkCircle} />}
         </TouchableOpacity>
-      ))}
-    </View>
-  );
 
-  const NewCardForm = () => (
-    <View style={styles.inputGroup}>
-      <Text
-        style={[
-          styles.header,
-          { color: '#fff', textAlign: 'left', marginBottom: 15 },
-        ]}
-      >
-        Enter Card Details
-      </Text>
-      <Text style={styles.label}>Card Holder Name</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="John Doe"
-        placeholderTextColor="#999"
-        value={name}
-        onChangeText={setName}
-      />
-
-      <Text style={styles.label}>Card Number</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="4242 4242 4242 4242"
-        placeholderTextColor="#999"
-        keyboardType="numeric"
-        maxLength={19}
-        value={number}
-        onChangeText={text => {
-          const formatted = text
-            .replace(/\s?/g, '')
-            .replace(/(\d{4})/g, '$1 ')
-            .trim();
-          setNumber(formatted);
-        }}
-      />
-
-      <View style={styles.row}>
-        <View style={[styles.rowItem, { marginRight: 10 }]}>
-          <Text style={styles.label}>Expiry Date</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="MM/YY"
-            placeholderTextColor="#999"
-            keyboardType="numeric"
-            maxLength={5}
-            value={expiry}
-            onChangeText={text => {
-              let formatted = text.replace(/\D/g, '');
-              if (formatted.length >= 3) {
-                formatted = formatted.slice(0, 2) + '/' + formatted.slice(2, 4);
-              }
-              setExpiry(formatted);
-            }}
-          />
-        </View>
-
-        <View style={styles.rowItem}>
-          <Text style={styles.label}>CVV</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="123"
-            placeholderTextColor="#999"
-            keyboardType="numeric"
-            secureTextEntry
-            maxLength={4}
-            value={cvv}
-            onChangeText={setCvv}
-          />
-        </View>
+        {/* DELETE ICON / BUTTON */}
+        <TouchableOpacity 
+          onPress={() => handleDeleteCard(card)} 
+          style={{ marginLeft: 15, padding: 8, backgroundColor: '#fee2e2', borderRadius: 5 }}
+        >
+          <Text style={{ color: '#ef4444', fontSize: 11, fontWeight: 'bold' }}>DELETE</Text>
+        </TouchableOpacity>
       </View>
-      <Text
-        onPress={() => handleAddNewCard()}
-        style={{
-          color: '#fff',
-          fontSize: 12,
-          textAlign: 'center',
-          textDecorationLine: 'underline',
-        }}
-      >
-        + Add from Saved Cards
-      </Text>
-    </View>
-  );
+    ))}
+    
+    <TouchableOpacity style={styles.addNewCardButton} onPress={() => setIsAddingNewCard(true)}>
+      <Text style={styles.addNewCardButtonText}>+ Add Another Card</Text>
+    </TouchableOpacity>
+  </View>
+);
+
+
+  // const SavedCardList = () => (
+  //   <View>
+  //     <Text style={styles.sectionHeader}>Select Card to Use</Text>
+  //     {savedCards.map((card, index) => (
+  //       <TouchableOpacity
+  //         key={index}
+  //         style={[styles.cardItem, selectedCardId === card.stripePaymentMethodId && styles.selectedCardItem]}
+  //         onPress={() => setSelectedCardId(card.stripePaymentMethodId)}
+  //       >
+  //         <View>
+  //           <Text style={styles.cardTypeText}>{card.brand.toUpperCase()}</Text>
+  //           <Text style={styles.cardText}>**** **** **** {card.last4}</Text>
+  //         </View>
+  //         {selectedCardId === card.stripePaymentMethodId && <View style={styles.checkCircle} />}
+  //       </TouchableOpacity>
+  //     ))}
+  //     <TouchableOpacity style={styles.addNewCardButton} onPress={() => setIsAddingNewCard(true)}>
+  //       <Text style={styles.addNewCardButtonText}>+ Add Another Card</Text>
+  //     </TouchableOpacity>
+  //   </View>
+  // );
 
   return (
-    <ImageBackground
-      source={AppImages.ccc}
-      style={styles.bg}
-      resizeMode="cover"
-    >
-      <View style={{ backgroundColor: 'white', justifyContent: 'center' }}>
-        <ReserveHeader
-          containerStyle={{ top: -5, height: 55 }}
-          title={'Confirm Your Reservation'}
-          onBack={() => navigation.goBack()}
-        />
-      </View>
+    <ImageBackground source={AppImages.ccc} style={styles.bg} resizeMode="cover">
+      <View style={{backgroundColor: 'white'}}><ReserveHeader title={'Payment Details'} onBack={() => navigation.goBack()} /></View>
 
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.overlay}>
-          <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          >
-            <ScrollView
-              contentContainerStyle={styles.container}
-              showsVerticalScrollIndicator={false}
-            >
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
+            <ScrollView contentContainerStyle={styles.container}>
+              
               <View style={styles.policyBox}>
-                <Text style={[styles.header, { color: '#000' }]}>
-                  Cancellation Policy
-                </Text>
-                <Text style={styles.policyText}>
-                  Please confirm your reservation. Your card will not be
-                  charged. In the event of a late cancellation or no-show, the
-                  following fee may be applied.
-                </Text>
-                <View style={styles.feeBox}>
-                  <Text style={styles.feeTitle}>Cancellation Fee</Text>
-                  <Text style={styles.feeAmount}>
-                    £{NoOfGuest ? NoOfGuest * 12 : 12}
-                  </Text>
-                  <Text style={styles.feeNote}>(£12 per person)</Text>
-                  <Text style={styles.feeDetail}>
-                    £24 fee for a no-show or a cancellation done less than 24
-                    hours prior to the reservation.
-                  </Text>
+                <Text style={styles.policyTitle}>Cancellation Policy</Text>
+                <Text style={styles.policyText}>A fee of £12 per person applies for no-shows.</Text>
+              </View>
+
+              {isAddingNewCard ? (
+                <View style={styles.inputGroup}>
+                  <Text style={styles.sectionHeader}>Enter Secure Card Details</Text>
+                  <TextInput 
+                    style={styles.input} 
+                    placeholder="Card Holder Name" 
+                    placeholderTextColor="#999"
+                    value={name} 
+                    onChangeText={setName} 
+                  />
+                  
+                  {/* REAL STRIPE INPUT */}
+                  <CardField
+                    postalCodeEnabled={false}
+                    cardStyle={{
+                      backgroundColor: '#FFFFFF',
+                      textColor: '#000000',
+                      borderRadius: 8,
+                    }}
+                    style={styles.cardField}
+                    onCardChange={(details) => setCardDetails(details)}
+                  />
+                  
+                  <TouchableOpacity style={styles.button} onPress={handleAddCardToList} disabled={loading}>
+                    {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Save Card Securely</Text>}
+                  </TouchableOpacity>
+
+                  {savedCards.length > 0 && (
+                    <Text onPress={() => setIsAddingNewCard(false)} style={styles.linkText}>Back to Saved Cards</Text>
+                  )}
                 </View>
-              </View>
-              {/* Card Selection List */}
-              {savedCards.length > 0 && !isAddingNewCard && <SavedCardList />}
-
-              {/* Add New Card Button / Toggle */}
-              {/* {(savedCards.length > 0 && !isAddingNewCard) && (
-                <TouchableOpacity 
-                    style={styles.addNewCardButton} 
-                    onPress={handleAddNewCard}
-                >
-                    <Text style={styles.addNewCardButtonText}>+ Add New Card</Text>
-                </TouchableOpacity>
-              )} */}
-
-              {/* New Card Form (Shown if no saved cards or explicitly toggled) */}
-              {(isAddingNewCard || savedCards.length === 0) && <NewCardForm />}
-
-              {/* Cancellation Policy */}
-
-              {/* Checkbox and Button */}
-              {isAddingNewCard|| savedCards?.length > 0 &&
-              <View style={styles.checkboxContainer}>
-                <CheckBox
-                  value={accepted}
-                  onValueChange={setAccepted}
-                  tintColors={{ true: Colors.Muted_Gold, false: '#aaa' }}
-                />
-                <Text style={styles.checkboxLabel}>
-                  I accept the cancellation policy and agree to the terms.
-                </Text>
-              </View>
-}
- {isAddingNewCard||savedCards?.length > 0 &&
-              <TouchableOpacity
-                style={[
-                  styles.button,
-                  (!accepted || loading) && { opacity: 0.7 },
-                ]}
-                onPress={handleSubmit}
-                disabled={!accepted || loading}
-              >
-                <Text style={styles.buttonText}>
-                  {loading ? 'Submitting...' : 'Confirm Reservation'}
-                </Text>
-              </TouchableOpacity>}
+              ) : (
+                <View>
+                  <SavedCardList />
+                  <View style={styles.checkboxContainer}>
+                    <CheckBox value={accepted} onValueChange={setAccepted} tintColors={{ true: Colors.Muted_Gold }} />
+                    <Text style={styles.checkboxLabel}>I accept the cancellation terms for {NoOfGuest} guests.</Text>
+                  </View>
+                  <TouchableOpacity 
+                    style={[styles.button, !accepted && { opacity: 0.5 }]} 
+                    onPress={handleFinalConfirmation} 
+                    disabled={!accepted || loading}
+                  >
+                    {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Confirm Reservation</Text>}
+                  </TouchableOpacity>
+                </View>
+              )}
             </ScrollView>
           </KeyboardAvoidingView>
         </View>
       </TouchableWithoutFeedback>
+
       <CustomModal
         visible={bookingConfirmModal}
         onClose={() => setBookingConfirmModal(false)}
-        title=""
-        titleAlign="center"
         imageSource={require('../res/images/icons/confirm.png')}
-        description="Thank you for your booking! You can view all the details in your Profile → Bookings section."
-        buttonText="Share"
+        description="Booking Successful! Your card will only be charged in case of a no-show."
+        description1="Confirmed!"
+        buttonText="View Details"
         onButtonPress={() => {
-          setBookingConfirmModal(false),
-            navigation.navigate('BottomTabs', { screen: 'Account' });
+          setBookingConfirmModal(false);
+          setTimeout(() => navigation.navigate('BottomTabs', { screen: 'Account' }), 200);
         }}
         modalStyle={{ backgroundColor: '#fafafa' }}
-        titleStyle={{ color: '#e63946' }}
         buttonStyle={{ backgroundColor: Colors.Muted_Gold, marginBottom: 20 }}
         showCloseIcon={true}
-        description1="Booking Successful!"
       />
     </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  bg: {
-    flex: 1,
-  },
-  container: {
-    padding: 20,
-    paddingBottom: 60,
-  },
-  header: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#fffe',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 9999,
-  },
-  policyBox: {
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 20,
-  },
-  policyText: {
-    fontSize: 14,
-    color: '#444',
-    marginBottom: 10,
-  },
-  feeBox: {
-    backgroundColor: '#f9f1f5',
-    borderRadius: 10,
-    padding: 12,
-    alignItems: 'center',
-  },
-  feeTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#d71b6b',
-  },
-  feeAmount: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#d71b6b',
-    marginVertical: 4,
-  },
-  feeNote: {
-    fontSize: 13,
-    color: '#777',
-  },
-  feeDetail: {
-    fontSize: 13,
-    color: '#444',
-    textAlign: 'center',
-    marginTop: 6,
-  },
-  inputGroup: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 13,
-    color: '#fff',
-    marginBottom: 5,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: Platform.OS === 'ios' ? 12 : 10,
-    marginBottom: 12,
-    backgroundColor: '#fff',
-    fontSize: 15,
-    color: '#000',
-  },
-  row: {
-    flexDirection: 'row',
-  },
-  rowItem: {
-    flex: 1,
-  },
-  checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 25,
-  },
-  checkboxLabel: {
-    flex: 1,
-    fontSize: 13.5,
-    color: '#fff',
-    lineHeight: 20,
-    marginTop: 5,
-  },
-  button: {
-    backgroundColor: Colors.Muted_Gold,
-    paddingVertical: 14,
-    borderRadius: 30,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 17,
-    fontWeight: '600',
-  },
-
-  // --- New Styles for Card Selection ---
-  cardListContainer: {
-    marginBottom: 20,
-  },
-  cardItem: {
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  selectedCardItem: {
-    borderColor: Colors.GREEN,
-    backgroundColor: 'rgba(255, 255, 255, 1)',
-  },
-  cardText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    flex: 2,
-    textAlign: 'center',
-  },
-  cardTypeText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: Colors.Muted_Gold,
-    flex: 1,
-  },
-  cardTextSmall: {
-    fontSize: 12,
-    color: '#777',
-    flex: 1,
-    textAlign: 'right',
-  },
-  addNewCardButton: {
-    backgroundColor: 'transparent',
-    paddingVertical: 10,
-    borderWidth: 1,
-    borderColor: '#fff',
-    borderRadius: 8,
-    marginTop: 5,
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  addNewCardButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '500',
-  },
+  bg: { flex: 1 },
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)' },
+  container: { padding: 20 },
+  policyBox: { backgroundColor: '#fff', borderRadius: 10, padding: 15, marginBottom: 20 },
+  policyTitle: { fontWeight: 'bold', fontSize: 16, color: '#333' },
+  policyText: { fontSize: 13, color: '#666' },
+  sectionHeader: { color: '#fff', fontSize: 18, fontWeight: 'bold', marginBottom: 15 },
+  cardItem: { backgroundColor: '#fff', padding: 15, borderRadius: 10, marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  selectedCardItem: { borderWidth: 2, borderColor: Colors.Muted_Gold },
+  cardTypeText: { color: Colors.Muted_Gold, fontWeight: 'bold', fontSize: 12 },
+  cardText: { fontSize: 16, color: '#333' },
+  checkCircle: { width: 20, height: 20, borderRadius: 10, backgroundColor: Colors.Muted_Gold },
+  addNewCardButton: { padding: 10, alignItems: 'center' },
+  addNewCardButtonText: { color: '#fff', textDecorationLine: 'underline' },
+  input: { backgroundColor: '#fff', borderRadius: 8, padding: 12, marginBottom: 10, color: '#000' },
+  cardField: { width: '100%', height: 50, marginVertical: 10 },
+  checkboxContainer: { flexDirection: 'row', alignItems: 'center', marginVertical: 20 },
+  checkboxLabel: { color: '#fff', marginLeft: 10, fontSize: 13, flex: 1 },
+  button: { backgroundColor: Colors.Muted_Gold, padding: 16, borderRadius: 30, alignItems: 'center' },
+  buttonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  linkText: { color: '#fff', textAlign: 'center', marginTop: 15, textDecorationLine: 'underline' }
 });
 
 export default CardDetailsScreen;

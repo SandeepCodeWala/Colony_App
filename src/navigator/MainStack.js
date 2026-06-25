@@ -23,13 +23,14 @@ import MemberScreen from '../screens/MemberScreen'
 import BookEventScreen from '../screens/BookEventScreen'
 import ReservationHistory from '../screens/ReservationHistory'
 import MyStatement from '../screens/MyStatement'
-import MyBenefits from "../screens/MyBenefits"
-import RegisteredOffers from "../screens/RegisteredOffers"
+import LoyaltyPass from '../screens/LoyaltyPass'
+import { useSelector } from 'react-redux';
 
-
+ 
 const Stack = createNativeStackNavigator();
 function MainStack() {
   const [enableSplash, setEnableSplash] = useState(true);
+  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
  
   const timerRef = useRef(null);
   useEffect(() => {
@@ -42,8 +43,11 @@ function MainStack() {
       }
     };
   }, []);
+
+  const initialRoute = isLoggedIn ? 'BottomTabs' : 'Login';
+
   return (
-    <Stack.Navigator initialRouteName='Splash' screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName={enableSplash ? 'Splash' : initialRoute} screenOptions={{ headerShown: false }}>
       {enableSplash && <Stack.Screen  name="Splash" component={Splash} />}
       <Stack.Screen name="BottomTabs" component={BottomTabs} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
@@ -51,6 +55,7 @@ function MainStack() {
       <Stack.Screen name="HelpSupport" component={HelpSupport} />
       <Stack.Screen name="ManageConsents" component={ManageConsents} />
       <Stack.Screen name="MyStatement" component={MyStatement} />
+       <Stack.Screen name="LoyaltyPass" component={LoyaltyPass} />
     
       {/* <Stack.Screen name="RegisteredOffice" component={RegisteredOffice} /> */}
       <Stack.Screen name="TermsConditions" component={TermsConditions} />

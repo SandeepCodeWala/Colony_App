@@ -12,9 +12,15 @@ import rightic from '../res/images/icons/Right.png'
 import leftic from '../res/images/icons/Left.png';
 import bell from '../res/images/icons/Bell.png';
 import { AppImages, Colors, Fonts } from '../res';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { logout } from '../redux/slices/authSlice'; // Adjust this path to your authSlice file
+import { postApi } from '../utils/api';
 
 
-const ProfileScreen = ({ navigation }) => {
+const ProfileScreen = () => {
+
+
   const menuItems = [
     { title: 'Edit Profile',
       screen: 'ChangePassword'
@@ -46,6 +52,52 @@ const ProfileScreen = ({ navigation }) => {
     { title: 'Help & Support' },
   ];
 
+
+
+
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+  const [isLoading, setIsLoading] = useState(false);
+const token = useSelector((state) => state.auth.token);
+
+
+const handleLogout = async () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to log out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Logout', 
+          style: 'destructive',
+          onPress: async () => {
+            setIsLoading(true);
+
+            try {
+              // STEP 1: Call Backend
+              // We pass an empty object {} because the backend 
+              // identifies the user via the Bearer Token in headers.
+              const response = await postApi('logout', {}, token); 
+
+              // STEP 2: Local Cleanup
+              // We dispatch logout to clear Redux and redirect the user
+              dispatch(logout());
+
+              if (response?.success) {
+                console.log("Logged out from server successfully");
+              }
+            } catch (error) {
+              console.error("Logout API failed:", error);
+              // Force local logout even if the network fails
+              dispatch(logout()); 
+            } finally {
+              setIsLoading(false);
+            }
+          } 
+        },
+      ]
+    );
+  };
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -91,9 +143,23 @@ const ProfileScreen = ({ navigation }) => {
         ))}
 
         {/* Logout Button */}
-        <TouchableOpacity style={styles.logoutButton}>
+        {/* <TouchableOpacity style={styles.logoutButton}>
           <Text style={styles.logoutText}>Logout</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+
+
+
+        <TouchableOpacity 
+        style={styles.logoutButton} 
+        onPress={handleLogout}
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <ActivityIndicator />
+        ) : (
+          <Text style={styles.logoutText}>Logout=====</Text>
+        )}
+      </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -198,7 +264,7 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   logoutText: {
-    color: 'red',
+   
     fontSize: 16,
     fontWeight: '500',
   },

@@ -17,6 +17,7 @@
 		379F12500F084B8B9291D1D4 /* InstrumentSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2DD2ECF756BB4997A1B046CA /* InstrumentSans-SemiBold.ttf */; };
 		3B33739D2BFC4A5E83D35B10 /* Montserrat-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B784F19AF97647E3927DD6D5 /* Montserrat-ExtraLightItalic.ttf */; };
 		3C64489C5EBE4CA0ADE329D8 /* InstrumentSans-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6299E6BB96F84304B288CE2F /* InstrumentSans-SemiBoldItalic.ttf */; };
+		3E3C51181E0F64B66B27ACB4 /* libPods-colony_frontend.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D5A9D63B1FF1094A17DA4F67 /* libPods-colony_frontend.a */; };
 		45F8AE793F314D889EE3D52F /* InstrumentSans_Condensed-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2E83C38C624E49818E2AE5C7 /* InstrumentSans_Condensed-BoldItalic.ttf */; };
 		480F13CDD42A46DBB855783D /* InstrumentSans_Condensed-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AD9F8699D3DA4F729AD648C2 /* InstrumentSans_Condensed-MediumItalic.ttf */; };
 		48DF4742562D4008A3C95238 /* InstrumentSans_SemiCondensed-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 180828DB51EF4089B6793A26 /* InstrumentSans_SemiCondensed-SemiBold.ttf */; };
@@ -24,7 +25,6 @@
 		53EBB6B38A79441D92F6D46C /* Montserrat-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5E8F5F8C9713428A807C814F /* Montserrat-MediumItalic.ttf */; };
 		54BDF450FADC4C99B2722807 /* InstrumentSans_SemiCondensed-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5CA0860CCD7149199A6121A4 /* InstrumentSans_SemiCondensed-Regular.ttf */; };
 		5FBE2461CEBD441EBB6688C2 /* InstrumentSans_SemiCondensed-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00E3F75DB42E41FD9F6F9C1C /* InstrumentSans_SemiCondensed-BoldItalic.ttf */; };
-		61244045A36FDE3BFC4A0298 /* libPods-colony_frontend.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD7DF2E5BDE533CCAD19345F /* libPods-colony_frontend.a */; };
 		6EB3589A39414E25AD0D82A5 /* Montserrat-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EDCAEC106D1D4AE38219621C /* Montserrat-ThinItalic.ttf */; };
 		6EFA97EAFD6B4256B4BA7F6C /* InstrumentSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A5C12E009A7846A8AA41B4DC /* InstrumentSans-Bold.ttf */; };
 		7614A8EE2ED96BE900FA84AE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
@@ -59,11 +59,11 @@
 		2E83C38C624E49818E2AE5C7 /* InstrumentSans_Condensed-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_Condensed-BoldItalic.ttf"; path = "../assets/fonts/InstrumentSans_Condensed-BoldItalic.ttf"; sourceTree = "<group>"; };
 		3981BF5E8399459496351627 /* InstrumentSans_Condensed-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_Condensed-Regular.ttf"; path = "../assets/fonts/InstrumentSans_Condensed-Regular.ttf"; sourceTree = "<group>"; };
 		3F99433C6BA24997912E08F2 /* InstrumentSans-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans-MediumItalic.ttf"; path = "../assets/fonts/InstrumentSans-MediumItalic.ttf"; sourceTree = "<group>"; };
-		507C8EF5AD5A9DDD59DF61E0 /* Pods-colony_frontend.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-colony_frontend.debug.xcconfig"; path = "Target Support Files/Pods-colony_frontend/Pods-colony_frontend.debug.xcconfig"; sourceTree = "<group>"; };
 		5AE1D120941047338315AFE6 /* InstrumentSans_SemiCondensed-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_SemiCondensed-Italic.ttf"; path = "../assets/fonts/InstrumentSans_SemiCondensed-Italic.ttf"; sourceTree = "<group>"; };
 		5CA0860CCD7149199A6121A4 /* InstrumentSans_SemiCondensed-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_SemiCondensed-Regular.ttf"; path = "../assets/fonts/InstrumentSans_SemiCondensed-Regular.ttf"; sourceTree = "<group>"; };
 		5E8F5F8C9713428A807C814F /* Montserrat-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-MediumItalic.ttf"; path = "../assets/fonts/Montserrat-MediumItalic.ttf"; sourceTree = "<group>"; };
 		6299E6BB96F84304B288CE2F /* InstrumentSans-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans-SemiBoldItalic.ttf"; path = "../assets/fonts/InstrumentSans-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
+		6D7B158C846C9F81642DC9BA /* Pods-colony_frontend.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-colony_frontend.debug.xcconfig"; path = "Target Support Files/Pods-colony_frontend/Pods-colony_frontend.debug.xcconfig"; sourceTree = "<group>"; };
 		727D16BA353949038C290B0C /* Montserrat-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-ExtraBoldItalic.ttf"; path = "../assets/fonts/Montserrat-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = colony_frontend/AppDelegate.swift; sourceTree = "<group>"; };
 		7ABE170B26CE4E8AA9B840B1 /* Montserrat-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-ExtraLight.ttf"; path = "../assets/fonts/Montserrat-ExtraLight.ttf"; sourceTree = "<group>"; };
@@ -73,7 +73,6 @@
 		8667A42576F142FEA7CE9E67 /* InstrumentSans_SemiCondensed-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_SemiCondensed-SemiBoldItalic.ttf"; path = "../assets/fonts/InstrumentSans_SemiCondensed-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		8C0F76DC35CD4A28805EF453 /* InstrumentSans_Condensed-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_Condensed-SemiBoldItalic.ttf"; path = "../assets/fonts/InstrumentSans_Condensed-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		8E1468B24AA44C3BA68586B0 /* InstrumentSans_Condensed-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_Condensed-SemiBold.ttf"; path = "../assets/fonts/InstrumentSans_Condensed-SemiBold.ttf"; sourceTree = "<group>"; };
-		8EBAAB983F3C9B62FEFCE132 /* Pods-colony_frontend.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-colony_frontend.release.xcconfig"; path = "Target Support Files/Pods-colony_frontend/Pods-colony_frontend.release.xcconfig"; sourceTree = "<group>"; };
 		8F45AF02E1794DAA9647949F /* Montserrat-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Light.ttf"; path = "../assets/fonts/Montserrat-Light.ttf"; sourceTree = "<group>"; };
 		9CA5809C944D4743880DE899 /* InstrumentSans-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans-BoldItalic.ttf"; path = "../assets/fonts/InstrumentSans-BoldItalic.ttf"; sourceTree = "<group>"; };
 		9DFB8F272D6A40E987E3084A /* Montserrat-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Bold.ttf"; path = "../assets/fonts/Montserrat-Bold.ttf"; sourceTree = "<group>"; };
@@ -87,8 +86,9 @@
 		B9AA15B93E8F4434988F04BE /* InstrumentSans_Condensed-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_Condensed-Bold.ttf"; path = "../assets/fonts/InstrumentSans_Condensed-Bold.ttf"; sourceTree = "<group>"; };
 		C253BBB0C98444789AD5CD59 /* InstrumentSans_SemiCondensed-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_SemiCondensed-Medium.ttf"; path = "../assets/fonts/InstrumentSans_SemiCondensed-Medium.ttf"; sourceTree = "<group>"; };
 		C2CBC7F065DF42C9ACA2BE39 /* InstrumentSans_SemiCondensed-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_SemiCondensed-Bold.ttf"; path = "../assets/fonts/InstrumentSans_SemiCondensed-Bold.ttf"; sourceTree = "<group>"; };
-		CD7DF2E5BDE533CCAD19345F /* libPods-colony_frontend.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-colony_frontend.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D5A9D63B1FF1094A17DA4F67 /* libPods-colony_frontend.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-colony_frontend.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E34B49C048CE4B70B6F8655F /* Montserrat-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-BlackItalic.ttf"; path = "../assets/fonts/Montserrat-BlackItalic.ttf"; sourceTree = "<group>"; };
+		E7527045D77AE5121DF01147 /* Pods-colony_frontend.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-colony_frontend.release.xcconfig"; path = "Target Support Files/Pods-colony_frontend/Pods-colony_frontend.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		EDCAEC106D1D4AE38219621C /* Montserrat-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-ThinItalic.ttf"; path = "../assets/fonts/Montserrat-ThinItalic.ttf"; sourceTree = "<group>"; };
 		F19B5493CB034DF4AC94622B /* InstrumentSans-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans-Regular.ttf"; path = "../assets/fonts/InstrumentSans-Regular.ttf"; sourceTree = "<group>"; };
@@ -102,7 +102,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				61244045A36FDE3BFC4A0298 /* libPods-colony_frontend.a in Frameworks */,
+				3E3C51181E0F64B66B27ACB4 /* libPods-colony_frontend.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,7 +125,7 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				CD7DF2E5BDE533CCAD19345F /* libPods-colony_frontend.a */,
+				D5A9D63B1FF1094A17DA4F67 /* libPods-colony_frontend.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -163,8 +163,8 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				507C8EF5AD5A9DDD59DF61E0 /* Pods-colony_frontend.debug.xcconfig */,
-				8EBAAB983F3C9B62FEFCE132 /* Pods-colony_frontend.release.xcconfig */,
+				6D7B158C846C9F81642DC9BA /* Pods-colony_frontend.debug.xcconfig */,
+				E7527045D77AE5121DF01147 /* Pods-colony_frontend.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -225,13 +225,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "colony_frontend" */;
 			buildPhases = (
-				A55E36124A711EB930DA8920 /* [CP] Check Pods Manifest.lock */,
+				B7417F35E0C34FA22039C143 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				235F218C454F2504E4DC3CA6 /* [CP] Copy Pods Resources */,
-				6057AF797CC8C33B48981871 /* [CP] Embed Pods Frameworks */,
+				657D51AB2BB19F199BE9CA22 /* [CP] Embed Pods Frameworks */,
+				32D2C217873A5EE4E4BA6383 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -331,7 +331,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		235F218C454F2504E4DC3CA6 /* [CP] Copy Pods Resources */ = {
+		32D2C217873A5EE4E4BA6383 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -348,7 +348,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-colony_frontend/Pods-colony_frontend-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		6057AF797CC8C33B48981871 /* [CP] Embed Pods Frameworks */ = {
+		657D51AB2BB19F199BE9CA22 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -365,7 +365,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-colony_frontend/Pods-colony_frontend-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A55E36124A711EB930DA8920 /* [CP] Check Pods Manifest.lock */ = {
+		B7417F35E0C34FA22039C143 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -403,13 +403,17 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 507C8EF5AD5A9DDD59DF61E0 /* Pods-colony_frontend.debug.xcconfig */;
+			baseConfigurationReference = 6D7B158C846C9F81642DC9BA /* Pods-colony_frontend.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = 3J4R5RRCHP;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = colony_frontend/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -421,8 +425,9 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.colonyapp;
 				PRODUCT_NAME = colony_frontend;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -431,12 +436,16 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8EBAAB983F3C9B62FEFCE132 /* Pods-colony_frontend.release.xcconfig */;
+			baseConfigurationReference = E7527045D77AE5121DF01147 /* Pods-colony_frontend.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = DMB977G2NP;
 				INFOPLIST_FILE = colony_frontend/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -448,8 +457,9 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.colonyapp;
 				PRODUCT_NAME = colony_frontend;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};

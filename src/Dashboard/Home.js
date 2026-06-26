@@ -175,8 +175,8 @@ const styles = StyleSheet.create({
     height,
   },
   image: {
-    width: 400,
-    height: 400,
+    width,
+    height,
     resizeMode: 'cover',
   },
   overlay: {

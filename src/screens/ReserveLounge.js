@@ -143,7 +143,7 @@ export default ReserveLoungeScreen1;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.WHITE,
+    backgroundColor: '#FFF9EF',
   },
   header: {
     flexDirection: 'row',

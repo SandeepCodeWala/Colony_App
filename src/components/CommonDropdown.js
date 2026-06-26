@@ -7,24 +7,28 @@ const CommonDropdown = ({
   data,
   value,
   onChange,
-  placeholder = 'Select option',
+  placeholder = '',
 }) => {
   const [isFocus, setIsFocus] = useState(false);
-
-  const isLabelActive = isFocus || !!value;
+  const isLabelActive = isFocus || value;
 
   return (
     <View style={styles.container}>
       {/* Floating Label */}
       {label && (
-        <Text style={[styles.label, isLabelActive && styles.labelActive]}>
+        <Text
+          style={[
+            styles.label,
+            isLabelActive && styles.labelActive,
+          ]}
+        >
           {label}
         </Text>
       )}
 
       {/* Dropdown */}
       <Dropdown
-        style={[styles.dropdown, isLabelActive && styles.dropdownActive]}
+        style={styles.dropdown}
         containerStyle={styles.dropdownContainer}
         placeholderStyle={styles.placeholder}
         selectedTextStyle={styles.selectedText}
@@ -32,72 +36,61 @@ const CommonDropdown = ({
         labelField="label"
         valueField="value"
         value={value}
-        placeholder={isLabelActive ? '' : placeholder}
+        placeholder={!isLabelActive ? placeholder : ''}
         onFocus={() => setIsFocus(true)}
         onBlur={() => setIsFocus(false)}
         onChange={item => {
           onChange(item.value);
           setIsFocus(false);
         }}
+        
       />
     </View>
   );
 };
 
 export default CommonDropdown;
-
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 16,
+    // marginTop: 24,
     position: 'relative',
-    height: 68, // Increased height to prevent overlap
   },
 
   label: {
     position: 'absolute',
-    left: 4,
-    top: 22,
-    fontSize: 15,
-    color: '#666',
-    zIndex: 2,
-    backgroundColor: 'transparent',
+    left: 0,
+    top: 5,
+    fontSize: 14,
+    color: '#5a5959',
   },
 
   labelActive: {
-    top: 4,
+    top: -8,
     fontSize: 12,
-    color: '#8C6B4B', // Luxury gold accent (matches your new theme)
-    fontWeight: '600',
+    color: '#000',
+    letterSpacing: 1,
   },
 
   dropdown: {
-    height: 52,
-    borderBottomWidth: 1.5,
-    borderBottomColor: '#CCCCCC',
-    paddingHorizontal: 4,
-    paddingTop: 22, // Important: Space for floating label
-    backgroundColor: 'transparent',
-  },
-
-  dropdownActive: {
-    borderBottomColor: '#000', // Dark border when focused/selected
+    height: 42,
+    borderBottomWidth: 1,
+    borderBottomColor: '#000',
+    paddingHorizontal: 0,
   },
 
   placeholder: {
     fontSize: 16,
-    color: '#6d6c6c',
+    color: '#000',
   },
 
   selectedText: {
     fontSize: 16,
-    color: '#1A1A1A',
+    color: '#000',
   },
 
   dropdownContainer: {
-    borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ddd',
-    marginTop: 4,
-    backgroundColor: '#fff',
+    borderColor: '#dcdcdc',
+    // marginTop: 8,
   },
 });

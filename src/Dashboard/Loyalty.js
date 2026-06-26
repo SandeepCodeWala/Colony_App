@@ -1,228 +1,3 @@
-// import React, { useCallback, useState } from 'react';
-// import { StyleSheet, View, Text, ImageBackground } from 'react-native';
-// import { AppImages, Fonts, Colors } from '../res';
-// import AppButton from '../components/AppButton';
-// import {
-//   createStaticNavigation,
-//   useFocusEffect,
-//   useNavigation,
-// } from '@react-navigation/native';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// import MemberScreen from '../screens/MemberScreen';
-// export default function Loyalty(props) {
-//   const navigation = useNavigation();
-//   const [userName, setUserName] = useState('');
-
-//   const fetchUser = async () => {
-//     try {
-//       const userName = await AsyncStorage.getItem('name');
-//       const membershipNum = await AsyncStorage.getItem('membershipNumber');
-
-//       console.log('🟢 Fetched user:', { userName, membershipNum });
-
-//       // ✅ Check if userName is missing or empty
-//       if (!userName || userName === 'null' || userName === 'undefined') {
-//         console.log('🔴 No user found, navigating to Loyalty screen...');
-//       } else {
-//         setUserName(userName);
-//         console.log('✅ User is logged in');
-//       }
-//     } catch (error) {
-//       console.log('❌ Error fetching user:', error);
-//     }
-//   };
-
-//   useFocusEffect(
-//     useCallback(() => {
-//       fetchUser();
-//     }, [userName]),
-//   );
-
-//   return (
-//     <>
-//       {!userName || userName === 'null' || userName === 'undefined' ? (
-//          <>
-//           <ImageBackground source={AppImages.loginBg} style={styles.container}>
-//             <View style={styles.header}>
-//               <Text style={styles.colony}>COLONY</Text>
-//               <AppButton
-//                 text={'LOGIN'}
-//                 onPress={() => navigation.navigate('Login')}
-//                 style={{
-//                   backgroundColor: Colors.WHITE,
-//                   width: 250,
-//                   marginTop: 40,
-//                 }}
-//                 textStyle={{
-//                   color: Colors.BLACK,
-//                   fontFamily: Fonts.regular,
-//                   letterSpacing: 2,
-//                 }}
-//               />
-//               <Text style={styles.colony1}>OR</Text>
-//               <AppButton
-//                 text={'JOIN NOW'}
-//                 onPress={() => navigation.navigate('Signup')}
-//                 style={{
-//                   backgroundColor: Colors.WHITE,
-//                   width: 250,
-//                   marginTop: 20,
-//                 }}
-//                 textStyle={{
-//                   color: Colors.BLACK,
-//                   fontFamily: Fonts.regular,
-//                   letterSpacing: 2,
-//                 }}
-//               />
-//               <Text style={styles.colony1}>ABOUT COLONY</Text>
-//             </View>
-//           </ImageBackground>
-//         </>
-
-//       ) : (
-//         <MemberScreen />
-//       )}
-//     </>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-//   header: {
-//     // You don’t really need extra alignment here now
-//   },
-//   colony: {
-//     fontSize: 50,
-//     fontFamily: Fonts.SemiBold,
-//     color: Colors.WHITE,
-//     textAlign: 'center',
-//   },
-//   colony1: {
-//     fontSize: 15,
-//     fontFamily: Fonts.SemiBold,
-//     color: Colors.WHITE,
-//     textAlign: 'center',
-//     marginTop: 20,
-//   },
-// });
-/////////////////////QR CODE CORRECT
-
-// import React from 'react';
-// import { StyleSheet, View, Text, ImageBackground } from 'react-native';
-// import { AppImages, Fonts, Colors } from '../res';
-// import AppButton from '../components/AppButton';
-// import { useNavigation } from '@react-navigation/native';
-// import { useSelector, useDispatch } from 'react-redux'; // Redux Hooks
-// import QRCode from 'react-native-qrcode-svg';
-
-// export default function Loyalty(props) {
-//   const navigation = useNavigation();
-//   const dispatch = useDispatch();
-
-//   // --- REDUX STATE ---
-//   // Taking reference from your authSlice structure
-//   const token = useSelector(state => state.auth.token);
-//   // const membershipNumber = useSelector(state => state.auth.membershipNumber);
-
-//   // // Assuming your user object (name/phone) is also in auth state
-//   // // If they are nested, adjust the path: state.auth.user.name
-//   // const name = useSelector(state => state.auth.name || 'Member');
-//   // const phone = useSelector(state => state.auth.phone || '');
-
-//   const name = useSelector(state => state.auth.user?.name || 'Member');
-// const phone = useSelector(state => state.auth.user?.phone || '');
-// const membershipNumber = useSelector(state => state.auth.membershipNumber);
-
-// console.log(name,"qr name")
-
-//   return (
-//     <View style={{ flex: 1 }}>
-
-//       {token ? (
-//         // --- CASE 1: USER IS LOGGED IN (TOKEN EXISTS) ---
-//         <View style={styles.qrContainer}>
-//           <Text style={styles.headerText}>COLONY LOYALTY PASS</Text>
-//         <Text style={styles.headerText}>Loyalty Points</Text>
-//  <Text style={styles.headerText}>200</Text>
-
-//           <View style={styles.qrBox}>
-
-//             <QRCode
-//               // Referencing name and phone as requested
-//               value={JSON.stringify({
-//                 name: name,
-//                 phone: phone,
-//                 membership: membershipNumber
-//               })}
-//               size={220}
-//               color={Colors.BLACK}
-//               backgroundColor={Colors.WHITE}
-//             />
-//           </View>
-
-//         <View style={styles.infoBox}>
-//   {/* <Text style={styles.nameText}>{name}</Text>
-//   {/* Show phone only if it exists in Redux */}
-//   {/* {phone ? <Text style={styles.phoneText}>{phone}</Text> : null}
-//   // <Text style={styles.idText}>Member ID: {membershipNumber}</Text> */}
-// </View>
-//         </View>
-//       ) : (
-//         // --- CASE 2: USER IS GUEST (NO TOKEN) ---
-//         <ImageBackground source={AppImages.loginBg} style={styles.container}>
-//           <View style={styles.header}>
-//             <Text style={styles.colony}>COLONY</Text>
-//             <AppButton
-//               text={'LOGIN'}
-//               onPress={() => navigation.navigate('Login')}
-//               style={styles.authBtn}
-//               textStyle={styles.authBtnText}
-//             />
-//             <Text style={styles.colony1}>OR</Text>
-//             <AppButton
-//               text={'JOIN NOW'}
-//               onPress={() => navigation.navigate('Signup')}
-//               style={styles.authBtn}
-//               textStyle={styles.authBtnText}
-//             />
-//             <Text style={styles.colony1}>ABOUT COLONY</Text>
-//           </View>
-//         </ImageBackground>
-//       )}
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-//   colony: { fontSize: 50, fontFamily: Fonts.SemiBold, color: Colors.WHITE, textAlign: 'center' },
-//   colony1: { fontSize: 15, fontFamily: Fonts.SemiBold, color: Colors.WHITE, textAlign: 'center', marginTop: 20 },
-//   authBtn: { backgroundColor: Colors.WHITE, width: 250, marginTop: 20 },
-//   authBtnText: { color: Colors.BLACK, fontFamily: Fonts.regular, letterSpacing: 2 },
-
-//   // QR View Styles
-//   qrContainer: { flex: 1, backgroundColor: Colors.WHITE, alignItems: 'center', justifyContent: 'center' },
-//   headerText: { fontFamily: Fonts.SemiBold, fontSize: 18, color: Colors.BLACK, marginBottom: 40, letterSpacing: 1 },
-//   qrBox: {
-//     padding: 20,
-//     backgroundColor: Colors.WHITE,
-//     borderRadius: 20,
-//     elevation: 8,
-//     shadowColor: '#000',
-//     shadowOffset: { width: 0, height: 4 },
-//     shadowOpacity: 0.3,
-//     shadowRadius: 4.65,
-//   },
-//   infoBox: { marginTop: 30, alignItems: 'center' },
-//   nameText: { fontFamily: Fonts.SemiBold, fontSize: 24, color: Colors.BLACK },
-//   phoneText: { fontFamily: Fonts.regular, fontSize: 16, color: Colors.DARK_GREY, marginTop: 5 },
-//   idText: { fontFamily: Fonts.SemiBold, fontSize: 14, color: Colors.BLACK, marginTop: 10, opacity: 0.6 }
-// });
-
 import React from 'react';
 import {
   StyleSheet,
@@ -235,8 +10,9 @@ import {
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-import { Fonts, Colors, AppImages } from '../res';
+import { Fonts, AppImages } from '../res';
 import AppButton from '../components/AppButton';
+import PremiumTheme from '../res/PremiumTheme';
 
 export default function Loyalty() {
   const navigation = useNavigation();
@@ -246,60 +22,36 @@ export default function Loyalty() {
   if (!token) {
     return (
       <ImageBackground source={AppImages.loginBg} style={styles.guestContainer}>
-        <Text style={styles.colonyTitle}>COLONY22</Text>
-        <AppButton
-          text={'LOGIN'}
-          onPress={() => navigation.navigate('Login')}
-          style={styles.authBtn}
-        />
-        <AppButton
-          text={'JOIN NOW'}
-          onPress={() => navigation.navigate('Signup')}
-          style={styles.authBtn}
-        />
+        <View style={styles.guestCard}>
+          <Text style={styles.guestKicker}>CRAV LOYALTY</Text>
+          <Text style={styles.colonyTitle}>Fresh rewards for every bite.</Text>
+          <AppButton text={'LOGIN'} onPress={() => navigation.navigate('Login')} style={styles.authBtn} />
+          <AppButton text={'JOIN NOW'} onPress={() => navigation.navigate('Signup')} style={styles.authBtnAlt} textStyle={styles.authBtnAltText} />
+        </View>
       </ImageBackground>
     );
   }
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* --- PROFESSIONAL COLONY CARD --- */}
-      <TouchableOpacity
-        activeOpacity={0.9}
-        style={styles.clubCard}
-        onPress={() => navigation.navigate('LoyaltyPass')}
-      >
-        {/* Subtle Logo Watermark in background */}
-        <Image
-          source={AppImages.logo}
-          style={styles.cardWatermark}
-          resizeMode="contain"
-        />
-
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
+      <Text style={styles.kicker}>CRAV CLUB</Text>
+      <Text style={styles.heading}>Your loyalty, served premium.</Text>
+      <TouchableOpacity activeOpacity={0.9} style={styles.clubCard} onPress={() => navigation.navigate('LoyaltyPass')}>
+        <Image source={AppImages.logo} style={styles.cardWatermark} resizeMode="contain" />
         <View style={styles.cardTopRow}>
-          <View>
-            {/* <Image source={AppImages.logo} style={styles.miniLogo} resizeMode="contain" /> */}
-            <Text style={styles.cardType}>CLUBCARD</Text>
-          </View>
-          {/* <View style={styles.tierBadge}>
-             <Text style={styles.tierText}>GOLD</Text>
-          </View> */}
+          <Text style={styles.cardType}>CLUBCARD</Text>
+          <View style={styles.tierBadge}><Text style={styles.tierText}>GOLD</Text></View>
         </View>
-
-        <View style={styles.tapActionRow}>
-          <View>
-            <Text style={styles.tapText}>Tap to scan</Text>
-          </View>
+        <View>
+          <Text style={styles.tapText}>Tap to scan</Text>
+          <Text style={styles.tapSub}>Collect rewards on every visit</Text>
         </View>
       </TouchableOpacity>
 
-      {/* --- STATS SECTION --- */}
       <View style={styles.statsContainer}>
         <View style={styles.statBox}>
           <Text style={styles.statLabel}>Vouchers</Text>
-          <Text style={styles.statValue}>
-            £{(loyaltyPoints / 10).toFixed(2)}
-          </Text>
+          <Text style={styles.statValue}>£{(loyaltyPoints / 10).toFixed(2)}</Text>
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statBox}>
@@ -308,13 +60,12 @@ export default function Loyalty() {
         </View>
       </View>
 
-      {/* --- POINTS PROGRESS --- */}
       <View style={styles.pointsWrapper}>
-        <View style={styles.pointsHeader}>
+        <View>
           <Text style={styles.pointsNumber}>{loyaltyPoints}</Text>
           <Text style={styles.pointsLabelText}>Total Points</Text>
         </View>
-        <TouchableOpacity style={styles.activityBtn}>
+        <TouchableOpacity style={styles.activityBtn} activeOpacity={0.75}>
           <Text style={styles.activityText}>View Activity ❯</Text>
         </TouchableOpacity>
       </View>
@@ -323,113 +74,56 @@ export default function Loyalty() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8F9FA' },
-  // Card Design
+  container: { flex: 1, backgroundColor: PremiumTheme.paper },
+  content: { padding: 18, paddingBottom: 36 },
+  kicker: { color: PremiumTheme.gold, fontSize: 11, letterSpacing: 2.4, fontFamily: Fonts.instrumentSansMedium, marginTop: 18 },
+  heading: { color: PremiumTheme.ink, fontSize: 34, lineHeight: 39, fontFamily: Fonts.instrumentSansMedium, marginTop: 6, marginBottom: 18 },
   clubCard: {
-    backgroundColor: '#B2975E',
-    height: 230,
-    margin: 20,
-    borderRadius: 24,
+    backgroundColor: PremiumTheme.cream,
+    minHeight: 230,
+    borderRadius: 30,
     padding: 24,
     justifyContent: 'space-between',
-    overflow: 'hidden', // Clips the watermark logo
-    elevation: 12,
-    shadowColor: '#B2975E',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: PremiumTheme.border,
+    shadowColor: PremiumTheme.shadow,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.14,
+    shadowRadius: 18,
+    elevation: 6,
   },
-  cardWatermark: {
-    position: 'absolute',
-    right: 100,
-    bottom: 40,
-    width: 150,
-    height: 150,
-    opacity: 0.3, // Very faint logo
-    tintColor: '#FFF',
-    // paddingTop:100
-  },
-  cardTopRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 20,
-  },
-  miniLogo: { width: 90, height: 40, tintColor: '#FFF' },
-  cardType: {
-    color: '#FFF',
-    fontSize: 18,
-    fontWeight: '350',
-    letterSpacing: 1,
-    marginTop: 5,
-  },
-  tierBadge: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 20,
-  },
-  tierText: { color: '#FFF', fontWeight: 'bold', fontSize: 12 },
-
-  // Tap Area
-  tapActionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 15,
-  },
-  tapText: { color: '#FFF', fontSize: 18, fontWeight: '300' },
-  couponText: { color: 'rgba(255,255,255,0.8)', fontSize: 12 },
-  circleArrow: {
-    backgroundColor: '#FFF',
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  arrow: { color: '#B2975E', fontWeight: '900', fontSize: 18 },
-
-  // Stats Section
+  cardWatermark: { position: 'absolute', right: -10, bottom: -20, width: 190, height: 190, opacity: 0.1, tintColor: PremiumTheme.goldDark },
+  cardTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  cardType: { color: PremiumTheme.ink, fontSize: 18, fontWeight: '700', letterSpacing: 2 },
+  tierBadge: { backgroundColor: PremiumTheme.ink, paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20 },
+  tierText: { color: PremiumTheme.surface, fontWeight: '800', fontSize: 11, letterSpacing: 1.2 },
+  tapText: { color: PremiumTheme.ink, fontSize: 27, fontWeight: '800' },
+  tapSub: { color: PremiumTheme.muted, fontSize: 13, marginTop: 4 },
   statsContainer: {
     flexDirection: 'row',
-    marginHorizontal: 20,
-    backgroundColor: '#FFF',
-    borderRadius: 20,
+    marginTop: 20,
+    backgroundColor: PremiumTheme.surface,
+    borderRadius: 24,
     padding: 20,
     alignItems: 'center',
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: PremiumTheme.border,
   },
   statBox: { flex: 1, alignItems: 'center' },
-  statDivider: { width: 1, height: 40, backgroundColor: '#EEE' },
-  statLabel: { fontSize: 12, color: '#888', marginBottom: 5 },
-  statValue: { fontSize: 22, fontWeight: '800', color: '#222' },
-
-  // Points Section
-  pointsWrapper: {
-    padding: 30,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  pointsHeader: { alignItems: 'flex-start' },
-  pointsNumber: { fontSize: 56, fontWeight: '900', color: '#222' },
-  pointsLabelText: { fontSize: 16, color: '#666', marginTop: -8 },
+  statDivider: { width: 1, height: 42, backgroundColor: PremiumTheme.border },
+  statLabel: { fontSize: 12, color: PremiumTheme.muted, marginBottom: 5 },
+  statValue: { fontSize: 24, fontWeight: '900', color: PremiumTheme.ink },
+  pointsWrapper: { marginTop: 20, padding: 24, borderRadius: 24, backgroundColor: PremiumTheme.surface, borderWidth: 1, borderColor: PremiumTheme.border, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  pointsNumber: { fontSize: 56, fontWeight: '900', color: PremiumTheme.ink },
+  pointsLabelText: { fontSize: 15, color: PremiumTheme.muted, marginTop: -8 },
   activityBtn: { paddingVertical: 8 },
-  activityText: { color: '#B2975E', fontWeight: 'bold', fontSize: 16 },
-
-  // Guest View
-  guestContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  colonyTitle: {
-    fontSize: 45,
-    color: '#FFF',
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  authBtn: {
-    backgroundColor: '#B2975E',
-    width: 280,
-    marginTop: 15,
-    borderRadius: 12,
-  },
+  activityText: { color: PremiumTheme.goldDark, fontWeight: '800', fontSize: 15 },
+  guestContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
+  guestCard: { width: '100%', backgroundColor: 'rgba(255,255,255,0.94)', borderRadius: 30, padding: 24, borderWidth: 1, borderColor: PremiumTheme.border, alignItems: 'center' },
+  guestKicker: { color: PremiumTheme.gold, letterSpacing: 2.4, fontSize: 11, fontWeight: '700' },
+  colonyTitle: { fontSize: 32, lineHeight: 37, color: PremiumTheme.ink, fontWeight: '800', marginVertical: 18, textAlign: 'center' },
+  authBtn: { backgroundColor: PremiumTheme.ink, width: '100%', marginTop: 8, marginHorizontal: 0 },
+  authBtnAlt: { backgroundColor: PremiumTheme.surface, borderWidth: 1, borderColor: PremiumTheme.border, width: '100%', marginTop: 12, marginHorizontal: 0 },
+  authBtnAltText: { color: PremiumTheme.ink },
 });

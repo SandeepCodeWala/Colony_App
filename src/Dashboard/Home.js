@@ -9,17 +9,20 @@ import {
   Dimensions,
   StatusBar,
   Platform,
+  Animated,
+  Easing,
 } from 'react-native';
-import { AppImages, Colors, Fonts } from '../res';
+import { AppImages, Fonts } from '../res';
+import PremiumTheme from '../res/PremiumTheme';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const { width, height } = Dimensions.get('window');
 
 const DATA = [
   {
     id: '1',
+    eyebrow: 'SMASHED FRESH',
     title: 'Restaurant',
     subtitle: 'Experience fine dining with exquisite cuisines.',
     image: AppImages.restaurant,
@@ -28,6 +31,7 @@ const DATA = [
   },
   {
     id: '2',
+    eyebrow: 'SIGNATURE VIBE',
     title: 'Lounge',
     subtitle: 'Relax with signature cocktails and cozy ambiance.',
     image: AppImages.lounge,
@@ -36,6 +40,7 @@ const DATA = [
   },
   {
     id: '3',
+    eyebrow: 'LIVE TABLES',
     title: 'Events',
     subtitle: 'Join our special events and live performances.',
     image: AppImages.events,
@@ -47,28 +52,19 @@ const DATA = [
 const Home = () => {
   const navigation = useNavigation();
   const flatListRef = useRef(null);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [UserName, setUserName] = React.useState('');
-  const [membership, setMembershipNumber] = React.useState('');
-  const dispatch = useDispatch();
+  const user = useSelector(state => state.auth?.user);
+  const membership = useSelector(state => state.auth?.membershipNumber);
 
   useEffect(() => {
-    fetchUser();
-    // Any side effects if needed
-  }, []);
-
-  const fetchUser = async () => {
-    // const UserName = await AsyncStorage.getItem('name');
-    const UserName = useSelector(state => state.auth?.user?.name);
-    console.log('redux User Name:', UserName);
-
-    const membershipNum = useSelector(state => state.auth.membershipNumber);
-    // const membershipNum = await AsyncStorage.getItem('membershipNumber');
-    setUserName(UserName);
-    setMembershipNumber(membershipNum);
-
-    // Fetch user data logic here
-  };
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 650,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -89,38 +85,29 @@ const Home = () => {
   const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 50 });
 
   const handleReserveTable = screen => {
-    console.log(
-      'UserName && membership || UserName',
-      (UserName && membership) || UserName,
-    );
-    if (screen == 'Event') {
+    if (screen === 'Event') {
       navigation.navigate('BookEvent');
       return;
     }
-    if (screen == 'Lounge') {
+    if (screen === 'Lounge') {
       navigation.navigate('ReserveLounge', { screen: 'Lounge' });
       return;
     }
-    if ((UserName && membership) || UserName != null) {
+    if ((user?.name && membership) || user?.name != null) {
       navigation.navigate('ReserveLounge', { screen: 'table' });
     } else {
       navigation.navigate('Login');
-      // showToast('error', 'User details not found. Please log in again.');
     }
   };
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <Image source={item.image} style={styles.image} />
+      <View style={styles.lightWash} />
       <View style={styles.overlay}>
-        <View
-          style={{
-            position: 'absolute',
-            bottom: '5%',
-            width: '100%',
-            alignItems: 'center',
-          }}
-        >
+        <Animated.View style={[styles.copyCard, { opacity: fadeAnim }]}> 
+          <Text style={styles.brand}>CRAV · EST. 1997</Text>
+          <Text style={styles.eyebrow}>{item.eyebrow}</Text>
           <Text style={styles.title}>{item.title}</Text>
           <Text style={styles.subtitle}>{item.subtitle}</Text>
 
@@ -128,33 +115,26 @@ const Home = () => {
             {DATA.map((_, index) => (
               <View
                 key={index}
-                style={[
-                  styles.dot,
-                  currentIndex === index ? styles.activeDot : null,
-                ]}
+                style={[styles.dot, currentIndex === index && styles.activeDot]}
               />
             ))}
           </View>
-          {item.title !== 'Lounge' && (
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => handleReserveTable(item?.screen)}
-            >
-              <Text style={styles.buttonText}>{item.buttonText}</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+
+          <TouchableOpacity
+            activeOpacity={0.78}
+            style={styles.button}
+            onPress={() => handleReserveTable(item?.screen)}
+          >
+            <Text style={styles.buttonText}>{item.buttonText}</Text>
+          </TouchableOpacity>
+        </Animated.View>
       </View>
     </View>
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#000' }}>
-      <StatusBar
-        translucent
-        backgroundColor="transparent"
-        barStyle="light-content"
-      />
+    <View style={styles.root}>
+      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
       <FlatList
         ref={flatListRef}
         data={DATA}
@@ -172,82 +152,94 @@ const Home = () => {
 };
 
 const styles = StyleSheet.create({
-  card: {
-    width,
-    height,
-  },
-  image: {
-    width,
-    height,
-    resizeMode: 'cover',
-  },
-  overlay: {
+  root: { flex: 1, backgroundColor: PremiumTheme.paper },
+  card: { width, height, backgroundColor: PremiumTheme.paper },
+  image: { width, height: height * 0.72, resizeMode: 'cover' },
+  lightWash: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    bottom: 70, // 0 in mac
-    justifyContent: 'center',
+    height: height * 0.72,
+    backgroundColor: 'rgba(255,249,239,0.18)',
+  },
+  overlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: Platform.OS === 'ios' ? 100 : 84,
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.35)',
+    paddingHorizontal: 18,
+  },
+  copyCard: {
+    width: '100%',
+    backgroundColor: 'rgba(255,255,255,0.94)',
+    borderRadius: 30,
+    paddingVertical: 26,
+    paddingHorizontal: 22,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: PremiumTheme.border,
+    shadowColor: PremiumTheme.shadow,
+    shadowOpacity: 0.18,
+    shadowRadius: 22,
+    shadowOffset: { width: 0, height: 12 },
+    elevation: 8,
+  },
+  brand: {
+    fontFamily: Fonts.instrumentSansMedium,
+    fontSize: 11,
+    letterSpacing: 2.8,
+    color: PremiumTheme.gold,
+    marginBottom: 10,
+  },
+  eyebrow: {
+    fontFamily: Fonts.instrumentSansRegular,
+    fontSize: 13,
+    letterSpacing: 1.8,
+    color: PremiumTheme.tomato,
+    textTransform: 'uppercase',
   },
   title: {
     fontFamily: Fonts.instrumentSansMedium,
-    fontSize: 32,
-    fontWeight: '500',
+    fontSize: 42,
     textAlign: 'center',
-    color: Colors.OFF_WHITE,
+    color: PremiumTheme.ink,
     textTransform: 'uppercase',
-    marginBottom: 8,
+    marginTop: 4,
   },
   subtitle: {
     fontFamily: Fonts.instrumentSansRegular,
-    fontSize: 14,
-    fontWeight: '400',
-    lineHeight: 21,
+    fontSize: 15,
+    lineHeight: 22,
     textAlign: 'center',
-    color: Colors.BLUE_GRAY,
-    marginBottom: 20,
+    color: PremiumTheme.muted,
+    marginTop: 8,
+    marginBottom: 18,
   },
-  button: {
-    backgroundColor: Colors.Muted_Gold,
-    width: '95%',
-    height: 40,
-    borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    // marginTop: 25,
-    marginBottom: Platform.OS === 'ios' ? 60 : 0,
-  },
-  buttonText: {
-    fontFamily: Fonts.instrumentSansMedium,
-    fontSize: 14,
-    fontWeight: '500',
-    textAlign: 'center',
-    color: Colors.WHITE,
-  },
-
-  paginationContainer: {
-    // position: 'absolute',
-    // bottom: 40,
-    // left: 0,
-    // right: 0,
-    // paddingVertical: 10,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  paginationContainer: { flexDirection: 'row', marginBottom: 18 },
   dot: {
     width: 7,
     height: 7,
-    borderRadius: 4,
-    backgroundColor: Colors.WHITE,
-    marginHorizontal: 3,
+    borderRadius: 7,
+    backgroundColor: PremiumTheme.sand,
+    marginHorizontal: 4,
   },
-  activeDot: {
-    width: 25,
-    height: 7,
-    backgroundColor: Colors.Muted_Gold,
+  activeDot: { width: 24, backgroundColor: PremiumTheme.gold },
+  button: {
+    backgroundColor: PremiumTheme.ink,
+    width: '100%',
+    height: 50,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    fontFamily: Fonts.instrumentSansMedium,
+    color: PremiumTheme.surface,
+    fontSize: 14,
+    letterSpacing: 1.4,
+    textTransform: 'uppercase',
   },
 });
 

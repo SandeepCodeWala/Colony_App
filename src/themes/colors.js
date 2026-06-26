@@ -21,8 +21,8 @@ const colors = {
   googlebgcolor: '#E3011F',
   emailColor: '#0B0C0C',
   orangeText: '#FF974A',
-  buttonBgColor: '#AB9764',
-  background: '#FFFFFF',
+  buttonBgColor: '#24150D',
+  background: '#FFF9EF',
   yellowbgColor: '#E39B01',
   lightthemeColor: '#01E3A4',
   lightBlack: '#49596D',
@@ -31,7 +31,7 @@ const colors = {
   specialgreen: '#1E4F49',
   selectedColor: '#283A52',
   statusbar: '#02F3D1',
-  txtColor: '#6D6D6D',
+  txtColor: '#7D6B5B',
 };
 
 export default {

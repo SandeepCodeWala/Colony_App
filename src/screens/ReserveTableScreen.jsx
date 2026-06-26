@@ -173,7 +173,7 @@ const arrayToObject = arr =>
   // ---- Render ----
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={Colors.WHITE} />
+      <StatusBar barStyle="dark-content" backgroundColor="#FFF9EF" />
 
       {/* Header */}
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 140 }}>
@@ -193,7 +193,7 @@ const arrayToObject = arr =>
               <Text style={styles.subSectionTitle}>Special Occasion?</Text>
               {occasionsList.map(item => (
                 <TouchableOpacity key={item} style={styles.checkboxRow} onPress={() => toggleOccasion(item)}>
-                  <View style={[styles.checkboxBox, occasions[item] && { backgroundColor: Colors.WHITE, borderColor: Colors.Muted_Gold }]}>
+                  <View style={[styles.checkboxBox, occasions[item] && { backgroundColor: '#FFF9EF', borderColor: Colors.Muted_Gold }]}>
                     {occasions[item] && <Text style={{ color: '#fff' }}>✔️</Text>}
                   </View>
                   <Text style={{ marginLeft: 8 }}>{item}</Text>
@@ -203,7 +203,7 @@ const arrayToObject = arr =>
               <Text style={[styles.subSectionTitle, { marginTop: 14 }]}>Dietary restrictions</Text>
               {dietaryList.map(item => (
                 <TouchableOpacity key={item} style={styles.checkboxRow} onPress={() => toggleDietary(item)}>
-                  <View style={[styles.checkboxBox, dietary[item] && { backgroundColor: Colors.WHITE, borderColor: Colors.Muted_Gold }]}>
+                  <View style={[styles.checkboxBox, dietary[item] && { backgroundColor: '#FFF9EF', borderColor: Colors.Muted_Gold }]}>
                     {dietary[item] && <Text style={{ color: '#fff' }}>✔️</Text>}
                   </View>
                   <Text style={{ marginLeft: 8 }}>{item}</Text>
@@ -228,7 +228,7 @@ const arrayToObject = arr =>
 export default ReserveTableScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.WHITE },
+  container: { flex: 1, backgroundColor: '#FFF9EF' },
   image: { width: '92%', height: 200, borderRadius: 16, alignSelf: 'center', marginTop: 15 },
   detailsContainer: { paddingHorizontal: 20, paddingVertical: 20 },
   summaryTitle: { fontFamily: Fonts.instrumentSansRegular, fontSize: 12, color: Colors.DARK_GREY },
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   subSectionTitle: { fontFamily: Fonts.instrumentSansMedium, fontSize: 14, color: Colors.BLACK, marginTop: 16, marginBottom: 8 },
   checkboxRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
   checkboxBox: { height: 18, width: 18, borderWidth: 1, borderColor: Colors.BORDERGREY, borderRadius: 4, justifyContent: 'center', alignItems: 'center' },
-  footer: { position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: Colors.WHITE, paddingHorizontal: 16, paddingVertical: 12, borderTopLeftRadius: 20, borderTopRightRadius: 20, elevation: 8 },
+  footer: { position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: '#FFF9EF', paddingHorizontal: 16, paddingVertical: 12, borderTopLeftRadius: 20, borderTopRightRadius: 20, elevation: 8 },
   payButton: { backgroundColor: Colors.Muted_Gold, borderRadius: 30, paddingVertical: 10, width: '100%' },
   payText: { fontFamily: Fonts.instrumentSansMedium, color: Colors.WHITE, fontSize: 14 },
 });

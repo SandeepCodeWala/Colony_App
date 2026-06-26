@@ -16,9 +16,13 @@ const CommonTextInput = ({
         value={value}
         onChangeText={onChangeText}
         mode="flat"
+
+        /* 🔴 IMPORTANT */
         dense={true}
+
         style={styles.input}
         contentStyle={styles.content}
+
         underlineColor="#000"
         activeUnderlineColor="#000"
         theme={{
@@ -27,9 +31,13 @@ const CommonTextInput = ({
             onSurfaceVariant: '#666',
           },
         }}
+
         right={
           showRightIcon && iconName ? (
-            <TextInput.Icon icon={() => iconName} style={styles.rightIcon} />
+            <TextInput.Icon
+              icon={() => iconName}
+              style={styles.rightIcon}
+            />
           ) : null
         }
       />
@@ -38,6 +46,7 @@ const CommonTextInput = ({
 };
 
 export default CommonTextInput;
+
 
 const styles = StyleSheet.create({
   container: {
@@ -48,14 +57,14 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: 'transparent',
     margin: 0,
-    paddingHorizontal: 0, // 🔥 remove left & right padding
+    paddingHorizontal: 0,   // 🔥 remove left & right padding
     paddingVertical: 0,
     minHeight: 40,
-    fontSize: 14,
+    fontSize:14
   },
 
   content: {
-    paddingHorizontal: 0, // 🔥 typed text + placeholder spacing
+    paddingHorizontal: 0,   // 🔥 typed text + placeholder spacing
     paddingVertical: 0,
     margin: 0,
   },
@@ -63,6 +72,6 @@ const styles = StyleSheet.create({
   rightIcon: {
     margin: 0,
     padding: 0,
-    marginLeft: 30,
+    marginLeft:30
   },
 });

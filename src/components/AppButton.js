@@ -1,10 +1,11 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { Colors, Fonts } from '../res';
+import { Fonts } from '../res';
+import PremiumTheme from '../res/PremiumTheme';
 
 const AppButton = ({ text, onPress, style, textStyle }) => {
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.button, style]}>
+    <TouchableOpacity activeOpacity={0.78} onPress={onPress} style={[styles.button, style]}>
       <Text style={[styles.buttonText, textStyle]}>{text}</Text>
     </TouchableOpacity>
   );
@@ -12,16 +13,24 @@ const AppButton = ({ text, onPress, style, textStyle }) => {
 
 const styles = StyleSheet.create({
   button: {
-    height: 50,
+    minHeight: 50,
     marginHorizontal: 20,
-    backgroundColor: Colors.MEDIUMTURQUOISE,
+    backgroundColor: PremiumTheme.ink,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 12,
+    borderRadius: 28,
+    paddingHorizontal: 22,
+    shadowColor: PremiumTheme.shadow,
+    shadowOpacity: 0.14,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 4,
   },
   buttonText: {
-    color: Colors.WHITE,
-    fontSize: 16,
+    color: PremiumTheme.surface,
+    fontSize: 14,
+    letterSpacing: 1.4,
+    textTransform: 'uppercase',
     fontFamily: Fonts.SemiBold,
   },
 });

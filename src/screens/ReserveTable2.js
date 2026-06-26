@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     flex: 1,                    // fill the screen
     justifyContent: 'center',    // center vertically
     alignItems: 'center',        // center horizontally
-    backgroundColor: '#fff',     // white background
+    backgroundColor: '#FFF9EF',     // white background
   },
   text: {
     fontSize: 24,               // large text

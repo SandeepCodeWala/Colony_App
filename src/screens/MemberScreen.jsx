@@ -54,7 +54,7 @@ const MemberScreen = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor="#f3ebdf" barStyle="dark-content" />
+      <StatusBar backgroundColor="#FFF9EF" barStyle="dark-content" />
       <ReserveHeader title={'Loyalty'} onBack={() => navigation.goBack()} />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {/* Header */}

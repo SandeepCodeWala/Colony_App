@@ -343,7 +343,7 @@ const ReserveLoungeScreen = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.WHITE },
+  container: { flex: 1, backgroundColor: '#FFF9EF' },
   image: {
     width: '92%',
     height: 200,
@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     width: '100%',
-    backgroundColor: '#fff',
+    backgroundColor: '#FFF9EF',
     elevation: 8,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,

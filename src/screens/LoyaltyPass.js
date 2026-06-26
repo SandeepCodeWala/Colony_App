@@ -32,7 +32,7 @@ export default function LoyaltyPass() {
             })}
             size={240}
             color={Colors.BLACK}
-            backgroundColor={Colors.WHITE}
+            backgroundColor="#FFF9EF"
           />
         </View>
 
@@ -45,14 +45,14 @@ export default function LoyaltyPass() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF' },
+  container: { flex: 1, backgroundColor: '#FFF9EF' },
   header: { padding: 50, alignItems: 'flex-end' },
   closeBtn: { fontSize: 18, fontFamily: Fonts.SemiBold, color: '#000' },
   content: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 100 },
   title: { fontSize: 18, fontFamily: Fonts.SemiBold, color: '#000', marginBottom: 30, letterSpacing: 1 },
   qrWrapper: { 
     padding: 20, 
-    backgroundColor: '#FFF', 
+    backgroundColor: '#FFF9EF', 
     borderRadius: 20, 
     elevation: 20,
     shadowColor: '#000',

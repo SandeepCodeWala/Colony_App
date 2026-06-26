@@ -1,7 +1,7 @@
 export default {
-  BLACK: '#1A1A1A',
+  BLACK: '#24150D',
 
-  APPBLACK: '#181823',
+  APPBLACK: '#24150D',
   PROGRESSORANGE: '#fca02a',
   BLACKGRAY: '#666666',
   BORDERYELLOW: '#fcc82a',
@@ -22,7 +22,7 @@ export default {
   MINT: '#0AAB99',
   TEAL: '#3B82A6',
   TEAL1: '#449DBF',
-  MEDIUMTURQUOISE: '#17A2B8',
+  MEDIUMTURQUOISE: '#B7782E',
   APP_BLUE: '#76B9E8',
   DARK_BLUE: '#25A3FF',
   GREEN: 'rgba(22, 168, 95, 1)',
@@ -33,13 +33,13 @@ export default {
   BOX_GREY: '#F0F0F0',
   BORDERGREY: '#ccc',
   CHATYELLOW: '#80fce22a',
-  APPCOLOR: '#F3ECDE',
+  APPCOLOR: '#FFF9EF',
   OFF_WHITE:'#FEFEFE',
-  Muted_Gold:'#B2975E',
-  BLUE_GRAY:'#E3E9ED',
+  Muted_Gold:'#B7782E',
+  BLUE_GRAY:'#7D6B5B',
 
   // gray light color
-  LIGHT_GRAY:"#F7F7F7"
+  LIGHT_GRAY:"#FFF9EF"
 
 
 };

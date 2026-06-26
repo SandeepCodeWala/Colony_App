@@ -225,7 +225,7 @@ const screenStyles = StyleSheet.create({
 
 const cardStyles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFF9EF',
     borderRadius: 15,
     marginBottom: 20,
     borderWidth: 1,
@@ -262,7 +262,7 @@ const cardStyles = StyleSheet.create({
   headerUpcoming: { backgroundColor: Colors.Muted_Gold },
   headerPast: { backgroundColor: '#ddd' },
   headerText: { color: '#fff', fontWeight: 'bold' },
-  completedTag: { color: Colors.Text_Dark, fontSize: 10, backgroundColor: '#fff', paddingHorizontal: 5, borderRadius: 5 },
+  completedTag: { color: Colors.Text_Dark, fontSize: 10, backgroundColor: '#FFF9EF', paddingHorizontal: 5, borderRadius: 5 },
   body: { padding: 15 },
   sectionTitle: { fontSize: 12, color: Colors.Text_Muted, fontWeight: 'bold', marginBottom: 5 },
   dateTimeText: { fontSize: 16, color: Colors.Muted_Gold, fontWeight: 'bold' },

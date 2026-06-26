@@ -126,7 +126,7 @@ export default MyBenefits;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.WHITE,
+    backgroundColor: '#FFF9EF',
   },
 
   mainTitle: {

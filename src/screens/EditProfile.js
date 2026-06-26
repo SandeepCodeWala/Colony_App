@@ -1,625 +1,497 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
-  TextInput,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
   Image,
   Dimensions,
+  Alert,
+  ActivityIndicator,
+  StatusBar,
 } from 'react-native';
-import ReserveHeader from '../components/ReserveHeader';
-import { AppImages, Colors } from '../res';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 import { useNavigation } from '@react-navigation/native';
-import CommonTextInput from '../components/TextInputField';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
+
 import SettingHeader from '../components/SettingHeader';
+import CommonTextInput from '../components/TextInputField';
 import CommonDropdown from '../components/CommonDropdown';
-import CommonCheckboxGroup from '../components/CommonCheckboxGroup';
+import { AppImages, Colors } from '../res';
 
-import CommonRadioGroup from '../components/CommonRadioButton';
+const { width } = Dimensions.get('window');
 
+// ─── Professional Static Data ─────────────────────────────────
 const titleData = [
   { label: 'Mr', value: 'Mr' },
   { label: 'Ms', value: 'Ms' },
   { label: 'Mrs', value: 'Mrs' },
 ];
 
-const cardDummyData = [
-  {
-    id: '1',
-    title: 'Stays',
-    image: AppImages.restaurant,
-  },
-  {
-    id: '2',
-    title: 'Dining',
-    image: AppImages.lounge,
-  },
-  {
-    id: '3',
-    title: 'Well-being',
-    image: AppImages.events,
-  },
-  {
-    id: '4',
-    title: 'Passions',
-    image: AppImages.restaurant,
-  },
+const genderData = [
+  { label: 'Male', value: 'Male' },
+  { label: 'Female', value: 'Female' },
+  { label: 'Other', value: 'Other' },
 ];
 
-const CommonConsentCheckbox = ({ checked, onPress, children }) => {
-  return (
-    <TouchableOpacity style={styles.row} activeOpacity={0.8} onPress={onPress}>
-      <View style={[styles.box, checked && styles.boxChecked]}>
-        {checked && <Text style={styles.tick}>✓</Text>}
-      </View>
+const countryCodeData = [
+  { label: '+91 🇮🇳', value: '+91' },
+  { label: '+1 🇺🇸', value: '+1' },
+  { label: '+44 🇬🇧', value: '+44' },
+  { label: '+971 🇦🇪', value: '+971' },
+];
 
-      <Text style={styles.text}>{children}</Text>
-    </TouchableOpacity>
-  );
+const nationalityData = [
+  { label: 'Indian', value: 'Indian' },
+  { label: 'American', value: 'American' },
+  { label: 'British', value: 'British' },
+  { label: 'Emirati', value: 'Emirati' },
+];
+
+const countryData = [
+  { label: 'India', value: 'India' },
+  { label: 'USA', value: 'USA' },
+  { label: 'UK', value: 'UK' },
+  { label: 'UAE', value: 'UAE' },
+];
+
+// ─── Helpers (Same as before) ─────────────────────────────────
+const splitName = (fullName = '') => {
+  const parts = fullName.trim().split(' ');
+  return {
+    firstName: parts[0] || '',
+    lastName: parts.slice(1).join(' ') || '',
+  };
 };
 
-const { width } = Dimensions.get('window');
-const CARD_WIDTH = (width - 48) / 2;
+const splitPhone = (phone = '') => {
+  const match = phone?.match(/^(\+\d{1,3})\s*(.*)$/);
+  return match
+    ? { code: match[1], number: match[2] }
+    : { code: null, number: phone || '' };
+};
+
+// ─── Validation ───────────────────────────────────────────────
+const validationSchema = Yup.object().shape({
+  firstName: Yup.string().required('First name is required'),
+  lastName: Yup.string().required('Last name is required'),
+  phone: Yup.string()
+    .matches(/^[0-9]{7,15}$/, 'Enter a valid mobile number')
+    .required('Mobile number is required'),
+});
+
 const EditProfileScreen = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [title, setTitle] = useState(null);
-  const [type, setType] = useState('mobile');
-  const [selected, setSelected] = useState([]);
-  const [offers, setOffers] = useState(true);
-  const [partners, setPartners] = useState(true);
-
   const navigation = useNavigation();
+  const token = useSelector(state => state.auth.token);
+  const BASE_URL = 'https://moistness-shudder-partition.ngrok-free.dev';
 
-  const onSelect = item => {
-    console.log('Selected:', item.title);
+  const formik = useFormik({
+    initialValues: {
+      title: null,
+      firstName: '',
+      lastName: '',
+      nationality: null,
+      gender: null,
+      email: '',
+      addressLineOne: '',
+      addressLinetwo: '',
+      addressLinethree: '',
+      city: '',
+      country: null,
+      mobileCode: null,
+      phone: '',
+      workCode: null,
+      workNumber: '',
+      homeCode: null,
+      homeNumber: '',
+    },
+    validationSchema,
+    onSubmit: async values => {
+      // ... (Payload same as previous response)
+      try {
+        const payload = {
+          name: `${values.firstName} ${values.lastName}`.trim(),
+          phone: values.mobileCode
+            ? `${values.mobileCode} ${values.phone}`.trim()
+            : values.phone,
+          title: values.title,
+          gender: values.gender,
+          nationality: values.nationality,
+          workNumber: values.workNumber
+            ? `${values.workCode || ''} ${values.workNumber}`.trim()
+            : null,
+          homeNumber: values.homeNumber
+            ? `${values.homeCode || ''} ${values.homeNumber}`.trim()
+            : null,
+          addressLineOne: values.addressLineOne,
+          addressLinetwo: values.addressLinetwo,
+          addressLinethree: values.addressLinethree,
+          city: values.city,
+          country: values.country,
+        };
+
+        const response = await axios.put(
+          `${BASE_URL}/api/user/edit-profile`,
+          payload,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+
+        if (response.data?.success) {
+          Alert.alert('Success', 'Profile updated successfully');
+          navigation.goBack();
+        }
+      } catch (error) {
+        Alert.alert(
+          'Error',
+          error?.response?.data?.message || 'Something went wrong',
+        );
+      }
+    },
+  });
+
+  // fetchProfile function remains same as previous response...
+  const fetchProfile = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/user/get_profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const u = response.data?.data || response.data?.user || {};
+
+      const { firstName, lastName } = splitName(u.name);
+      const mobile = splitPhone(u.phone);
+      const work = splitPhone(u.workNumber);
+      const home = splitPhone(u.homeNumber);
+
+      formik.setValues({
+        title: u.title || null,
+        firstName,
+        lastName,
+        nationality: u.nationality || null,
+        gender: u.gender || null,
+        email: u.email || '',
+
+        addressLineOne: u.addressLineOne || '',
+        addressLinetwo: u.addressLinetwo || '',
+        addressLinethree: u.addressLinethree || '',
+        city: u.city || '',
+        country: u.country || null,
+
+        mobileCode: mobile.code,
+        phone: mobile.number,
+        workCode: work.code,
+        workNumber: work.number,
+        homeCode: home.code,
+        homeNumber: home.number,
+
+        anniversary_date: u.anniversary_date || null,
+        birthday_date: u.birthday_date || null,
+      });
+    } catch (error) {
+      console.log('Fetch profile error:', error?.message);
+    }
   };
+
+  useEffect(() => {
+    fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fieldError = field =>
+    formik.touched[field] && formik.errors[field] ? formik.errors[field] : null;
+
   return (
     <View style={styles.container}>
-      {/* ---------- Header ---------- */}
-      <SettingHeader
-        title={'PERSONAL DETAILS'}
-        onBack={() => navigation.goBack()}
-      />
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+
+      <SettingHeader title="EDIT PROFILE" onBack={() => navigation.goBack()} />
+
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 40, paddingHorizontal: 25 }}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.mainTitle}>A place to update your details</Text>
+        <Text style={styles.mainTitle}>Update Your Personal Details</Text>
         <Text style={styles.subTitle}>
-          All fields are mandatory unless stated otherwise.
+          Please fill in the information below
         </Text>
 
-        {/* Section */}
-        <Text style={styles.sectionTitle}>PERSONAL INFORMATION</Text>
+        {/* PERSONAL INFORMATION SECTION */}
+        <View style={styles.sectionCard}>
+          <Text style={styles.sectionHeader}>PERSONAL INFORMATION</Text>
 
-        <View style={styles.formContainer}>
           <CommonDropdown
-            label="TITLE (OPTIONAL)"
+            label="TITLE"
             data={titleData}
-            value={title}
-            onChange={setTitle}
-          />
-          <CommonTextInput
-            label="FIRST NAME"
-            value={firstName}
-            onChangeText={setFirstName}
-            showError={!firstName}
-            showRightIcon={true}
-            iconName={
-              <Image source={AppImages.exclamation} style={styles.backIcon} />
-            }
+            value={formik.values.title}
+            onChange={val => formik.setFieldValue('title', val)}
           />
 
           <CommonTextInput
-            label="MIDDLE NAME (OPTIONAL)"
-            value={lastName}
-            onChangeText={setLastName}
-            showError={!lastName}
+            label="FIRST NAME *"
+            value={formik.values.firstName}
+            onChangeText={val => formik.setFieldValue('firstName', val)}
+            onBlur={() => formik.setFieldTouched('firstName')}
           />
+          {fieldError('firstName') && (
+            <Text style={styles.errorText}>{fieldError('firstName')}</Text>
+          )}
 
           <CommonTextInput
-            label="Last NAME"
-            value={lastName}
-            onChangeText={setLastName}
-            showError={!lastName}
-            showRightIcon={true}
-            iconName={
-              <Image source={AppImages.exclamation} style={styles.backIcon} />
-            }
+            label="LAST NAME *"
+            value={formik.values.lastName}
+            onChangeText={val => formik.setFieldValue('lastName', val)}
+            onBlur={() => formik.setFieldTouched('lastName')}
+          />
+          {fieldError('lastName') && (
+            <Text style={styles.errorText}>{fieldError('lastName')}</Text>
+          )}
+
+          <CommonDropdown
+            label="NATIONALITY"
+            data={nationalityData}
+            value={formik.values.nationality}
+            onChange={val => formik.setFieldValue('nationality', val)}
+          />
+          <CommonDropdown
+            label="GENDER"
+            data={genderData}
+            value={formik.values.gender}
+            onChange={val => formik.setFieldValue('gender', val)}
           />
 
-          <View style={{ marginTop: 10 }}>
-            <CommonDropdown
-              label="NATIONALITY (OPTIONAL)"
-              data={titleData}
-              value={title}
-              onChange={setTitle}
+          <View style={styles.readOnlyContainer}>
+            <CommonTextInput
+              label="EMAIL ADDRESS"
+              value={formik.values.email}
+              editable={false}
             />
-          </View>
-          <CommonTextInput
-            label="EMAIL"
-            value={lastName}
-            onChangeText={setLastName}
-            showError={!lastName}
-            showRightIcon={true}
-            iconName={
-              <Image source={AppImages.exclamation} style={styles.backIcon} />
-            }
-          />
-
-          <View style={{ marginTop: 10 }}>
-            <CommonDropdown
-              label="GENDER (OPTIONAL)"
-              data={titleData}
-              value={title}
-              onChange={setTitle}
-            />
+            <Text style={styles.readOnlyHint}>Email cannot be changed</Text>
           </View>
         </View>
 
-        {/* Address Section */}
-        <Text style={[styles.sectionTitle, { marginTop: 40 }]}>
-          ADDRESS INFORMATION
-        </Text>
-
-        <View style={styles.formContainer}>
+        {/* ADDRESS SECTION */}
+        <View style={styles.sectionCard}>
+          <Text style={styles.sectionHeader}>ADDRESS INFORMATION</Text>
           <CommonTextInput
-            label="ADDRESS LINE 1/P.O. BOX (OPTIONAL)"
-            value={firstName}
-            onChangeText={setFirstName}
-            showError={!firstName}
+            label="ADDRESS LINE 1"
+            value={formik.values.addressLineOne}
+            onChangeText={val => formik.setFieldValue('addressLineOne', val)}
           />
           <CommonTextInput
-            label="ADDRESS LINE 2 (OPTIONAL)"
-            value={firstName}
-            onChangeText={setFirstName}
-            showError={!firstName}
+            label="ADDRESS LINE 2"
+            value={formik.values.addressLinetwo}
+            onChangeText={val => formik.setFieldValue('addressLinetwo', val)}
           />
           <CommonTextInput
-            label="ADDRESS LINE 3 (OPTIONAL)"
-            value={firstName}
-            onChangeText={setFirstName}
-            showError={!firstName}
+            label="ADDRESS LINE 3"
+            value={formik.values.addressLinethree}
+            onChangeText={val => formik.setFieldValue('addressLinethree', val)}
           />
           <CommonTextInput
-            label="CITY (OPTIONAL)"
-            value={firstName}
-            onChangeText={setFirstName}
-            showError={!firstName}
+            label="CITY"
+            value={formik.values.city}
+            onChangeText={val => formik.setFieldValue('city', val)}
           />
-          <View style={{ marginTop: 10 }}>
-            <CommonDropdown
-              label="COUNTRY OF RESIDENCE"
-              data={titleData}
-              value={title}
-              onChange={setTitle}
-            />
-          </View>
+          <CommonDropdown
+            label="COUNTRY"
+            data={countryData}
+            value={formik.values.country}
+            onChange={val => formik.setFieldValue('country', val)}
+          />
         </View>
 
-        {/* Address Section */}
-        <Text style={[styles.sectionTitle, { marginTop: 40 }]}>
-          CONTACT INFORMATION
-        </Text>
-        <Text style={styles.contactSubTitle}>
-          Please choose which telephone number you would prefer us to contact
-          you on
-        </Text>
+        {/* CONTACT SECTION */}
+        <View style={styles.sectionCard}>
+          <Text style={styles.sectionHeader}>CONTACT INFORMATION</Text>
 
-        <CommonRadioGroup
-          value={type}
-          onChange={setType}
-          options={[
-            { label: 'MOBILE', value: 'mobile' },
-            { label: 'WORK', value: 'work' },
-            { label: 'Home', value: 'home' },
-          ]}
-        />
-        <View>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <View style={{ flex: 1, marginRight: 8, marginTop: 5 }}>
-              <CommonDropdown
-                label="CODE"
-                data={titleData}
-                value={title}
-                onChange={setTitle}
-              />
-            </View>
-            <View style={{ flex: 1, marginLeft: 8 }}>
-              <CommonTextInput
-                label="MOBILE NUMBER"
-                value={firstName}
-                onChangeText={setFirstName}
-                showError={!firstName}
-              />
-            </View>
-          </View>
+          <PhoneRow
+            codeValue={formik.values.mobileCode}
+            onCodeChange={val => formik.setFieldValue('mobileCode', val)}
+            numberValue={formik.values.phone}
+            onNumberChange={val => formik.setFieldValue('phone', val)}
+            onNumberBlur={() => formik.setFieldTouched('phone')}
+            numberLabel="MOBILE NUMBER *"
+            error={fieldError('phone')}
+            codeData={countryCodeData}
+          />
 
-          {/* work number */}
+          <PhoneRow
+            codeValue={formik.values.workCode}
+            onCodeChange={val => formik.setFieldValue('workCode', val)}
+            numberValue={formik.values.workNumber}
+            onNumberChange={val => formik.setFieldValue('workNumber', val)}
+            numberLabel="WORK NUMBER"
+            codeData={countryCodeData}
+            style={{ marginTop: 16 }}
+          />
 
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginTop: 10,
-            }}
-          >
-            <View style={{ flex: 1, marginRight: 8, marginTop: 5 }}>
-              <CommonDropdown
-                label="CODE"
-                data={titleData}
-                value={title}
-                onChange={setTitle}
-              />
-            </View>
-            <View style={{ flex: 1, marginLeft: 8 }}>
-              <CommonTextInput
-                label="WORK NUMBER"
-                value={firstName}
-                onChangeText={setFirstName}
-                showError={!firstName}
-              />
-            </View>
-          </View>
-
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginTop: 10,
-            }}
-          >
-            <View style={{ flex: 1, marginRight: 8, marginTop: 5 }}>
-              <CommonDropdown
-                label="CODE"
-                data={titleData}
-                value={title}
-                onChange={setTitle}
-              />
-            </View>
-            <View style={{ flex: 1, marginLeft: 8 }}>
-              <CommonTextInput
-                label="HOME NUMBER"
-                value={firstName}
-                onChangeText={setFirstName}
-                showError={!firstName}
-              />
-            </View>
-          </View>
+          <PhoneRow
+            codeValue={formik.values.homeCode}
+            onCodeChange={val => formik.setFieldValue('homeCode', val)}
+            numberValue={formik.values.homeNumber}
+            onNumberChange={val => formik.setFieldValue('homeNumber', val)}
+            numberLabel="HOME NUMBER"
+            codeData={countryCodeData}
+            style={{ marginTop: 16 }}
+          />
         </View>
-        <Text style={[styles.sectionTitle, { marginTop: 40 }]}>
-          COMMUNICATION PREFERENCE
-        </Text>
-        <Text style={styles.eventsTitle}>
-          Which of the following updates would you like to receive?
-        </Text>
-        <View style={styles.borderBottom}>
-          <CommonCheckboxGroup
-            values={selected}
-            onChange={setSelected}
-            options={[
-              { label: 'OFFERS', value: 'offers' },
-              { label: 'EVENTS', value: 'events' },
-              { label: 'NEWSLETTERS', value: 'newsletters' },
+
+        {/* ACTION BUTTONS */}
+        <View style={styles.actionContainer}>
+          <TouchableOpacity
+            style={[
+              styles.confirmBtn,
+              formik.isSubmitting && styles.disabledBtn,
             ]}
-          />
-        </View>
-        <Text style={[styles.eventsTitle, { marginTop: 20 }]}>
-          Tell us more of your personal preference.
-        </Text>
-
-        <View style={[styles.houseContainer, styles.borderBottom]}>
-          {cardDummyData.map(item => (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.card}
-              activeOpacity={0.8}
-              onPress={() => onSelect(item)}
-            >
-              <Image source={item.image} style={styles.cardImage} />
-
-              <Text style={styles.cardTitle}>{item.title}</Text>
-              <Text style={styles.cardSelect}>SELECT</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        <Text style={[styles.marketingTitle, { marginTop: 40 }]}>
-          MARKETING COMMUNICATION PREFERENCE
-        </Text>
-
-        {/* last content */}
-
-        <View style={styles.lastContainer}>
-          {/* Intro Text */}
-          <Text style={styles.paragraph}>
-            We tailor our marketing communications to your preferences. Further
-            details can be found in{' '}
-            <Text style={styles.link}>Jumeirah's Privacy Policy</Text>.
-          </Text>
-
-          {/* Checkbox 1 */}
-          <CommonConsentCheckbox
-            checked={offers}
-            onPress={() => setOffers(!offers)}
+            onPress={formik.handleSubmit}
+            disabled={formik.isSubmitting}
           >
-            I would like to receive personalized offers, events and promotions
-            from Jumeirah. I understand that I may unsubscribe or change my
-            preferences at any time as described in Jumeirah's{' '}
-            <Text style={styles.link}>Privacy Notice</Text>.
-          </CommonConsentCheckbox>
-
-          {/* Checkbox 2 */}
-          <CommonConsentCheckbox
-            checked={partners}
-            onPress={() => setPartners(!partners)}
-          >
-            I would like Jumeirah to send me exclusive tailored offers from
-            Jumeirah's carefully selected partners. (Our partner list, which
-            changes from time to time, can be viewed{' '}
-            <Text style={styles.link}>online</Text>.)
-          </CommonConsentCheckbox>
-
-          {/* Terms */}
-          <Text style={styles.paragraph}>
-            By joining, I agree to Jumeirah One{' '}
-            <Text style={styles.link}>Terms and Conditions</Text> and confirm
-            that I am at least 18 years of age.
-          </Text>
-
-          {/* Buttons */}
-          <TouchableOpacity style={styles.confirmBtn}>
-            <Text style={styles.confirmText}>CONFIRM CHANGES</Text>
+            {formik.isSubmitting ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text style={styles.confirmText}>SAVE CHANGES</Text>
+            )}
           </TouchableOpacity>
 
-          <TouchableOpacity>
-            <Text style={styles.cancel}>CANCEL</Text>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.cancelBtn}
+          >
+            <Text style={styles.cancelText}>CANCEL</Text>
           </TouchableOpacity>
         </View>
-        <View style={{ height: 60 }} />
       </ScrollView>
     </View>
   );
 };
 
+// PhoneRow Component (Improved)
+const PhoneRow = ({
+  codeValue,
+  onCodeChange,
+  numberValue,
+  onNumberChange,
+  onNumberBlur,
+  numberLabel,
+  error,
+  codeData,
+  style,
+}) => (
+  <View style={style}>
+    <View style={styles.phoneRow}>
+      <View style={{ flex: 0.4 }}>
+        <CommonDropdown
+          label="CODE"
+          data={codeData}
+          value={codeValue}
+          onChange={onCodeChange}
+        />
+      </View>
+      <View style={{ flex: 0.6, marginLeft: 12 }}>
+        <CommonTextInput
+          label={numberLabel}
+          value={numberValue}
+          onChangeText={onNumberChange}
+          onBlur={onNumberBlur}
+          keyboardType="phone-pad"
+        />
+      </View>
+    </View>
+    {error && <Text style={styles.errorText}>{error}</Text>}
+  </View>
+);
+
 export default EditProfileScreen;
 
+// ─── PROFESSIONAL STYLES ─────────────────────────────────────
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.WHITE,
-  },
-
-  formContainer: {
-    flexDirection: 'column',
-    gap: 5,
-  },
-  header: {
-    alignItems: 'center',
-    // marginTop: 10,
-    marginBottom: 20,
-  },
-
-  headerTitle: {
-    fontSize: 16,
-    letterSpacing: 2,
-    color: '#111',
-  },
+  container: { flex: 1, backgroundColor: '#F8F7F4' },
+  scrollContent: { paddingHorizontal: 20, paddingBottom: 60 },
 
   mainTitle: {
-    fontSize: 21,
-    fontFamily: 'serif',
-    color: '#444444',
-    marginBottom: 15,
-    marginTop: 29,
-    textAlign: 'center',
-  },
-
-  subTitle: {
-    fontSize: 13,
-    fontFamily: 'serif',
-    color: '#666',
-    marginBottom: 15,
-    textAlign: 'center',
-  },
-  contactSubTitle: {
-    fontSize: 13,
-    color: '#666',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  eventsTitle: {
-    fontSize: 15,
-    color: '#8e8b8b',
-    marginBottom: 20,
-    textAlign: 'left',
-    fontWeight: '400',
-  },
-
-  sectionTitle: {
-    fontSize: 13,
-    letterSpacing: 2,
-    color: '#5c5b5b',
-    marginTop: 10,
-    marginBottom: 25,
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-
-  label: {
-    fontSize: 12,
-    color: '#555',
-    letterSpacing: 1,
-    marginBottom: 4,
-  },
-
-  inputWrapper: {
-    marginBottom: 22,
-  },
-
-  input: {
-    fontSize: 16,
-    paddingVertical: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: '#222',
-    color: '#111',
-  },
-
-  selectField: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#222',
-    paddingVertical: 12,
-    marginBottom: 22,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-
-  selectText: {
-    fontSize: 16,
-    color: '#111',
-  },
-
-  arrow: {
-    fontSize: 18,
-    color: '#111',
-  },
-  backIcon: { height: 20, width: 20, tintColor: Colors.OFF_GREY },
-
-  houseContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    gap: 4,
-    paddingHorizontal: 0,
-  },
-
-  card: {
-    width: CARD_WIDTH - 10,
-    marginBottom: 28,
-  },
-
-  cardImage: {
-    width: '100%',
-    height: 180,
-    borderRadius: 4,
-    backgroundColor: '#eee',
-  },
-
-  cardTitle: {
-    marginTop: 10,
-    fontSize: 18,
-    color: '#2b2b2b',
-    fontFamily: 'serif', // optional
-  },
-
-  cardSelect: {
-    marginTop: 2,
-    fontSize: 12,
-    letterSpacing: 1,
-    color: '#777',
-  },
-  borderBottom: {
-    borderBottomWidth: 1,
-    borderColor: '#000',
-    paddingBottom: 5,
-  },
-
-  marketingTitle: {
-    fontSize: 12,
-    letterSpacing: 2,
-    color: '#5c5b5b',
-    marginTop: 10,
-    marginBottom: 25,
-    textAlign: 'center',
+    fontSize: 26,
     fontWeight: '600',
+    color: '#1A1A1A',
+    textAlign: 'center',
+    marginTop: 20,
+    marginBottom: 6,
+    letterSpacing: 0.5,
+  },
+  subTitle: {
+    fontSize: 15,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 30,
   },
 
-  //  last content
-
-  row: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    textAlign: 'justify',
-    marginBottom: 22,
+  sectionCard: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 6,
   },
-
-  box: {
-    width: 18,
-    height: 18,
-    borderWidth: 1.5,
-    borderColor: '#000',
-    borderRadius: 2,
-    marginTop: 3,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  boxChecked: {
-    backgroundColor: '#e5d8c5',
-  },
-
-  tick: {
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-
-  text: {
-    flex: 1,
-    marginLeft: 12,
+  sectionHeader: {
     fontSize: 14,
-    lineHeight: 20,
-    color: '#2b2b2b',
-    textAlign: 'justify',
-  },
-
-  //  pages last content
-
-  lastContainer: {
-    padding: 0,
-    // backgroundColor: '#f7f5f1',
-    flex: 1,
-  },
-
-  paragraph: {
-    fontSize: 14,
-    lineHeight: 20,
-    color: '#2b2b2b',
+    letterSpacing: 2,
+    fontWeight: '700',
+    color: '#8C6B4B', // Gold-Brown luxury tone
     marginBottom: 20,
-    textAlign: 'justify',
   },
 
-  link: {
-    textDecorationLine: 'underline',
+  phoneRow: { flexDirection: 'row', alignItems: 'flex-end' },
+
+  readOnlyContainer: { marginTop: 8 },
+  readOnlyHint: {
+    fontSize: 12,
+    color: '#888',
+    marginTop: 4,
+    fontStyle: 'italic',
   },
 
+  actionContainer: { marginTop: 20, paddingHorizontal: 4 },
   confirmBtn: {
-    borderWidth: 1.5,
-    borderColor: '#000',
+    backgroundColor: '#1A1A1A',
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  confirmText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: 1,
+  },
+  disabledBtn: { opacity: 0.7 },
+
+  cancelBtn: {
     paddingVertical: 14,
     alignItems: 'center',
-    marginTop: 24,
-    marginBottom: 16,
   },
-
-  confirmText: {
-    fontSize: 14,
-    letterSpacing: 1,
+  cancelText: {
+    color: '#666',
+    fontSize: 15,
     fontWeight: '500',
   },
 
-  cancel: {
-    textAlign: 'center',
-    fontSize: 14,
-    letterSpacing: 1,
+  errorText: {
+    color: '#E53935',
+    fontSize: 12,
+    marginTop: 4,
+    marginLeft: 4,
   },
 });

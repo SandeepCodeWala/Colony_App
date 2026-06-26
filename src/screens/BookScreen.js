@@ -20,36 +20,34 @@ const BookScreen = () => {
   const navigation = useNavigation();
 
   // ✅ Get stored user and membership number from Redux correctly
-const user = useSelector(state => state.auth?.user);
-const membershipNumber = useSelector(state => state.auth?.membershipNumber);
-const fullState = useSelector(state => state);
-console.log("FULL REDUX STATE:", fullState);
+  const user = useSelector(state => state.auth?.user);
+  const membershipNumber = useSelector(state => state.auth?.membershipNumber);
+  const fullState = useSelector(state => state);
+  console.log('FULL REDUX STATE:', fullState);
 
   // Local UI states
   const [UserName, setUserName] = React.useState('');
   const [membership, setMembership] = React.useState('');
 
   // When Redux updates → update UI
-useEffect(() => {
-  if (user?.name) {
-    setUserName(user.name);
-  }
-  
-  if (membershipNumber) {
-    setMembership(membershipNumber);
-  }
-}, [user, membershipNumber]);
+  useEffect(() => {
+    if (user?.name) {
+      setUserName(user.name);
+    }
 
- 
+    if (membershipNumber) {
+      setMembership(membershipNumber);
+    }
+  }, [user, membershipNumber]);
 
- const handleReserveTable = () => {
-  if (user?.membership_number || membershipNumber) {
-    navigation.navigate('ReserveLounge', { screen: 'table' });
-  } else {
-    navigation.navigate('Login');
-    showToast('error', 'User details not found. Please log in again.');
-  }
-};
+  const handleReserveTable = () => {
+    if (user?.membership_number || membershipNumber) {
+      navigation.navigate('ReserveLounge', { screen: 'table' });
+    } else {
+      navigation.navigate('Login');
+      showToast('error', 'User details not found. Please log in again.');
+    }
+  };
   return (
     <View style={styles.container}>
       {/* ---------- Header ---------- */}
@@ -61,8 +59,7 @@ useEffect(() => {
         contentContainerStyle={{ paddingBottom: 40 }}
       >
         <View style={{ marginTop: 10 }}>
-          {/* ---------- Lounge Section ---------- */}
-          <View style={styles.card}>
+          {/* <View style={styles.card}>
             <ImageBackground
               source={AppImages.lounge}
               imageStyle={{ borderRadius: 16 }}
@@ -77,7 +74,7 @@ useEffect(() => {
                   a time.
                 </Text>
 
-                {/* Only the button is touchable */}
+                
                 <Button
                   title="Reserve a Lounge"
                   style={styles.reserveButton}
@@ -86,7 +83,7 @@ useEffect(() => {
                 />
               </View>
             </ImageBackground>
-          </View>
+          </View> */}
 
           {/* ---------- Restaurant Section ---------- */}
           <View style={[styles.card, { marginTop: 24 }]}>

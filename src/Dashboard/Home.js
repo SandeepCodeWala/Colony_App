@@ -135,12 +135,14 @@ const Home = () => {
               />
             ))}
           </View>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => handleReserveTable(item?.screen)}
-          >
-            <Text style={styles.buttonText}>{item.buttonText}</Text>
-          </TouchableOpacity>
+          {item.title !== 'Lounge' && (
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => handleReserveTable(item?.screen)}
+            >
+              <Text style={styles.buttonText}>{item.buttonText}</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </View>
@@ -175,8 +177,8 @@ const styles = StyleSheet.create({
     height,
   },
   image: {
-    width: 400,
-    height: 400,
+    width,
+    height,
     resizeMode: 'cover',
   },
   overlay: {

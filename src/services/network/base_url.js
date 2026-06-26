@@ -1,14 +1,13 @@
 const baseURL = {
-  base_url: 'http://localhost:2000//user/',
-  base_url1:'http://localhost:2000//'
-  };
+  base_url: ' https://moistness-shudder-partition.ngrok-free.dev/user/',
+  base_url1: ' https://moistness-shudder-partition.ngrok-free.dev/',
+};
 
-// export default baseURL;
-
+export default baseURL;
 
 // const baseURL = {
 //   base_url: 'http://colony-backend-server.paprikaventures.com/user/',
 //   base_url1: 'http://colony-backend-server.paprikaventures.com/'
 // };
 
-export default baseURL;
+// export default baseURL;

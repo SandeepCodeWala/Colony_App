@@ -1,124 +1,121 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Image,
   TouchableOpacity,
-  ScrollView,
-  Dimensions,
-  Alert, // Added missing import
-  ActivityIndicator, // Added missing import
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
-
-import ReserveHeader from '../components/ReserveHeader';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-import { logout } from '../redux/slices/authSlice'; 
+import { logout } from '../redux/slices/authSlice';
 import { postApi } from '../services/network/api';
-import { Fonts, Colors } from '../res'; // Assuming these exist in your project
-
-const { width } = Dimensions.get('window');
+import { AppImages, Fonts } from '../res';
+import PremiumTheme from '../res/PremiumTheme';
+import { CravPage, PremiumCard } from '../components/CravPremium';
 
 export default function Settings() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  
-  // Selectors from Redux
-  const membershipNumber = useSelector(state => state.auth.membershipNumber);
-  const name = useSelector(state => state.auth.user?.name || 'Member');
-  const token = useSelector((state) => state.auth.token);
+
+  const membershipNumber = useSelector(
+    state => state.auth.membershipNumber || state.auth.user?.membership_number,
+  );
+  const user = useSelector(state => state.auth.user);
+  const token = useSelector(state => state.auth.token);
+
+  const name = user?.name || 'Member';
+  const points = user?.loyalty_points ?? 0;
+  const spent = user?.total_spent || '0.00';
 
   const [isLoading, setIsLoading] = useState(false);
 
   const menuItems = [
-    { id: 1, title: 'Edit Profile', onPress: () => navigation.navigate("EditProfile") },
-    { id: 10, title: 'My Reservations', onPress: () => navigation.navigate("ReservationHistory") },
-    { id: 2, title: 'My Statement', onPress: () => navigation.navigate("MyStatement") },
-    { id: 3, title: 'My Benefits', onPress: () => navigation.navigate("ReservationHistory") },
-    { id: 4, title: 'Registered Offers', onPress: () => navigation.navigate("ReservationHistory") },
-    { id: 5, title: 'Change Password', onPress: () => navigation.navigate("ChangePassword") },
-    { id: 6, title: 'Manage Your Consent', onPress: () => navigation.navigate("ReservationHistory") },
-    { id: 7, title: 'Settings', onPress: () => navigation.navigate("ReservationHistory") },
-    { id: 8, title: 'Terms & Conditions', onPress: () => navigation.navigate("ReservationHistory") },
-    { id: 9, title: 'Help & Support', onPress: () => navigation.navigate("ReservationHistory") },
+    {
+      id: 1,
+      title: 'Edit Profile',
+      sub: 'Personal details and address',
+      onPress: () => navigation.navigate('EditProfile'),
+    },
+    {
+      id: 10,
+      title: 'My Reservations',
+      sub: 'Upcoming and past bookings',
+      onPress: () => navigation.navigate('ReservationHistory'),
+    },
+    {
+      id: 2,
+      title: 'My Statement',
+      sub: 'Points and transaction history',
+      onPress: () => navigation.navigate('MyStatement'),
+    },
+    {
+      id: 3,
+      title: 'My Benefits',
+      sub: 'Tier benefits and privileges',
+      onPress: () => navigation.navigate('MyBenefits'),
+    },
+    {
+      id: 4,
+      title: 'Registered Offers',
+      sub: 'Offers linked to your account',
+      onPress: () => navigation.navigate('RegisteredOffers'),
+    },
+    {
+      id: 5,
+      title: 'Change Password',
+      sub: 'Update account security',
+      onPress: () => navigation.navigate('ChangePassword'),
+    },
+    {
+      id: 6,
+      title: 'Manage Your Consent',
+      sub: 'Communication preferences',
+      onPress: () => navigation.navigate('ManageConsents'),
+    },
+    {
+      id: 7,
+      title: 'Settings',
+      sub: 'App and account settings',
+      onPress: () => navigation.navigate('Settings'),
+    },
+    {
+      id: 8,
+      title: 'Terms & Conditions',
+      sub: 'Membership terms',
+      onPress: () => navigation.navigate('TermsConditions'),
+    },
+    {
+      id: 9,
+      title: 'Help & Support',
+      sub: 'Contact support team',
+      onPress: () => navigation.navigate('HelpSupport'),
+    },
   ];
 
   const handleLogout = () => {
-    // This now works because Alert is imported
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to log out of Colony?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Logout', 
-          style: 'destructive',
-          onPress: async () => {
-            setIsLoading(true);
-            try {
-              // Passing token for backend middleware identification
-              const response = await postApi('logout', {}, token); 
-
-              // Clear Redux state
-              dispatch(logout());
-
-              if (response?.success) {
-                console.log("Logged out from server successfully");
-              }
-            } catch (error) {
-              console.error("Logout API failed:", error);
-              // Force local logout if network fails
-              dispatch(logout()); 
-            } finally {
-              setIsLoading(false);
-              // Navigate to Login screen
-              navigation.navigate('Login');
-            }
-          } 
+    Alert.alert('Logout', 'Are you sure you want to log out of Colony?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: async () => {
+          setIsLoading(true);
+          try {
+            await postApi('logout', {}, token);
+            dispatch(logout());
+          } catch (error) {
+            dispatch(logout());
+          } finally {
+            setIsLoading(false);
+            navigation.navigate('Login');
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
-
-  //   const handleDeleteAccount = () => {
-  //   // This now works because Alert is imported
-  //   Alert.alert(
-  //     'Delete Account',
-  //     'Are you sure you want to delete your account?',
-  //     [
-  //       { text: 'Cancel', style: 'cancel' },
-  //       { 
-  //         text: 'Delete', 
-  //         style: 'destructive',
-  //         onPress: async () => {
-  //           setIsLoading(true);
-  //           try {
-  //             // Passing token for backend middleware identification
-  //             const response = await postApi('logout', {}, token); 
-
-  //             // Clear Redux state
-  //             dispatch(logout());
-
-  //             if (response?.success) {
-  //               console.log("Logged out from server successfully");
-  //             }
-  //           } catch (error) {
-  //             console.error("Logout API failed:", error);
-  //             // Force local logout if network fails
-  //             dispatch(logout()); 
-  //           } finally {
-  //             setIsLoading(false);
-  //             // Navigate to Login screen
-  //             navigation.navigate('Login');
-  //           }
-  //         } 
-  //       },
-  //     ]
-  //   );
-  // };
-
-
 
   const handleDeleteAccount = () => {
     Alert.alert(
@@ -126,196 +123,427 @@ export default function Settings() {
       'Are you sure you want to delete your account? This action cannot be undone.',
       [
         { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Delete', 
+        {
+          text: 'Delete',
           style: 'destructive',
           onPress: async () => {
             setIsLoading(true);
             try {
-              // 1. Hit the dedicated delete profile endpoint using the bearer token
-              const response = await postApi('wipe-profile', {}, token); 
-
+              const response = await postApi('wipe-profile', {}, token);
               if (response?.success) {
-                console.log("Account wiped from server successfully");
-                // 2. Clear Redux state only after a successful server deletion
                 dispatch(logout());
                 navigation.navigate('Signup');
               } else {
-                // Handle case where server sent a 400/500 validation failure
-                Alert.alert("Error", response?.message || "Could not delete account. Please try again.");
+                Alert.alert(
+                  'Error',
+                  response?.message ||
+                    'Could not delete account. Please try again.',
+                );
               }
             } catch (error) {
-              console.error("Delete Account API failed:", error);
               Alert.alert(
-                "Connection Error", 
-                "Failed to delete your account from the server. Please check your internet connection."
+                'Connection Error',
+                'Failed to delete your account from the server. Please check your internet connection.',
               );
             } finally {
               setIsLoading(false);
             }
-          } 
+          },
         },
-      ]
+      ],
     );
   };
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <ReserveHeader title={'Settings'} onBack={() => navigation.goBack()} />
+    <CravPage title="" header="reserve">
+      <View style={styles.hero}>
+        <Text style={styles.kicker}>MY CRAV</Text>
+        <Text style={styles.heroTitle}>Account</Text>
+        <Text style={styles.heroSub}>
+          Manage your profile, reservations, benefits and account preferences.
+        </Text>
+      </View>
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
-        {/* Profile Box */}
-        <View style={{ height: 220 }}>
-          <View style={styles.topBanner}>
-            <View style={styles.profileBox}>
-              <Image
-                source={{ uri: 'https://i.pravatar.cc/150?img=45' }}
-                style={styles.profileImage}
-              />
-              <Text style={styles.profileName}>{name}</Text>
-              <Text style={styles.profileId}>
-                Membership no. {membershipNumber || 'N/A'}
-              </Text>
-            </View>
+      <PremiumCard style={styles.profileCard}>
+        <View style={styles.profileTop}>
+          <View style={styles.avatarWrap}>
+            <Image
+              source={AppImages.logo}
+              style={styles.avatar}
+              resizeMode="contain"
+            />
+          </View>
+
+          <View style={styles.profileInfo}>
+            <Text style={styles.welcome}>Welcome back</Text>
+            <Text numberOfLines={1} style={styles.profileName}>
+              {name}
+            </Text>
+            <Text style={styles.profileId}>
+              Membership no. {membershipNumber || 'N/A'}
+            </Text>
           </View>
         </View>
 
-        <View style={{ flex: 1, marginTop: 10 }}>
-          {/* Menu Options */}
-          {menuItems.map(item => (
-            <TouchableOpacity key={item.id} onPress={item?.onPress} style={styles.menuRow}>
-              <Text style={styles.menuText}>{item.title}</Text>
-              <Text style={styles.arrow}>›</Text>
-            </TouchableOpacity>
-          ))}
+        {/* <View style={styles.statsRow}>
+          <View style={styles.statBox}>
+            <Text style={styles.statValue}>{points}</Text>
+            <Text style={styles.statLabel}>Points</Text>
+          </View>
 
-          {/* Logout Button */}
-          <TouchableOpacity 
-            style={[styles.menuRow, styles.logoutRow]} 
-            onPress={handleLogout}
-            disabled={isLoading}
+          <View style={styles.statDivider} />
+
+          <View style={styles.statBox}>
+            <Text style={styles.statValue}>£{spent}</Text>
+            <Text style={styles.statLabel}>Spent</Text>
+          </View>
+        </View> */}
+      </PremiumCard>
+
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Account Menu</Text>
+        <Text style={styles.sectionHint}>Tap to manage</Text>
+      </View>
+
+      <View style={styles.menuWrap}>
+        {menuItems.map((item, index) => (
+          <TouchableOpacity
+            key={item.id}
+            activeOpacity={0.8}
+            onPress={item.onPress}
+            style={[styles.menuRow, index === 0 && styles.featuredMenuRow]}
           >
-            {isLoading ? (
-              <ActivityIndicator size="small" color="#D30000" />
-            ) : (
-              <View style={styles.logoutContent}>
-                <Text style={styles.logoutText}>Logout</Text>
-                <Text style={[styles.arrow, { color: '#D30000' }]}>›</Text>
-              </View>
-            )}
+            <View style={styles.menuNumber}>
+              <Text style={styles.menuNumberText}>
+                {String(index + 1).padStart(2, '0')}
+              </Text>
+            </View>
+
+            <View style={styles.menuContent}>
+              <Text style={styles.menuText}>{item.title}</Text>
+              <Text style={styles.menuSub}>{item.sub}</Text>
+            </View>
+
+            <View style={styles.arrowCircle}>
+              <Text style={styles.arrow}>›</Text>
+            </View>
           </TouchableOpacity>
-             <TouchableOpacity 
-            style={[styles.menuRow, styles.logoutRow]} 
-            onPress={handleDeleteAccount}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <ActivityIndicator size="small" color="#D30000" />
-            ) : (
-              <View style={styles.logoutContent}>
-                <Text style={styles.logoutText}>Delete Account</Text>
-                <Text style={[styles.arrow, { color: '#D30000' }]}>›</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </View>
+        ))}
+      </View>
+
+      <View style={styles.securityBox}>
+        <Text style={styles.securityTitle}>Account Actions</Text>
+
+        <TouchableOpacity
+          style={styles.actionRow}
+          onPress={handleLogout}
+          disabled={isLoading}
+          activeOpacity={0.8}
+        >
+          {isLoading ? (
+            <ActivityIndicator size="small" color={T.ketchup} />
+          ) : (
+            <>
+              <Text style={styles.actionText}>Logout</Text>
+              <Text style={styles.actionArrow}>›</Text>
+            </>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.actionRow, styles.deleteRow]}
+          onPress={handleDeleteAccount}
+          disabled={isLoading}
+          activeOpacity={0.8}
+        >
+          {isLoading ? (
+            <ActivityIndicator size="small" color={T.ketchup} />
+          ) : (
+            <>
+              <Text style={[styles.actionText, styles.deleteText]}>
+                Delete Account
+              </Text>
+              <Text style={styles.actionArrow}>›</Text>
+            </>
+          )}
+        </TouchableOpacity>
+      </View>
+    </CravPage>
   );
 }
 
+const fontMed = Fonts.instrumentSansMedium;
+const fontReg = Fonts.instrumentSansRegular;
+const T = PremiumTheme;
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFF9EF',
+  hero: {
+    paddingTop: 18,
+    paddingBottom: 24,
   },
-  topBanner: {
-    width: width,
-    height: 128,
-    backgroundColor: '#F7E9D3',
-    borderBottomLeftRadius: 34,
-    borderBottomRightRadius: 34,
-    borderBottomWidth: 1,
-    borderColor: '#E8D8C3',
+
+  kicker: {
+    color: T.tomato,
+    fontFamily: fontMed,
+    fontSize: 11,
+    letterSpacing: 3,
+    textTransform: 'uppercase',
+    textAlign: 'center',
   },
-  profileBox: {
-    marginTop: 42,
+
+  heroTitle: {
+    color: T.ink,
+    fontFamily: fontMed,
+    fontSize: 38,
+    lineHeight: 44,
+    marginTop: 6,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+    letterSpacing: -0.6,
+  },
+
+  heroSub: {
+    marginTop: 10,
+    color: T.muted,
+    fontFamily: fontReg,
+    fontSize: 14,
+    lineHeight: 22,
+    textAlign: 'center',
+    paddingHorizontal: 14,
+  },
+
+  profileCard: {
+    marginBottom: 18,
+    padding: 18,
+    borderRadius: 30,
+  },
+
+  profileTop: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 18,
-    paddingVertical: 18,
-    borderRadius: 28,
-    backgroundColor: '#FFFFFF',
+  },
+
+  avatarWrap: {
+    width: 78,
+    height: 78,
+    borderRadius: 26,
+    backgroundColor: '#FFF4E7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
     borderWidth: 1,
-    borderColor: '#E8D8C3',
-    shadowColor: '#6B3517',
-    shadowOpacity: 0.12,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 5,
+    borderColor: '#F0D7C1',
   },
-  profileImage: {
-    width: 96,
-    height: 96,
-    borderRadius: 100,
-    borderWidth: 4,
-    borderColor: '#FFFFFF',
-    backgroundColor: '#F7E9D3',
+
+  avatar: {
+    width: 56,
+    height: 56,
   },
+
+  profileInfo: {
+    flex: 1,
+  },
+
+  welcome: {
+    color: T.tomato,
+    fontFamily: fontMed,
+    fontSize: 11,
+    letterSpacing: 1.8,
+    textTransform: 'uppercase',
+    marginBottom: 4,
+  },
+
   profileName: {
-    fontSize: 22,
-    fontWeight: '700',
-    marginTop: 12,
-    color: '#24150D',
-    letterSpacing: 0.2,
+    fontFamily: fontMed,
+    fontSize: 26,
+    color: T.ink,
+    letterSpacing: -0.4,
   },
+
   profileId: {
-    marginTop: 5,
+    fontFamily: fontReg,
     fontSize: 13,
-    color: '#7D6B5B',
-    letterSpacing: 0.3,
+    color: T.muted,
+    marginTop: 5,
   },
-  menuRow: {
-    backgroundColor: '#FFFFFF',
-    marginHorizontal: 18,
-    marginTop: 12,
-    paddingVertical: 18,
-    paddingHorizontal: 18,
-    borderRadius: 20,
+
+  statsRow: {
+    flexDirection: 'row',
+    marginTop: 18,
+    backgroundColor: '#FFF8F1',
+    borderRadius: 22,
+    paddingVertical: 14,
+    borderWidth: 1,
+    borderColor: '#F1DFCD',
+  },
+
+  statBox: {
+    flex: 1,
+    alignItems: 'center',
+  },
+
+  statValue: {
+    fontFamily: fontMed,
+    fontSize: 20,
+    color: T.ink,
+  },
+
+  statLabel: {
+    marginTop: 3,
+    fontFamily: fontReg,
+    fontSize: 12,
+    color: T.muted,
+  },
+
+  statDivider: {
+    width: 1,
+    backgroundColor: '#EAD7C6',
+  },
+
+  sectionHeader: {
+    marginTop: 4,
+    marginBottom: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-end',
+  },
+
+  sectionTitle: {
+    fontFamily: fontMed,
+    color: T.ink,
+    fontSize: 18,
+  },
+
+  sectionHint: {
+    fontFamily: fontReg,
+    color: T.muted,
+    fontSize: 12,
+  },
+
+  menuWrap: {
+    marginTop: 2,
+  },
+
+  menuRow: {
+    backgroundColor: T.surface,
+    borderRadius: 24,
     borderWidth: 1,
-    borderColor: '#E8D8C3',
-    elevation: 2,
-    shadowColor: '#6B3517',
+    borderColor: T.border,
+    padding: 14,
+    marginBottom: 11,
+    flexDirection: 'row',
+    alignItems: 'center',
+
+    shadowColor: '#7E3F18',
     shadowOpacity: 0.06,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 2,
   },
+
+  featuredMenuRow: {
+    backgroundColor: '#FFF6EC',
+    borderColor: '#EAC8A7',
+  },
+
+  menuNumber: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: '#FFF1DE',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 13,
+  },
+
+  menuNumberText: {
+    color: T.goldDark,
+    fontFamily: fontMed,
+    fontSize: 11,
+    letterSpacing: 0.5,
+  },
+
+  menuContent: {
+    flex: 1,
+  },
+
   menuText: {
-    fontSize: 15,
-    color: '#24150D',
-    fontWeight: '600',
+    fontFamily: fontMed,
+    fontSize: 15.5,
+    color: T.ink,
   },
+
+  menuSub: {
+    fontFamily: fontReg,
+    fontSize: 12.5,
+    color: T.muted,
+    marginTop: 4,
+    lineHeight: 17,
+  },
+
+  arrowCircle: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#FFF2E4',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 10,
+  },
+
   arrow: {
-    fontSize: 24,
-    color: '#B7782E',
+    fontSize: 26,
+    color: T.goldDark,
+    marginTop: -2,
   },
-  logoutRow: {
+
+  securityBox: {
+    marginTop: 10,
+    marginBottom: 24,
+    padding: 14,
+    borderRadius: 26,
+    backgroundColor: '#FFF8F4',
+    borderWidth: 1,
+    borderColor: '#F0D7C9',
+  },
+
+  securityTitle: {
+    fontFamily: fontMed,
+    color: T.ink,
+    fontSize: 16,
+    marginBottom: 10,
+  },
+
+  actionRow: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#F0D7C9',
+    paddingVertical: 15,
+    paddingHorizontal: 16,
+    marginBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+
+  deleteRow: {
     backgroundColor: '#FFF0EA',
-    borderColor: '#F4C9B8',
-    marginBottom: 20,
+    borderColor: '#F2C5B6',
   },
-  logoutContent: {
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    flex: 1, 
-    alignItems: 'center'
-  },
-  logoutText: {
-    color: '#C43A1E',
-    fontWeight: '700',
+
+  actionText: {
+    color: T.ink,
+    fontFamily: fontMed,
     fontSize: 15,
+  },
+
+  deleteText: {
+    color: T.ketchup,
+  },
+
+  actionArrow: {
+    color: T.ketchup,
+    fontSize: 25,
   },
 });

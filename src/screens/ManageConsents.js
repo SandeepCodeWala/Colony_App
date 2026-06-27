@@ -1,25 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { CravPage, Hero, EmptyState } from '../components/CravPremium';
 
-const EditProfileScreen = () => {
+const Screen = () => {
+  const navigation = useNavigation();
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Manage consents</Text>
-    </View>
+    <CravPage title="MANAGE CONSENTS" onBack={() => navigation.goBack()}>
+      <Hero kicker="CRAV ACCOUNT" title="Manage consents" subtitle="Control the communication permissions and preferences linked with your account." />
+      <EmptyState title="Manage consents" subtitle="Content is kept same from your original app, design only is upgraded." />
+    </CravPage>
   );
 };
 
-export default EditProfileScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFF9EF',
-  },
-  text: {
-    fontSize: 20,
-    fontWeight: '600',
-  },
-});
+export default Screen;

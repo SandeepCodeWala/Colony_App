@@ -19,18 +19,19 @@ import axios from 'axios';
 import baseURL from '../services/network/base_url';
 import { showToast } from '../services/Toast';
 import ActivityIndicator from '../components/ActivityIndicator';
+import PremiumTheme from '../res/PremiumTheme';
 import { useSelector } from 'react-redux';
 
 const { width } = Dimensions.get('window');
 
 // --- 1. Colors Configuration ---
 const Colors = {
-  Muted_Gold: '#b8860b',
-  Primary_Red: '#e63946',
-  Light_Gray: '#f5f5f5',
-  Text_Dark: '#333',
-  Text_Muted: '#666',
-  Success_Green: '#2e7d32',
+  Muted_Gold: PremiumTheme.gold,
+  Primary_Red: PremiumTheme.tomato,
+  Light_Gray: PremiumTheme.paper,
+  Text_Dark: PremiumTheme.ink,
+  Text_Muted: PremiumTheme.muted,
+  Success_Green: PremiumTheme.success,
 };
 
 // --- 2. ReservationCard Sub-Component ---

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -6,620 +6,689 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
-  Dimensions,
+  ActivityIndicator,
+  Platform,
 } from 'react-native';
-import ReserveHeader from '../components/ReserveHeader';
-import { AppImages, Colors } from '../res';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
-import CommonTextInput from '../components/TextInputField';
+import { useSelector } from 'react-redux';
 import SettingHeader from '../components/SettingHeader';
-import CommonDropdown from '../components/CommonDropdown';
-import CommonCheckboxGroup from '../components/CommonCheckboxGroup';
+import { Fonts } from '../res';
+import PremiumTheme from '../res/PremiumTheme';
+import { getApi, postApi } from '../services/network/api';
+import { showToast } from '../services/Toast';
 
-import CommonRadioGroup from '../components/CommonRadioButton';
-
-const titleData = [
-  { label: 'Mr', value: 'Mr' },
-  { label: 'Ms', value: 'Ms' },
-  { label: 'Mrs', value: 'Mrs' },
-];
-
-const cardDummyData = [
-  {
-    id: '1',
-    title: 'Stays',
-    image: AppImages.restaurant,
-  },
-  {
-    id: '2',
-    title: 'Dining',
-    image: AppImages.lounge,
-  },
-  {
-    id: '3',
-    title: 'Well-being',
-    image: AppImages.events,
-  },
-  {
-    id: '4',
-    title: 'Passions',
-    image: AppImages.restaurant,
-  },
-];
-
-const CommonConsentCheckbox = ({ checked, onPress, children }) => {
-  return (
-    <TouchableOpacity style={styles.row} activeOpacity={0.8} onPress={onPress}>
-      <View style={[styles.box, checked && styles.boxChecked]}>
-        {checked && <Text style={styles.tick}>✓</Text>}
-      </View>
-
-      <Text style={styles.text}>{children}</Text>
-    </TouchableOpacity>
-  );
+const emptyForm = {
+  name: '',
+  phone: '',
+  membership_number: '',
+  total_spent: '0.00',
+  loyalty_points: '0',
+  anniversary_date: null,
+  birthday_date: null,
+  title: '',
+  gender: '',
+  nationality: '',
+  workNumber: '',
+  homeNumber: '',
+  addressLineOne: '',
+  addressLinetwo: '',
+  addressLinethree: '',
+  city: '',
+  country: '',
 };
 
-const { width } = Dimensions.get('window');
-const CARD_WIDTH = (width - 48) / 2;
-const EditProfileScreen = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [title, setTitle] = useState(null);
-  const [type, setType] = useState('mobile');
-  const [selected, setSelected] = useState([]);
-  const [offers, setOffers] = useState(true);
-  const [partners, setPartners] = useState(true);
+const formatViewDate = value => {
+  if (!value) return 'Not added';
 
-  const navigation = useNavigation();
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return 'Not added';
 
-  const onSelect = item => {
-    console.log('Selected:', item.title);
-  };
+  return d.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+};
+
+const formatApiDate = value => {
+  if (!value) return null;
+
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return null;
+
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+
+  return `${yyyy}-${mm}-${dd}`;
+};
+
+const Field = ({
+  label,
+  value,
+  editable,
+  onChangeText,
+  placeholder,
+  keyboardType,
+}) => {
   return (
-    <View style={styles.container}>
-      {/* ---------- Header ---------- */}
-      <SettingHeader
-        title={'PERSONAL DETAILS'}
-        onBack={() => navigation.goBack()}
-      />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 40, paddingHorizontal: 25 }}
-      >
-        <Text style={styles.mainTitle}>A place to update your details</Text>
-        <Text style={styles.subTitle}>
-          All fields are mandatory unless stated otherwise.
-        </Text>
+    <View style={styles.fieldBox}>
+      <Text style={styles.label}>{label}</Text>
 
-        {/* Section */}
-        <Text style={styles.sectionTitle}>PERSONAL INFORMATION</Text>
-
-        <View style={styles.formContainer}>
-          <CommonDropdown
-            label="TITLE (OPTIONAL)"
-            data={titleData}
-            value={title}
-            onChange={setTitle}
-          />
-          <CommonTextInput
-            label="FIRST NAME"
-            value={firstName}
-            onChangeText={setFirstName}
-            showError={!firstName}
-            showRightIcon={true}
-            iconName={
-              <Image source={AppImages.exclamation} style={styles.backIcon} />
-            }
-          />
-
-          <CommonTextInput
-            label="MIDDLE NAME (OPTIONAL)"
-            value={lastName}
-            onChangeText={setLastName}
-            showError={!lastName}
-          />
-
-          <CommonTextInput
-            label="Last NAME"
-            value={lastName}
-            onChangeText={setLastName}
-            showError={!lastName}
-            showRightIcon={true}
-            iconName={
-              <Image source={AppImages.exclamation} style={styles.backIcon} />
-            }
-          />
-
-          <View style={{ marginTop: 10 }}>
-            <CommonDropdown
-              label="NATIONALITY (OPTIONAL)"
-              data={titleData}
-              value={title}
-              onChange={setTitle}
-            />
-          </View>
-          <CommonTextInput
-            label="EMAIL"
-            value={lastName}
-            onChangeText={setLastName}
-            showError={!lastName}
-            showRightIcon={true}
-            iconName={
-              <Image source={AppImages.exclamation} style={styles.backIcon} />
-            }
-          />
-
-          <View style={{ marginTop: 10 }}>
-            <CommonDropdown
-              label="GENDER (OPTIONAL)"
-              data={titleData}
-              value={title}
-              onChange={setTitle}
-            />
-          </View>
-        </View>
-
-        {/* Address Section */}
-        <Text style={[styles.sectionTitle, { marginTop: 40 }]}>
-          ADDRESS INFORMATION
-        </Text>
-
-        <View style={styles.formContainer}>
-          <CommonTextInput
-            label="ADDRESS LINE 1/P.O. BOX (OPTIONAL)"
-            value={firstName}
-            onChangeText={setFirstName}
-            showError={!firstName}
-          />
-          <CommonTextInput
-            label="ADDRESS LINE 2 (OPTIONAL)"
-            value={firstName}
-            onChangeText={setFirstName}
-            showError={!firstName}
-          />
-          <CommonTextInput
-            label="ADDRESS LINE 3 (OPTIONAL)"
-            value={firstName}
-            onChangeText={setFirstName}
-            showError={!firstName}
-          />
-          <CommonTextInput
-            label="CITY (OPTIONAL)"
-            value={firstName}
-            onChangeText={setFirstName}
-            showError={!firstName}
-          />
-          <View style={{ marginTop: 10 }}>
-            <CommonDropdown
-              label="COUNTRY OF RESIDENCE"
-              data={titleData}
-              value={title}
-              onChange={setTitle}
-            />
-          </View>
-        </View>
-
-        {/* Address Section */}
-        <Text style={[styles.sectionTitle, { marginTop: 40 }]}>
-          CONTACT INFORMATION
-        </Text>
-        <Text style={styles.contactSubTitle}>
-          Please choose which telephone number you would prefer us to contact
-          you on
-        </Text>
-
-        <CommonRadioGroup
-          value={type}
-          onChange={setType}
-          options={[
-            { label: 'MOBILE', value: 'mobile' },
-            { label: 'WORK', value: 'work' },
-            { label: 'Home', value: 'home' },
-          ]}
+      {editable ? (
+        <TextInput
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder || label}
+          placeholderTextColor="#B8A89B"
+          keyboardType={keyboardType || 'default'}
+          style={styles.input}
         />
-        <View>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <View style={{ flex: 1, marginRight: 8, marginTop: 5 }}>
-              <CommonDropdown
-                label="CODE"
-                data={titleData}
-                value={title}
-                onChange={setTitle}
-              />
-            </View>
-            <View style={{ flex: 1, marginLeft: 8 }}>
-              <CommonTextInput
-                label="MOBILE NUMBER"
-                value={firstName}
-                onChangeText={setFirstName}
-                showError={!firstName}
-              />
-            </View>
-          </View>
-
-          {/* work number */}
-
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginTop: 10,
-            }}
-          >
-            <View style={{ flex: 1, marginRight: 8, marginTop: 5 }}>
-              <CommonDropdown
-                label="CODE"
-                data={titleData}
-                value={title}
-                onChange={setTitle}
-              />
-            </View>
-            <View style={{ flex: 1, marginLeft: 8 }}>
-              <CommonTextInput
-                label="WORK NUMBER"
-                value={firstName}
-                onChangeText={setFirstName}
-                showError={!firstName}
-              />
-            </View>
-          </View>
-
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginTop: 10,
-            }}
-          >
-            <View style={{ flex: 1, marginRight: 8, marginTop: 5 }}>
-              <CommonDropdown
-                label="CODE"
-                data={titleData}
-                value={title}
-                onChange={setTitle}
-              />
-            </View>
-            <View style={{ flex: 1, marginLeft: 8 }}>
-              <CommonTextInput
-                label="HOME NUMBER"
-                value={firstName}
-                onChangeText={setFirstName}
-                showError={!firstName}
-              />
-            </View>
-          </View>
-        </View>
-        <Text style={[styles.sectionTitle, { marginTop: 40 }]}>
-          COMMUNICATION PREFERENCE
-        </Text>
-        <Text style={styles.eventsTitle}>
-          Which of the following updates would you like to receive?
-        </Text>
-        <View style={styles.borderBottom}>
-          <CommonCheckboxGroup
-            values={selected}
-            onChange={setSelected}
-            options={[
-              { label: 'OFFERS', value: 'offers' },
-              { label: 'EVENTS', value: 'events' },
-              { label: 'NEWSLETTERS', value: 'newsletters' },
-            ]}
-          />
-        </View>
-        <Text style={[styles.eventsTitle, { marginTop: 20 }]}>
-          Tell us more of your personal preference.
-        </Text>
-
-        <View style={[styles.houseContainer, styles.borderBottom]}>
-          {cardDummyData.map(item => (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.card}
-              activeOpacity={0.8}
-              onPress={() => onSelect(item)}
-            >
-              <Image source={item.image} style={styles.cardImage} />
-
-              <Text style={styles.cardTitle}>{item.title}</Text>
-              <Text style={styles.cardSelect}>SELECT</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        <Text style={[styles.marketingTitle, { marginTop: 40 }]}>
-          MARKETING COMMUNICATION PREFERENCE
-        </Text>
-
-        {/* last content */}
-
-        <View style={styles.lastContainer}>
-          {/* Intro Text */}
-          <Text style={styles.paragraph}>
-            We tailor our marketing communications to your preferences. Further
-            details can be found in{' '}
-            <Text style={styles.link}>Jumeirah's Privacy Policy</Text>.
-          </Text>
-
-          {/* Checkbox 1 */}
-          <CommonConsentCheckbox
-            checked={offers}
-            onPress={() => setOffers(!offers)}
-          >
-            I would like to receive personalized offers, events and promotions
-            from Jumeirah. I understand that I may unsubscribe or change my
-            preferences at any time as described in Jumeirah's{' '}
-            <Text style={styles.link}>Privacy Notice</Text>.
-          </CommonConsentCheckbox>
-
-          {/* Checkbox 2 */}
-          <CommonConsentCheckbox
-            checked={partners}
-            onPress={() => setPartners(!partners)}
-          >
-            I would like Jumeirah to send me exclusive tailored offers from
-            Jumeirah's carefully selected partners. (Our partner list, which
-            changes from time to time, can be viewed{' '}
-            <Text style={styles.link}>online</Text>.)
-          </CommonConsentCheckbox>
-
-          {/* Terms */}
-          <Text style={styles.paragraph}>
-            By joining, I agree to Jumeirah One{' '}
-            <Text style={styles.link}>Terms and Conditions</Text> and confirm
-            that I am at least 18 years of age.
-          </Text>
-
-          {/* Buttons */}
-          <TouchableOpacity style={styles.confirmBtn}>
-            <Text style={styles.confirmText}>CONFIRM CHANGES</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity>
-            <Text style={styles.cancel}>CANCEL</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={{ height: 60 }} />
-      </ScrollView>
+      ) : (
+        <Text style={styles.value}>{value || 'Not added'}</Text>
+      )}
     </View>
   );
 };
 
-export default EditProfileScreen;
+const DateField = ({ label, value, editable, onPress }) => {
+  return (
+    <View style={styles.fieldBox}>
+      <Text style={styles.label}>{label}</Text>
+
+      {editable ? (
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={onPress}
+          style={styles.dateButton}
+        >
+          <Text style={styles.dateText}>{formatViewDate(value)}</Text>
+          <Text style={styles.calendarIcon}>📅</Text>
+        </TouchableOpacity>
+      ) : (
+        <Text style={styles.value}>{formatViewDate(value)}</Text>
+      )}
+    </View>
+  );
+};
+
+const EditProfile = () => {
+  const navigation = useNavigation();
+
+  const token = useSelector(state => state.auth?.token);
+
+  const [user, setUser] = useState({});
+  const [form, setForm] = useState(emptyForm);
+
+  const [isEdit, setIsEdit] = useState(false);
+  const [pageLoading, setPageLoading] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
+
+  const [showBirthdayPicker, setShowBirthdayPicker] = useState(false);
+  const [showAnniversaryPicker, setShowAnniversaryPicker] = useState(false);
+
+  const fillForm = data => {
+    setForm({
+      name: data?.name || '',
+      phone: data?.phone || '',
+      membership_number: data?.membership_number || '',
+      total_spent: data?.total_spent || '0.00',
+      loyalty_points: String(data?.loyalty_points ?? 0),
+
+      anniversary_date: data?.anniversary_date || null,
+      birthday_date: data?.birthday_date || null,
+
+      title: data?.title || '',
+      gender: data?.gender || '',
+      nationality: data?.nationality || '',
+      workNumber: data?.workNumber || '',
+      homeNumber: data?.homeNumber || '',
+      addressLineOne: data?.addressLineOne || '',
+      addressLinetwo: data?.addressLinetwo || '',
+      addressLinethree: data?.addressLinethree || '',
+      city: data?.city || '',
+      country: data?.country || '',
+    });
+  };
+
+  const getProfileData = async () => {
+    setPageLoading(true);
+
+    try {
+      const res = await getApi('get_profile', token);
+
+      if (res?.success) {
+        const profile = res?.data || {};
+        setUser(profile);
+        fillForm(profile);
+      } else {
+        setUser({});
+        fillForm({});
+        showToast('error', res?.message || 'Profile data not found');
+      }
+    } catch (error) {
+      console.log(error);
+      showToast('error', 'Failed to load profile');
+    } finally {
+      setPageLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (token) {
+      getProfileData();
+    }
+  }, [token]);
+
+  const updateField = (key, value) => {
+    setForm(prev => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  const handleCancel = () => {
+    fillForm(user);
+    setIsEdit(false);
+  };
+
+  const handleUpdate = async () => {
+    const obj = {
+      name: form.name || user?.name,
+      phone: form.phone || user?.phone,
+
+      anniversary_date:
+        formatApiDate(form.anniversary_date) || user?.anniversary_date,
+
+      birthday_date: formatApiDate(form.birthday_date) || user?.birthday_date,
+
+      title: form.title || user?.title,
+      gender: form.gender || user?.gender,
+      nationality: form.nationality || user?.nationality,
+      workNumber: form.workNumber || user?.workNumber,
+      homeNumber: form.homeNumber || user?.homeNumber,
+      addressLineOne: form.addressLineOne || user?.addressLineOne,
+      addressLinetwo: form.addressLinetwo || user?.addressLinetwo,
+      addressLinethree: form.addressLinethree || user?.addressLinethree,
+      city: form.city || user?.city,
+      country: form.country || user?.country,
+    };
+
+    setUpdateLoading(true);
+
+    try {
+      const res = await postApi('user/update_profile', obj, token);
+
+      if (res?.success) {
+        showToast('success', res?.message || 'Profile updated successfully');
+        setIsEdit(false);
+        getProfileData();
+      } else {
+        showToast('error', res?.message || 'Profile update failed');
+      }
+    } catch (error) {
+      console.log(error);
+      showToast('error', 'Something went wrong');
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+
+  const birthdayPickerValue = useMemo(() => {
+    return form.birthday_date ? new Date(form.birthday_date) : new Date();
+  }, [form.birthday_date]);
+
+  const anniversaryPickerValue = useMemo(() => {
+    return form.anniversary_date ? new Date(form.anniversary_date) : new Date();
+  }, [form.anniversary_date]);
+
+  return (
+    <View style={styles.container}>
+      <SettingHeader title="Edit Profile" onBack={() => navigation.goBack()} />
+
+      {pageLoading ? (
+        <View style={styles.loaderBox}>
+          <ActivityIndicator size="large" color={T.tomato || '#D84A2B'} />
+          <Text style={styles.loaderText}>Loading profile...</Text>
+        </View>
+      ) : (
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scroll}
+        >
+          <View style={styles.hero}>
+            <Text style={styles.kicker}>ACCOUNT DETAILS</Text>
+
+            <Text style={styles.heroTitle}>
+              {isEdit ? 'Update Profile' : 'Profile Information'}
+            </Text>
+
+            <Text style={styles.heroSub}>
+              View your full account information. Tap edit to update allowed
+              fields only.
+            </Text>
+          </View>
+
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.cardTitle}>Personal Information</Text>
+                <Text style={styles.cardSub}>
+                  Name, dates and basic profile details
+                </Text>
+              </View>
+
+              {!isEdit && (
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => setIsEdit(true)}
+                  style={styles.editBtn}
+                >
+                  <Text style={styles.editText}>Edit</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            <Field
+              label="Name"
+              value={form.name}
+              editable={isEdit}
+              onChangeText={v => updateField('name', v)}
+            />
+
+            <Field label="Phone" value={form.phone} editable={false} />
+
+            <Field
+              label="Membership Number"
+              value={form.membership_number}
+              editable={false}
+            />
+
+            <DateField
+              label="Birthday Date"
+              value={form.birthday_date}
+              editable={isEdit}
+              onPress={() => setShowBirthdayPicker(true)}
+            />
+
+            <DateField
+              label="Anniversary Date"
+              value={form.anniversary_date}
+              editable={isEdit}
+              onPress={() => setShowAnniversaryPicker(true)}
+            />
+
+            <Field
+              label="Title"
+              value={form.title}
+              editable={isEdit}
+              onChangeText={v => updateField('title', v)}
+            />
+
+            <Field
+              label="Gender"
+              value={form.gender}
+              editable={isEdit}
+              onChangeText={v => updateField('gender', v)}
+            />
+
+            <Field
+              label="Nationality"
+              value={form.nationality}
+              editable={isEdit}
+              onChangeText={v => updateField('nationality', v)}
+            />
+          </View>
+
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Contact Information</Text>
+            <Text style={styles.cardSub}>Work and home contact details</Text>
+
+            <Field
+              label="Work Number"
+              value={form.workNumber}
+              editable={isEdit}
+              keyboardType="phone-pad"
+              onChangeText={v => updateField('workNumber', v)}
+            />
+
+            <Field
+              label="Home Number"
+              value={form.homeNumber}
+              editable={isEdit}
+              keyboardType="phone-pad"
+              onChangeText={v => updateField('homeNumber', v)}
+            />
+          </View>
+
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Address Information</Text>
+            <Text style={styles.cardSub}>Your saved address details</Text>
+
+            <Field
+              label="Address Line One"
+              value={form.addressLineOne}
+              editable={isEdit}
+              onChangeText={v => updateField('addressLineOne', v)}
+            />
+
+            <Field
+              label="Address Line Two"
+              value={form.addressLinetwo}
+              editable={isEdit}
+              onChangeText={v => updateField('addressLinetwo', v)}
+            />
+
+            <Field
+              label="Address Line Three"
+              value={form.addressLinethree}
+              editable={isEdit}
+              onChangeText={v => updateField('addressLinethree', v)}
+            />
+
+            <Field
+              label="City"
+              value={form.city}
+              editable={isEdit}
+              onChangeText={v => updateField('city', v)}
+            />
+
+            <Field
+              label="Country"
+              value={form.country}
+              editable={isEdit}
+              onChangeText={v => updateField('country', v)}
+            />
+          </View>
+
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Account Summary</Text>
+            <Text style={styles.cardSub}>Read-only account values</Text>
+
+            <Field
+              label="Total Spent"
+              value={`£${form.total_spent || '0.00'}`}
+              editable={false}
+            />
+
+            <Field
+              label="Loyalty Points"
+              value={form.loyalty_points}
+              editable={false}
+            />
+          </View>
+
+          {isEdit && (
+            <View style={styles.actionRow}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={handleCancel}
+                style={styles.cancelBtn}
+                disabled={updateLoading}
+              >
+                <Text style={styles.cancelText}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={handleUpdate}
+                style={styles.updateBtn}
+                disabled={updateLoading}
+              >
+                {updateLoading ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.updateText}>Update</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          )}
+
+          <View style={{ height: 30 }} />
+        </ScrollView>
+      )}
+
+      {showBirthdayPicker && (
+        <DateTimePicker
+          value={birthdayPickerValue}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          maximumDate={new Date()}
+          onChange={(event, selectedDate) => {
+            setShowBirthdayPicker(false);
+
+            if (event?.type === 'dismissed') return;
+
+            if (selectedDate) {
+              updateField('birthday_date', selectedDate);
+            }
+          }}
+        />
+      )}
+
+      {showAnniversaryPicker && (
+        <DateTimePicker
+          value={anniversaryPickerValue}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          maximumDate={new Date()}
+          onChange={(event, selectedDate) => {
+            setShowAnniversaryPicker(false);
+
+            if (event?.type === 'dismissed') return;
+
+            if (selectedDate) {
+              updateField('anniversary_date', selectedDate);
+            }
+          }}
+        />
+      )}
+    </View>
+  );
+};
+
+export default EditProfile;
+
+const T = PremiumTheme;
+const fontMed = Fonts.instrumentSansMedium;
+const fontReg = Fonts.instrumentSansRegular;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF9EF',
+    backgroundColor: T.cream || '#FFF8F2',
   },
 
-  formContainer: {
-    flexDirection: 'column',
-    gap: 5,
-  },
-  header: {
-    alignItems: 'center',
-    // marginTop: 10,
-    marginBottom: 20,
-  },
-
-  headerTitle: {
-    fontSize: 16,
-    letterSpacing: 2,
-    color: '#111',
-  },
-
-  mainTitle: {
-    fontSize: 21,
-    fontFamily: 'serif',
-    color: '#444444',
-    marginBottom: 15,
-    marginTop: 29,
-    textAlign: 'center',
-  },
-
-  subTitle: {
-    fontSize: 13,
-    fontFamily: 'serif',
-    color: '#666',
-    marginBottom: 15,
-    textAlign: 'center',
-  },
-  contactSubTitle: {
-    fontSize: 13,
-    color: '#666',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  eventsTitle: {
-    fontSize: 15,
-    color: '#8e8b8b',
-    marginBottom: 20,
-    textAlign: 'left',
-    fontWeight: '400',
-  },
-
-  sectionTitle: {
-    fontSize: 13,
-    letterSpacing: 2,
-    color: '#5c5b5b',
-    marginTop: 10,
-    marginBottom: 25,
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-
-  label: {
-    fontSize: 12,
-    color: '#555',
-    letterSpacing: 1,
-    marginBottom: 4,
-  },
-
-  inputWrapper: {
-    marginBottom: 22,
-  },
-
-  input: {
-    fontSize: 16,
-    paddingVertical: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: '#222',
-    color: '#111',
-  },
-
-  selectField: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#222',
-    paddingVertical: 12,
-    marginBottom: 22,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-
-  selectText: {
-    fontSize: 16,
-    color: '#111',
-  },
-
-  arrow: {
-    fontSize: 18,
-    color: '#111',
-  },
-  backIcon: { height: 20, width: 20, tintColor: Colors.OFF_GREY },
-
-  houseContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    gap: 4,
-    paddingHorizontal: 0,
-  },
-
-  card: {
-    width: CARD_WIDTH - 10,
-    marginBottom: 28,
-  },
-
-  cardImage: {
-    width: '100%',
-    height: 180,
-    borderRadius: 4,
-    backgroundColor: '#eee',
-  },
-
-  cardTitle: {
-    marginTop: 10,
-    fontSize: 18,
-    color: '#2b2b2b',
-    fontFamily: 'serif', // optional
-  },
-
-  cardSelect: {
-    marginTop: 2,
-    fontSize: 12,
-    letterSpacing: 1,
-    color: '#777',
-  },
-  borderBottom: {
-    borderBottomWidth: 1,
-    borderColor: '#000',
-    paddingBottom: 5,
-  },
-
-  marketingTitle: {
-    fontSize: 12,
-    letterSpacing: 2,
-    color: '#5c5b5b',
-    marginTop: 10,
-    marginBottom: 25,
-    textAlign: 'center',
-    fontWeight: '600',
-  },
-
-  //  last content
-
-  row: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    textAlign: 'justify',
-    marginBottom: 22,
-  },
-
-  box: {
-    width: 18,
-    height: 18,
-    borderWidth: 1.5,
-    borderColor: '#000',
-    borderRadius: 2,
-    marginTop: 3,
+  loaderBox: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
 
-  boxChecked: {
-    backgroundColor: '#e5d8c5',
-  },
-
-  tick: {
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-
-  text: {
-    flex: 1,
-    marginLeft: 12,
+  loaderText: {
+    marginTop: 12,
+    fontFamily: fontReg,
     fontSize: 14,
-    lineHeight: 20,
-    color: '#2b2b2b',
-    textAlign: 'justify',
+    color: T.muted || '#7B6B60',
   },
 
-  //  pages last content
-
-  lastContainer: {
-    padding: 0,
-    // backgroundColor: '#f7f5f1',
-    flex: 1,
+  scroll: {
+    paddingHorizontal: 18,
+    paddingBottom: 40,
   },
 
-  paragraph: {
+  hero: {
+    paddingTop: 18,
+    paddingBottom: 20,
+  },
+
+  kicker: {
+    fontFamily: fontMed,
+    fontSize: 11,
+    letterSpacing: 2.8,
+    color: T.tomato || '#D84A2B',
+    textTransform: 'uppercase',
+  },
+
+  heroTitle: {
+    fontFamily: fontMed,
+    fontSize: 32,
+    lineHeight: 38,
+    color: T.ink || '#201A17',
+    textTransform: 'uppercase',
+    marginTop: 8,
+  },
+
+  heroSub: {
+    fontFamily: fontReg,
     fontSize: 14,
-    lineHeight: 20,
-    color: '#2b2b2b',
-    marginBottom: 20,
-    textAlign: 'justify',
+    lineHeight: 22,
+    color: T.muted || '#7B6B60',
+    marginTop: 8,
   },
 
-  link: {
-    textDecorationLine: 'underline',
-  },
-
-  confirmBtn: {
-    borderWidth: 1.5,
-    borderColor: '#000',
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginTop: 24,
+  card: {
+    backgroundColor: T.surface || '#FFFFFF',
+    borderRadius: 26,
+    borderWidth: 1,
+    borderColor: T.border || '#F1DFCD',
+    padding: 16,
     marginBottom: 16,
+    shadowColor: '#7E3F18',
+    shadowOpacity: 0.07,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 3,
   },
 
-  confirmText: {
-    fontSize: 14,
-    letterSpacing: 1,
-    fontWeight: '500',
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
 
-  cancel: {
-    textAlign: 'center',
-    fontSize: 14,
-    letterSpacing: 1,
+  cardTitle: {
+    fontFamily: fontMed,
+    fontSize: 18,
+    color: T.ink || '#201A17',
+  },
+
+  cardSub: {
+    fontFamily: fontReg,
+    fontSize: 12,
+    lineHeight: 18,
+    color: T.muted || '#7B6B60',
+    marginTop: 4,
+    marginBottom: 12,
+  },
+
+  editBtn: {
+    backgroundColor: T.gold || '#F5B544',
+    paddingHorizontal: 18,
+    paddingVertical: 9,
+    borderRadius: 18,
+  },
+
+  editText: {
+    fontFamily: fontMed,
+    fontSize: 13,
+    color: T.ink || '#201A17',
+  },
+
+  fieldBox: {
+    marginTop: 13,
+  },
+
+  label: {
+    fontFamily: fontMed,
+    fontSize: 11,
+    color: T.tomato || '#D84A2B',
+    letterSpacing: 1.4,
+    textTransform: 'uppercase',
+    marginBottom: 7,
+  },
+
+  value: {
+    fontFamily: fontReg,
+    fontSize: 15,
+    color: T.ink || '#201A17',
+    backgroundColor: '#FFF8F1',
+    borderWidth: 1,
+    borderColor: '#F0DECD',
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+  },
+
+  input: {
+    fontFamily: fontReg,
+    fontSize: 15,
+    color: T.ink || '#201A17',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: T.gold || '#F5B544',
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 13,
+  },
+
+  dateButton: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: T.gold || '#F5B544',
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 13,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  dateText: {
+    fontFamily: fontReg,
+    fontSize: 15,
+    color: T.ink || '#201A17',
+  },
+
+  calendarIcon: {
+    fontSize: 18,
+  },
+
+  actionRow: {
+    flexDirection: 'row',
+    marginBottom: 10,
+  },
+
+  cancelBtn: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E9CDB8',
+    borderRadius: 22,
+    paddingVertical: 15,
+    alignItems: 'center',
+    marginRight: 10,
+  },
+
+  cancelText: {
+    fontFamily: fontMed,
+    fontSize: 15,
+    color: T.ink || '#201A17',
+  },
+
+  updateBtn: {
+    flex: 1,
+    backgroundColor: T.tomato || '#D84A2B',
+    borderRadius: 22,
+    paddingVertical: 15,
+    alignItems: 'center',
+    marginLeft: 10,
+  },
+
+  updateText: {
+    fontFamily: fontMed,
+    fontSize: 15,
+    color: '#FFFFFF',
   },
 });

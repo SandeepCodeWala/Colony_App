@@ -1,18 +1,29 @@
 // components/ReserveHeader.js
 import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Platform,
+} from 'react-native';
 import { AppImages, Fonts } from '../res';
 import PremiumTheme from '../res/PremiumTheme';
 
 const ReserveHeader = ({ onBack, title, containerStyle }) => {
   return (
     <View style={[styles.header, containerStyle]}>
-      <TouchableOpacity onPress={onBack} style={styles.iconButton} activeOpacity={0.75}>
+      <TouchableOpacity
+        onPress={onBack}
+        style={styles.iconButton}
+        activeOpacity={0.75}
+      >
         <Image source={AppImages.Back} style={styles.backIcon} />
       </TouchableOpacity>
 
       <View style={styles.titleWrap}>
-        <Text style={styles.kicker}>CRAV</Text>
+        {/* <Text style={styles.kicker}>CRAV</Text> */}
         <Text style={styles.headerTitle}>{title}</Text>
       </View>
 

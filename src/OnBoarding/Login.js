@@ -13,7 +13,11 @@ import {
   Keyboard,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { setLoginField, setMembershipNumber,setUserData } from '../redux/slices/authSlice';
+import {
+  setLoginField,
+  setMembershipNumber,
+  setUserData,
+} from '../redux/slices/authSlice';
 import { checkNormalData } from '../components/Validation';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { AppImages } from '../res';
@@ -70,33 +74,34 @@ export default function SignIn(props) {
   // };
 
   const signIn = async () => {
-  const data = { loginField, password };
-  console.log(data,"=====>data fathima")
-  setIsLoading(true);
+    const data = { loginField, password };
+    console.log(data, '=====>data fathima');
+    setIsLoading(true);
 
-  const response = await postApi('login', data);
-  setIsLoading(false);
+    const response = await postApi('login', data);
+    setIsLoading(false);
 
-  if (response.success) {
-    // Save everything in Redux
-    dispatch(setUserData({
-      user: {
-        name: response.data.name,
-        phone: response.data.phone,
-        membership_number: response.data.membership_number
-      },
-      token: response.data.access_token
-    }));
+    if (response.success) {
+      // Save everything in Redux
+      dispatch(
+        setUserData({
+          user: {
+            name: response.data.name,
+            phone: response.data.phone,
+            membership_number: response.data.membership_number,
+          },
+          token: response.data.access_token,
+        }),
+      );
 
-    // Navigation
-    props.navigation.navigate('BottomTabs', { screen: 'Book' });
+      // Navigation
+      props.navigation.navigate('BottomTabs', { screen: 'Book' });
 
-    showToast('success', response.message);
-  } else {
-    showToast('error', response.message);
-  }
-};
-
+      showToast('success', response.message);
+    } else {
+      showToast('error', response.message);
+    }
+  };
 
   const submit = () => {
     Keyboard.dismiss();

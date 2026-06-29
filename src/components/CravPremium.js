@@ -129,7 +129,6 @@ export const MiniStat = ({ label, value }) => (
 
 export const EmptyState = ({ title, subtitle }) => (
   <PremiumCard style={styles.emptyCard}>
-    <Text style={styles.emptyMark}>CRAV</Text>
     <Text style={styles.emptyTitle}>{title}</Text>
     {!!subtitle && <Text style={styles.emptySub}>{subtitle}</Text>}
   </PremiumCard>

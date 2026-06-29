@@ -9,7 +9,6 @@ import RightArrow from '../components/RightArrow';
 import ChangePassword from '../screens/ChangePassword';
 import EditProfile from '../screens/EditProfile';
 import ManageConsents from '../screens/ManageConsents';
-import HelpSupport from '../screens/ChangePassword';
 import TermsConditions from '../screens/TermsConditions';
 import ReserveTable from '../screens/ReserveTable1';
 import ReserveTable2 from '../screens/ReserveTable2';
@@ -27,6 +26,7 @@ import LoyaltyPass from '../screens/LoyaltyPass';
 import { useSelector } from 'react-redux';
 import MyBenefits from '../screens/MyBenefits';
 import RegisteredOffers from '../screens/RegisteredOffers';
+import HelpSupport from '../screens/HelpSupportScreen';
 
 const Stack = createNativeStackNavigator();
 function MainStack() {
@@ -60,13 +60,9 @@ function MainStack() {
       <Stack.Screen name="ManageConsents" component={ManageConsents} />
       <Stack.Screen name="MyStatement" component={MyStatement} />
       <Stack.Screen name="LoyaltyPass" component={LoyaltyPass} />
-
-      {/* <Stack.Screen name="RegisteredOffice" component={RegisteredOffice} /> */}
       <Stack.Screen name="TermsConditions" component={TermsConditions} />
-
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
-
       <Stack.Screen name="Signup" component={Signup} />
       <Stack.Screen name="RestaurantList" component={RestaurantList} />
       <Stack.Screen name="RightArrow" component={RightArrow} />
@@ -74,7 +70,6 @@ function MainStack() {
       <Stack.Screen name="ReserveTable2" component={ReserveTable2} />
       <Stack.Screen name="ReserveLounge" component={ReserveLoungeScreen} />
       <Stack.Screen name="MemberScreen" component={MemberScreen} />
-
       <Stack.Screen name="ReserveTableScreen" component={ReserveTableScreen} />
       <Stack.Screen name="OTPValidate" component={OTPValidate} />
       <Stack.Screen name="Payment" component={PaymentScreen} />

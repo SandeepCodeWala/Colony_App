@@ -45,42 +45,42 @@ export default function Settings() {
       sub: 'Upcoming and past bookings',
       onPress: () => navigation.navigate('ReservationHistory'),
     },
-    {
-      id: 2,
-      title: 'My Statement',
-      sub: 'Points and transaction history',
-      onPress: () => navigation.navigate('MyStatement'),
-    },
-    {
-      id: 3,
-      title: 'My Benefits',
-      sub: 'Tier benefits and privileges',
-      onPress: () => navigation.navigate('MyBenefits'),
-    },
-    {
-      id: 4,
-      title: 'Registered Offers',
-      sub: 'Offers linked to your account',
-      onPress: () => navigation.navigate('RegisteredOffers'),
-    },
+    // {
+    //   id: 2,
+    //   title: 'My Statement',
+    //   sub: 'Points and transaction history',
+    //   onPress: () => navigation.navigate('MyStatement'),
+    // },
+    // {
+    //   id: 3,
+    //   title: 'My Benefits',
+    //   sub: 'Tier benefits and privileges',
+    //   onPress: () => navigation.navigate('MyBenefits'),
+    // },
+    // {
+    //   id: 4,
+    //   title: 'Registered Offers',
+    //   sub: 'Offers linked to your account',
+    //   onPress: () => navigation.navigate('RegisteredOffers'),
+    // },
     {
       id: 5,
       title: 'Change Password',
       sub: 'Update account security',
       onPress: () => navigation.navigate('ChangePassword'),
     },
-    {
-      id: 6,
-      title: 'Manage Your Consent',
-      sub: 'Communication preferences',
-      onPress: () => navigation.navigate('ManageConsents'),
-    },
-    {
-      id: 7,
-      title: 'Settings',
-      sub: 'App and account settings',
-      onPress: () => navigation.navigate('Settings'),
-    },
+    // {
+    //   id: 6,
+    //   title: 'Manage Your Consent',
+    //   sub: 'Communication preferences',
+    //   onPress: () => navigation.navigate('ManageConsents'),
+    // },
+    // {
+    //   id: 7,
+    //   title: 'Settings',
+    //   sub: 'App and account settings',
+    //   onPress: () => navigation.navigate('Settings'),
+    // },
     {
       id: 8,
       title: 'Terms & Conditions',
@@ -157,7 +157,6 @@ export default function Settings() {
   return (
     <CravPage title="" header="reserve">
       <View style={styles.hero}>
-        <Text style={styles.kicker}>MY CRAV</Text>
         <Text style={styles.heroTitle}>Account</Text>
         <Text style={styles.heroSub}>
           Manage your profile, reservations, benefits and account preferences.
@@ -278,7 +277,7 @@ const T = PremiumTheme;
 
 const styles = StyleSheet.create({
   hero: {
-    paddingTop: 18,
+    paddingTop: 30,
     paddingBottom: 24,
   },
 

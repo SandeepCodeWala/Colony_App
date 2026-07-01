@@ -1,9 +1,8 @@
-// 
+//
 
 ///////////
 
-
-////REDUX 
+////REDUX
 
 import React, { useEffect, useState } from 'react';
 import {
@@ -28,6 +27,7 @@ import { useStripe } from '@stripe/stripe-react-native';
 import axios from 'axios';
 import baseURL from '../services/network/base_url';
 import { setMembershipNumber } from '../redux/authSlice';
+import ReserveHeader from '../components/ReserveHeader';
 
 const ReserveTableScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -47,17 +47,27 @@ const ReserveTableScreen = ({ route }) => {
   const [sheetInitialized, setSheetInitialized] = useState(false);
   const [loading, setLoading] = useState(false);
 
-const arrayToObject = arr =>
-  Object.fromEntries((arr || []).map(item => [item, false]));
+  const arrayToObject = arr =>
+    Object.fromEntries((arr || []).map(item => [item, false]));
 
-  const [occasions, setOccasions] = useState(arrayToObject(userData?.obj?.dropdownOptions?.occasions));
+  const [occasions, setOccasions] = useState(
+    arrayToObject(userData?.obj?.dropdownOptions?.occasions),
+  );
   const [occasionsList] = useState(userData?.obj?.dropdownOptions?.occasions);
 
-  const [dietary, setDietary] = useState(arrayToObject(userData?.obj?.dropdownOptions?.dietaryRestrictionByUser));
-  const [dietaryList] = useState(userData?.obj?.dropdownOptions?.dietaryRestrictionByUser);
+  const [dietary, setDietary] = useState(
+    arrayToObject(userData?.obj?.dropdownOptions?.dietaryRestrictionByUser),
+  );
+  const [dietaryList] = useState(
+    userData?.obj?.dropdownOptions?.dietaryRestrictionByUser,
+  );
 
-  const [dietaryByParty, setDietaryByParty] = useState(arrayToObject(userData?.obj?.dropdownOptions?.dietaryRestrictionByParty));
-  const [dietaryListbyParty] = useState(userData?.obj?.dropdownOptions?.dietaryRestrictionByParty);
+  const [dietaryByParty, setDietaryByParty] = useState(
+    arrayToObject(userData?.obj?.dropdownOptions?.dietaryRestrictionByParty),
+  );
+  const [dietaryListbyParty] = useState(
+    userData?.obj?.dropdownOptions?.dietaryRestrictionByParty,
+  );
 
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
@@ -66,9 +76,12 @@ const arrayToObject = arr =>
   const [guests, setGuests] = useState(null);
 
   // Toggle functions
-  const toggleOccasion = key => setOccasions(prev => ({ ...prev, [key]: !prev[key] }));
-  const toggleDietary = key => setDietary(prev => ({ ...prev, [key]: !prev[key] }));
-  const toggleDietaryByParty = key => setDietaryByParty(prev => ({ ...prev, [key]: !prev[key] }));
+  const toggleOccasion = key =>
+    setOccasions(prev => ({ ...prev, [key]: !prev[key] }));
+  const toggleDietary = key =>
+    setDietary(prev => ({ ...prev, [key]: !prev[key] }));
+  const toggleDietaryByParty = key =>
+    setDietaryByParty(prev => ({ ...prev, [key]: !prev[key] }));
 
   // ---- API Calls ----
   const updateReservation = async () => {
@@ -85,7 +98,7 @@ const arrayToObject = arr =>
       const response = await axios.put(
         `${baseURL.base_url1}reservations/updateRes`,
         data,
-        { headers: { Authorization: `Bearer ${token}` }, timeout: 10000 }
+        { headers: { Authorization: `Bearer ${token}` }, timeout: 10000 },
       );
       showToast('success', response.data?.message);
       navigation.navigate('Payment', {
@@ -104,14 +117,25 @@ const arrayToObject = arr =>
 
   const fetchPaymentIntentClientSecret = async (amountInCents, phone) => {
     try {
-      const response = await fetch(`${baseURL.base_url1}reservations/create-payment-intent`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ amount: amountInCents, currency: 'gbp', phone }),
-      });
+      const response = await fetch(
+        `${baseURL.base_url1}reservations/create-payment-intent`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            amount: amountInCents,
+            currency: 'gbp',
+            phone,
+          }),
+        },
+      );
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Failed to fetch payment intent.');
+      if (!response.ok)
+        throw new Error(data.error || 'Failed to fetch payment intent.');
       return data;
     } catch (error) {
       console.error('Payment Error:', error);
@@ -122,9 +146,17 @@ const arrayToObject = arr =>
 
   const initializePaymentSheet = async totalAmount => {
     setLoading(true);
-    const paymentData = await fetchPaymentIntentClientSecret(totalAmount, phone);
+    const paymentData = await fetchPaymentIntentClientSecret(
+      totalAmount,
+      phone,
+    );
 
-    if (!paymentData || !paymentData.clientSecret || !paymentData.ephemeralKey || !paymentData.customer) {
+    if (
+      !paymentData ||
+      !paymentData.clientSecret ||
+      !paymentData.ephemeralKey ||
+      !paymentData.customer
+    ) {
       showToast('error', 'Payment initialization failed.');
       setLoading(false);
       return;
@@ -159,7 +191,8 @@ const arrayToObject = arr =>
     setLoading(false);
 
     if (error) {
-      if (error.code !== 'Canceled') showToast('error', `Payment failed: ${error.message}`);
+      if (error.code !== 'Canceled')
+        showToast('error', `Payment failed: ${error.message}`);
     } else {
       showToast('success', 'Payment successful and booking confirmed.');
     }
@@ -174,13 +207,23 @@ const arrayToObject = arr =>
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFF9EF" />
-
+      <ReserveHeader
+        title={'Confirmation'}
+        onBack={() => navigation.goBack()}
+      />
       {/* Header */}
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 140 }}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 140 }}
+      >
         <Image source={AppImages.restaurant} style={styles.image} />
         <View style={styles.detailsContainer}>
           <Text style={styles.summaryTitle}>Afternoon tea on top</Text>
-          <Text style={styles.summaryText}>{`${selectedData?.date1 || selectedData?.date} | ${selectedData?.time1 || selectedData?.time} | ${selectedData?.guests || selectedData?.partySize} Guests`}</Text>
+          <Text style={styles.summaryText}>{`${
+            selectedData?.date1 || selectedData?.date
+          } | ${selectedData?.time1 || selectedData?.time} | ${
+            selectedData?.guests || selectedData?.partySize
+          } Guests`}</Text>
 
           <Text style={styles.label}>Name</Text>
           <TextInput value={name} style={styles.textInput} editable={false} />
@@ -192,18 +235,46 @@ const arrayToObject = arr =>
             <>
               <Text style={styles.subSectionTitle}>Special Occasion?</Text>
               {occasionsList.map(item => (
-                <TouchableOpacity key={item} style={styles.checkboxRow} onPress={() => toggleOccasion(item)}>
-                  <View style={[styles.checkboxBox, occasions[item] && { backgroundColor: '#FFF9EF', borderColor: Colors.Muted_Gold }]}>
-                    {occasions[item] && <Text style={{ color: '#fff' }}>✔️</Text>}
+                <TouchableOpacity
+                  key={item}
+                  style={styles.checkboxRow}
+                  onPress={() => toggleOccasion(item)}
+                >
+                  <View
+                    style={[
+                      styles.checkboxBox,
+                      occasions[item] && {
+                        backgroundColor: '#FFF9EF',
+                        borderColor: Colors.Muted_Gold,
+                      },
+                    ]}
+                  >
+                    {occasions[item] && (
+                      <Text style={{ color: '#fff' }}>✔️</Text>
+                    )}
                   </View>
                   <Text style={{ marginLeft: 8 }}>{item}</Text>
                 </TouchableOpacity>
               ))}
 
-              <Text style={[styles.subSectionTitle, { marginTop: 14 }]}>Dietary restrictions</Text>
+              <Text style={[styles.subSectionTitle, { marginTop: 14 }]}>
+                Dietary restrictions
+              </Text>
               {dietaryList.map(item => (
-                <TouchableOpacity key={item} style={styles.checkboxRow} onPress={() => toggleDietary(item)}>
-                  <View style={[styles.checkboxBox, dietary[item] && { backgroundColor: '#FFF9EF', borderColor: Colors.Muted_Gold }]}>
+                <TouchableOpacity
+                  key={item}
+                  style={styles.checkboxRow}
+                  onPress={() => toggleDietary(item)}
+                >
+                  <View
+                    style={[
+                      styles.checkboxBox,
+                      dietary[item] && {
+                        backgroundColor: '#FFF9EF',
+                        borderColor: Colors.Muted_Gold,
+                      },
+                    ]}
+                  >
                     {dietary[item] && <Text style={{ color: '#fff' }}>✔️</Text>}
                   </View>
                   <Text style={{ marginLeft: 8 }}>{item}</Text>
@@ -212,14 +283,26 @@ const arrayToObject = arr =>
             </>
           )}
 
-          <Text style={[styles.subSectionTitle, { marginTop: 14 }]}>Anything else we should know?</Text>
-          <TextInput value={notes} onChangeText={setNotes} style={[styles.textInput, { height: 90, textAlignVertical: 'top' }]} multiline />
+          <Text style={[styles.subSectionTitle, { marginTop: 14 }]}>
+            Anything else we should know?
+          </Text>
+          <TextInput
+            value={notes}
+            onChangeText={setNotes}
+            style={[styles.textInput, { height: 90, textAlignVertical: 'top' }]}
+            multiline
+          />
         </View>
       </ScrollView>
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Button title="Proceed to Pay=======>>>>>>>" style={styles.payButton} textStyle={styles.payText} onPress={proceed} />
+        <Button
+          title="Proceed to Pay"
+          style={styles.payButton}
+          textStyle={styles.payText}
+          onPress={proceed}
+        />
       </View>
     </View>
   );
@@ -229,16 +312,80 @@ export default ReserveTableScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFF9EF' },
-  image: { width: '92%', height: 200, borderRadius: 16, alignSelf: 'center', marginTop: 15 },
+  image: {
+    width: '92%',
+    height: 200,
+    borderRadius: 16,
+    alignSelf: 'center',
+    marginTop: 15,
+  },
   detailsContainer: { paddingHorizontal: 20, paddingVertical: 20 },
-  summaryTitle: { fontFamily: Fonts.instrumentSansRegular, fontSize: 12, color: Colors.DARK_GREY },
-  summaryText: { fontFamily: Fonts.instrumentSansMedium, fontSize: 14, color: Colors.BLACK, marginVertical: 6 },
-  label: { fontFamily: Fonts.instrumentSansMedium, fontSize: 16, color: Colors.BLACK, marginTop: 16, marginBottom: 8 },
-  textInput: { borderWidth: 1, borderColor: Colors.BORDERGREY, borderRadius: 10, paddingHorizontal: 12, height: 48, fontFamily: Fonts.instrumentSansRegular, fontSize: 15, color: Colors.BLACK },
-  subSectionTitle: { fontFamily: Fonts.instrumentSansMedium, fontSize: 14, color: Colors.BLACK, marginTop: 16, marginBottom: 8 },
+  summaryTitle: {
+    fontFamily: Fonts.instrumentSansRegular,
+    fontSize: 12,
+    color: Colors.DARK_GREY,
+  },
+  summaryText: {
+    fontFamily: Fonts.instrumentSansMedium,
+    fontSize: 14,
+    color: Colors.BLACK,
+    marginVertical: 6,
+  },
+  label: {
+    fontFamily: Fonts.instrumentSansMedium,
+    fontSize: 16,
+    color: Colors.BLACK,
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: Colors.BORDERGREY,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    height: 48,
+    fontFamily: Fonts.instrumentSansRegular,
+    fontSize: 15,
+    color: Colors.BLACK,
+  },
+  subSectionTitle: {
+    fontFamily: Fonts.instrumentSansMedium,
+    fontSize: 14,
+    color: Colors.BLACK,
+    marginTop: 16,
+    marginBottom: 8,
+  },
   checkboxRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
-  checkboxBox: { height: 18, width: 18, borderWidth: 1, borderColor: Colors.BORDERGREY, borderRadius: 4, justifyContent: 'center', alignItems: 'center' },
-  footer: { position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: '#FFF9EF', paddingHorizontal: 16, paddingVertical: 12, borderTopLeftRadius: 20, borderTopRightRadius: 20, elevation: 8 },
-  payButton: { backgroundColor: Colors.Muted_Gold, borderRadius: 30, paddingVertical: 10, width: '100%' },
-  payText: { fontFamily: Fonts.instrumentSansMedium, color: Colors.WHITE, fontSize: 14 },
+  checkboxBox: {
+    height: 18,
+    width: 18,
+    borderWidth: 1,
+    borderColor: Colors.BORDERGREY,
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  footer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#FFF9EF',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    elevation: 8,
+  },
+  payButton: {
+    backgroundColor: Colors.Muted_Gold,
+    borderRadius: 30,
+    paddingVertical: 10,
+    width: '100%',
+  },
+  payText: {
+    fontFamily: Fonts.instrumentSansMedium,
+    color: Colors.WHITE,
+    fontSize: 14,
+  },
 });

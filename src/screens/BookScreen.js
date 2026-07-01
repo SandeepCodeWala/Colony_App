@@ -62,7 +62,7 @@ const BookScreen = () => {
           experience.
         </Text>
 
-        {!!UserName && (
+        {/* {!!UserName && (
           <View style={styles.infoCard}>
             <Text style={styles.name}>{UserName}</Text>
 
@@ -70,7 +70,7 @@ const BookScreen = () => {
               <Text style={styles.member}>Membership #{membership}</Text>
             )}
           </View>
-        )}
+        )} */}
       </View>
 
       {sections.map(item => (

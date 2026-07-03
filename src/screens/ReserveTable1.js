@@ -16,10 +16,10 @@ import baseURL from '../services/network/base_url';
 import { useDispatch, useSelector } from 'react-redux';
 
 const ReserveLoungeScreen = ({ route }) => {
-   const tokenR  = useSelector(state => state.auth?.token)
-     const membershipNumR = useSelector(state => state.auth.membershipNumber);
-       const userR = useSelector(state => state.auth?.user);
-          console.log('Fetched redux in reser page:', userR);
+  const tokenR = useSelector(state => state.auth?.token);
+  const membershipNumR = useSelector(state => state.auth.membershipNumber);
+  const userR = useSelector(state => state.auth?.user);
+  console.log('Fetched redux in reser page:', userR);
   const navigation = useNavigation();
   const { screen } = route?.params || '';
   console.log('screen screen', screen);
@@ -35,7 +35,6 @@ const ReserveLoungeScreen = ({ route }) => {
   const [token, setToken] = useState(tokenR);
   const [UserName, setUserName] = React.useState('');
   const [membership, setMembershipNumber] = React.useState('');
-  
 
   const guestOptions = Array.from({ length: 10 }, (_, i) => ({
     label: `${i + 1}`,
@@ -48,7 +47,6 @@ const ReserveLoungeScreen = ({ route }) => {
 
   const getToken = async () => {
     try {
-   
       setToken(tokenR);
     } catch (error) {
       console.error('Error retrieving token:', error);
@@ -79,7 +77,6 @@ const ReserveLoungeScreen = ({ route }) => {
   }, []);
 
   const fetchUser = async () => {
- 
     setUserName(userR);
     setMembershipNumber(membershipNumR);
 
@@ -87,12 +84,12 @@ const ReserveLoungeScreen = ({ route }) => {
   };
 
   const Continue = async () => {
-      console.log('🟢 Reserving table with details:', {
-        date1,
-        time1,
-        guests,
-        token,
-      });
+    console.log('🟢 Reserving table with details:', {
+      date1,
+      time1,
+      guests,
+      token,
+    });
     if (
       (!UserName && !membership) ||
       UserName === null ||
@@ -379,7 +376,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
   },
   confirmButton: {
-    backgroundColor: Colors.Muted_Gold,
+    // backgroundColor: Colors.Muted_Gold,
     marginTop: 25,
     borderRadius: 30,
     paddingVertical: 12,

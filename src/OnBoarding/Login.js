@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Text,
   StyleSheet,
@@ -82,20 +82,31 @@ export default function SignIn(props) {
     setIsLoading(false);
 
     if (response.success) {
-      // Save everything in Redux
+      const userData = {
+        name: response.data.name,
+        phone: response.data.phone,
+        membership_number: response.data.membership_number,
+      };
+
+      await AsyncStorage.setItem('token', response.data.access_token);
+      await AsyncStorage.setItem('user', JSON.stringify(userData));
+      await AsyncStorage.setItem('name', response.data.name || '');
+      await AsyncStorage.setItem(
+        'membershipNumber',
+        response.data.membership_number || '',
+      );
+
       dispatch(
         setUserData({
-          user: {
-            name: response.data.name,
-            phone: response.data.phone,
-            membership_number: response.data.membership_number,
-          },
+          user: userData,
           token: response.data.access_token,
         }),
       );
 
-      // Navigation
-      props.navigation.navigate('BottomTabs', { screen: 'Book' });
+      props.navigation.reset({
+        index: 0,
+        routes: [{ name: 'BottomTabs', params: { screen: 'Book' } }],
+      });
 
       showToast('success', response.message);
     } else {
@@ -208,12 +219,14 @@ export default function SignIn(props) {
           </View>
 
           <ErrorView text={passwordError.text} show={passwordError.status} />
-          <Button
-            title="Sign In"
-            style={styles.signInBtn}
-            textTitle={styles.signInBtnText}
-            onPress={submit}
-          />
+          <View style={{ paddingHorizontal: 25 }}>
+            <Button
+              title="Sign In"
+              style={styles.signInBtn}
+              textTitle={styles.signInBtnText}
+              onPress={submit}
+            />
+          </View>
           <Text
             style={styles.forgot}
             onPress={() => props.navigation.navigate('ForgotPassword')}
@@ -326,7 +339,7 @@ const styles = StyleSheet.create({
   signInBtn: {
     alignSelf: 'center',
     marginTop: 25,
-    backgroundColor: '#b49b5e', // golden brown tone
+    // backgroundColor: '#b49b5e', // golden brown tone
     borderRadius: 25,
   },
   signInBtnText: {

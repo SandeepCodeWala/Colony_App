@@ -1,113 +1,209 @@
-// import React, { useState,useEffect } from 'react'
-// import { Modal, View, StyleSheet, Image, Text } from 'react-native'
-// import { Icons, InputText, Button, Header } from '@beverages/common'
-// import { colors, family, fonts, metrics, styles } from '@beverages/themes'
-// import * as Progress from 'react-native-progress';
+import React, { useEffect, useRef } from 'react';
+import { View, StyleSheet, Animated, Text, Easing } from 'react-native';
+import PremiumTheme from '../res/PremiumTheme';
+import { Fonts } from '../res';
 
-// // import { DotIndicator, MaterialIndicator, UIActivityIndicator, BallIndicator } from 'react-native-indicators'
-// // import colors from '../../themes/colors'
+const Loader = () => {
+  const rotate1 = useRef(new Animated.Value(0)).current;
+  const rotate2 = useRef(new Animated.Value(0)).current;
+  const scale = useRef(new Animated.Value(0.9)).current;
+  const opacity = useRef(new Animated.Value(0.4)).current;
 
-// function ActivityIndicator(props) {
-// const [progress, setProgress] = useState(0.3)
+  useEffect(() => {
+    Animated.loop(
+      Animated.timing(rotate1, {
+        toValue: 1,
+        duration: 2200,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    ).start();
 
-// // useEffect(()=>{
-// //   setInterval(()=>{
-// //     setProgress(progress+0.3)
-// //   }, 100)
-// // },[props])
+    Animated.loop(
+      Animated.timing(rotate2, {
+        toValue: 1,
+        duration: 1500,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    ).start();
 
-//   return (
-//     <Modal
-//       animationType="fade"
-//       transparent={false}
-//       visible={props.animating}
-//       onRequestClose={() => {
-//         props.animating
-//       }}
-//     >
-//       <View style={Styles.container}>
-//         {/* <BallIndicator color={"#451C96"} /> */}
-//         <View style={{
-//           height: 240,
-//           width: '50%',
-//           marginTop: 220,
-//           alignItems: 'center',
-//         }}>
-//           <Image style={[{ resizeMode: 'contain', height: 130, width: 130, marginTop: 10, marginBottom: 12 }]} source={Icons.PlayingCards} />
-//           <Text style={[family.Montserrat_Bold,{fontSize: 30, fontWeight: 'bold', color: colors.white}]}>Beverages</Text>
-//           <Progress.Bar marginTop={15} indeterminate={true} borderColor={"transparent"} height={8} animationType={"spring"} borderWidth={0} color={"#283A52"}  progress={progress} width={122} unfilledColor="#fff"/>
-//         </View>
-//       </View>
-//     </Modal>
-//   )
-// }
+    Animated.loop(
+      Animated.sequence([
+        Animated.parallel([
+          Animated.timing(scale, {
+            toValue: 1.15,
+            duration: 700,
+            useNativeDriver: true,
+          }),
+          Animated.timing(opacity, {
+            toValue: 1,
+            duration: 700,
+            useNativeDriver: true,
+          }),
+        ]),
+        Animated.parallel([
+          Animated.timing(scale, {
+            toValue: 0.9,
+            duration: 700,
+            useNativeDriver: true,
+          }),
+          Animated.timing(opacity, {
+            toValue: 0.4,
+            duration: 700,
+            useNativeDriver: true,
+          }),
+        ]),
+      ]),
+    ).start();
+  }, []);
 
-// const Styles = StyleSheet.create({
-//   container: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.lightthemeColor },
-//   backgroundVideo: {
-//     position: "absolute",
-//     top: 0,
-//     // height:100,
-//     // width:100,
-//     left: 0,
-//     alignItems: "stretch",
-//     bottom: 0,
-//     right: 0,
+  const spin1 = rotate1.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
 
-//   },
-// })
-// export default ActivityIndicator
+  const spin2 = rotate2.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['360deg', '0deg'],
+  });
 
-import React from 'react';
-import { Modal, View, StyleSheet, Image } from 'react-native';
-
-import { AppImages } from '../res';
-import { colors, family, fonts, metrics, styles } from '../themes';
-
-const ActivityIndicator = props => {
   return (
-    // <Modal
-    //   animationType="fade"
-    //   transparent={true}
-    //   visible={props?.isLoading}
-    //   onRequestClose={() => props?.onRequestClose()}
-    // >
-    //   <View style={style.container}>
-    //     <Image style={{ height: 90, width: 90, backgroundColor: colors.modalColor }} source={Icons.CarLogo} />
-    //   </View>
-    // </Modal>
-    <React.Fragment>
-      {props?.isLoading ? (
-        <View style={style.container1}>
-          <Image
-            style={{ height: 100, width: 100 }}
-            source={AppImages.colonyGif}
-          />
-        </View>
-      ) : null}
-    </React.Fragment>
+    <View style={styles.loader}>
+      <Animated.View
+        style={[
+          styles.outerRing,
+          {
+            transform: [{ rotate: spin1 }],
+          },
+        ]}
+      />
+
+      <Animated.View
+        style={[
+          styles.middleRing,
+          {
+            transform: [{ rotate: spin2 }],
+          },
+        ]}
+      />
+
+      <Animated.View
+        style={[
+          styles.centerCircle,
+          {
+            transform: [{ scale }],
+            opacity,
+          },
+        ]}
+      />
+    </View>
   );
 };
 
-const style = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.modalColor,
-  },
-  container1: {
-    flex: 1,
-    position: 'absolute',
-    top: 0,
-    borderRadius: 10,
-    bottom: 0,
-    left: 0,
-    right: 0,
+const ActivityIndicator = ({
+  isLoading,
+  text = 'Preparing your experience...',
+}) => {
+  if (!isLoading) return null;
+
+  return (
+    <View style={styles.overlay}>
+      <View style={styles.card}>
+        <Loader />
+
+        <Text style={styles.brand}>Colony</Text>
+
+        <Text style={styles.text}>{text}</Text>
+      </View>
+    </View>
+  );
+};
+
+export default ActivityIndicator;
+
+const T = PremiumTheme;
+
+const styles = StyleSheet.create({
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(20,18,15,.45)',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 999999,
   },
-});
 
-export default ActivityIndicator;
+  card: {
+    width: 220,
+    height: 240,
+    backgroundColor: '#FFFDF9',
+    borderRadius: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.18,
+    shadowRadius: 25,
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    elevation: 15,
+  },
+
+  loader: {
+    width: 110,
+    height: 110,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  outerRing: {
+    position: 'absolute',
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 3,
+    borderColor: '#F1DEC7',
+    borderTopColor: '#D96A39',
+    borderRightColor: '#EFB54F',
+  },
+
+  middleRing: {
+    position: 'absolute',
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    borderWidth: 3,
+    borderColor: '#FFEAD6',
+    borderBottomColor: '#D96A39',
+    borderLeftColor: '#F6C767',
+  },
+
+  centerCircle: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: '#D96A39',
+
+    shadowColor: '#D96A39',
+    shadowOpacity: 0.8,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+
+  brand: {
+    marginTop: 28,
+    fontSize: 22,
+    letterSpacing: 7,
+    color: T.ink,
+    fontFamily: Fonts.instrumentSansMedium,
+  },
+
+  text: {
+    marginTop: 10,
+    color: T.muted,
+    fontSize: 13,
+    fontFamily: Fonts.instrumentSansRegular,
+  },
+});

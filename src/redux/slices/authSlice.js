@@ -2,11 +2,11 @@
 
 // const initialState = {
 //   loginField: '',
-  
+
 //   // Keep BOTH camelCase & snake_case synced
 //   membershipNumber: '',
 //   membership_number: '',
-  
+
 //   isLoggedIn: false,
 //   user: null,
 //   token: null,
@@ -41,7 +41,7 @@
 //         state.membershipNumber = action.payload.user.membership_number;
 //         state.membership_number = action.payload.user.membership_number;
 //       }
-     
+
 //     },
 
 //     // Clear ALL user data
@@ -73,10 +73,6 @@
 
 // export default authSlice.reducer;
 
-
-
-
-
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
@@ -92,7 +88,6 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-
     setLoginField: (state, action) => {
       state.loginField = action.payload;
     },
@@ -103,7 +98,7 @@ export const authSlice = createSlice({
     },
 
     setUserData: (state, action) => {
-      console.log("setUserData called!", action.payload);
+      console.log('setUserData called!', action.payload);
 
       const { user, token } = action.payload;
 
@@ -118,7 +113,7 @@ export const authSlice = createSlice({
       }
     },
 
-    logout: (state) => {
+    logout: state => {
       return initialState;
       // state.loginField = '';
       // state.membershipNumber = '';
@@ -128,12 +123,17 @@ export const authSlice = createSlice({
       // state.token = null;
     },
 
-    clearUser: (state) => {
+    clearUser: state => {
       state.loginField = '';
       state.membershipNumber = '';
       state.membership_number = '';
-    }
-  }
+    },
+    updateUserName: (state, action) => {
+      if (state.user) {
+        state.user.name = action.payload;
+      }
+    },
+  },
 });
 
 export const {
@@ -141,8 +141,8 @@ export const {
   setMembershipNumber,
   setUserData,
   logout,
-  clearUser
+  clearUser,
+  updateUserName,
 } = authSlice.actions;
 
 export default authSlice.reducer;
-

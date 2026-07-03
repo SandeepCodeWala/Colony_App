@@ -32,7 +32,7 @@ import ReserveHeader from '../components/ReserveHeader';
 const ReserveTableScreen = ({ route }) => {
   const navigation = useNavigation();
   const { userData, selectedData, screen } = route?.params ?? {};
-
+  const [bookingConfirmModal, setBookingConfirmModal] = useState(false);
   // Redux
   const token = useSelector(state => state.auth.token);
   const membershipNumber = useSelector(state => state.auth.membershipNumber);
@@ -101,10 +101,13 @@ const ReserveTableScreen = ({ route }) => {
         { headers: { Authorization: `Bearer ${token}` }, timeout: 10000 },
       );
       showToast('success', response.data?.message);
-      navigation.navigate('Payment', {
-        reservationId: userData?.obj?.reservation?.reservationId,
-        NoOfGuest: selectedData?.partySize,
-      });
+      if (response.data.success) {
+        setBookingConfirmModal(true);
+      }
+      // navigation.navigate('Payment', {
+      //   reservationId: userData?.obj?.reservation?.reservationId,
+      //   NoOfGuest: selectedData?.partySize,
+      // });
     } catch (err) {
       console.error('API Error:', err?.response?.data || err);
       showToast('error', 'Something went wrong, try again!');
@@ -294,7 +297,7 @@ const ReserveTableScreen = ({ route }) => {
           />
         </View>
       </ScrollView>
-
+      Anything
       {/* Footer */}
       <View style={styles.footer}>
         <Button
@@ -304,6 +307,24 @@ const ReserveTableScreen = ({ route }) => {
           onPress={proceed}
         />
       </View>
+      <CustomModal
+        visible={bookingConfirmModal}
+        onClose={() => setBookingConfirmModal(false)}
+        imageSource={require('../res/images/icons/confirm.png')}
+        description="Booking Successful! Your card will only be charged in case of a no-show."
+        description1="Confirmed!"
+        buttonText="View Details"
+        onButtonPress={() => {
+          setBookingConfirmModal(false);
+          setTimeout(
+            () => navigation.navigate('BottomTabs', { screen: 'Account' }),
+            200,
+          );
+        }}
+        modalStyle={{ backgroundColor: '#fafafa' }}
+        buttonStyle={{ backgroundColor: Colors.Muted_Gold, marginBottom: 20 }}
+        showCloseIcon={true}
+      />
     </View>
   );
 };
@@ -378,7 +399,7 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   payButton: {
-    backgroundColor: Colors.Muted_Gold,
+    // backgroundColor: Colors.Muted_Gold,
     borderRadius: 30,
     paddingVertical: 10,
     width: '100%',

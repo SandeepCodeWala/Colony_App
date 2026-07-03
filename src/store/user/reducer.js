@@ -6,11 +6,11 @@ export const initialState = {
   userLoginInfo: {
     email: '',
     password: '',
-    remember: false
+    remember: false,
   },
   historyList: [],
   agreeTerms: false,
-  versionStatus: null
+  versionStatus: null,
 };
 
 export const authSlice = createSlice({
@@ -25,7 +25,7 @@ export const authSlice = createSlice({
     },
     toggleDefaultAddress(state, action) {
       const { id } = action.payload;
-      state.userDetail?.addresses?.forEach((address) => {
+      state.userDetail?.addresses?.forEach(address => {
         if (address?.id === id) {
           address.is_default = 1; // Set selected address to default
         } else {
@@ -36,7 +36,7 @@ export const authSlice = createSlice({
     deleteWarehouseAddress(state, action) {
       const { id } = action.payload;
       state.userDetail.addresses = state.userDetail.addresses.filter(
-        (address) => address.id !== id
+        address => address.id !== id,
       );
     },
     storeNewDraftData(state, action) {
@@ -69,10 +69,16 @@ export const authSlice = createSlice({
     updateUserDetailOrderCount(state, action) {
       state.userDetail = {
         ...state.userDetail,
-        orderCount: state.userDetail.orderCount + action.payload
+        orderCount: state.userDetail.orderCount + action.payload,
       };
-    }
-  }
+    },
+    updateUserName(state, action) {
+      state.userDetail = {
+        ...state.userDetail,
+        name: action.payload,
+      };
+    },
+  },
 });
 
 export const {
@@ -87,5 +93,6 @@ export const {
   setHistoryList,
   setAgreeTerms,
   setVersionStatus,
-  updateUserDetailOrderCount
+  updateUserDetailOrderCount,
+  updateUserName,
 } = authSlice.actions;

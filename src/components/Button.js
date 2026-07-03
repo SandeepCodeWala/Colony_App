@@ -21,7 +21,7 @@ export default Button;
 const styles = StyleSheet.create({
   button: {
     minHeight: 48,
-    width: '90%',
+    width: '100%',
     backgroundColor: PremiumTheme.ink,
     borderRadius: 28,
     justifyContent: 'center',

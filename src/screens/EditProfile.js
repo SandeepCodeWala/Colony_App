@@ -11,12 +11,14 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import SettingHeader from '../components/SettingHeader';
 import { Fonts } from '../res';
 import PremiumTheme from '../res/PremiumTheme';
-import { getApi, postApi } from '../services/network/api';
+import { getApi, postApi, putApiWithBase1 } from '../services/network/api';
 import { showToast } from '../services/Toast';
+import CommonDatePickerModal from '../components/ui/CommonDatePickerModal';
+import { updateUserName } from '../redux/slices/authSlice';
 
 const emptyForm = {
   name: '',
@@ -168,7 +170,6 @@ const EditProfile = () => {
         showToast('error', res?.message || 'Profile data not found');
       }
     } catch (error) {
-      console.log(error);
       showToast('error', 'Failed to load profile');
     } finally {
       setPageLoading(false);
@@ -192,6 +193,7 @@ const EditProfile = () => {
     fillForm(user);
     setIsEdit(false);
   };
+  const dispatch = useDispatch();
 
   const handleUpdate = async () => {
     const obj = {
@@ -218,17 +220,17 @@ const EditProfile = () => {
     setUpdateLoading(true);
 
     try {
-      const res = await postApi('user/update_profile', obj, token);
+      const res = await putApiWithBase1('user/edit_profile', obj, token);
 
       if (res?.success) {
         showToast('success', res?.message || 'Profile updated successfully');
+        dispatch(updateUserName(form.name));
         setIsEdit(false);
         getProfileData();
       } else {
         showToast('error', res?.message || 'Profile update failed');
       }
     } catch (error) {
-      console.log(error);
       showToast('error', 'Something went wrong');
     } finally {
       setUpdateLoading(false);
@@ -402,7 +404,7 @@ const EditProfile = () => {
             />
           </View>
 
-          <View style={styles.card}>
+          {/* <View style={styles.card}>
             <Text style={styles.cardTitle}>Account Summary</Text>
             <Text style={styles.cardSub}>Read-only account values</Text>
 
@@ -417,7 +419,7 @@ const EditProfile = () => {
               value={form.loyalty_points}
               editable={false}
             />
-          </View>
+          </View> */}
 
           {isEdit && (
             <View style={styles.actionRow}>
@@ -450,38 +452,58 @@ const EditProfile = () => {
       )}
 
       {showBirthdayPicker && (
-        <DateTimePicker
+        // <DateTimePicker
+        //   value={birthdayPickerValue}
+        //   mode="date"
+        //   display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+        //   maximumDate={new Date()}
+        //   onChange={(event, selectedDate) => {
+        //     setShowBirthdayPicker(false);
+
+        //     if (event?.type === 'dismissed') return;
+
+        //     if (selectedDate) {
+        //       updateField('birthday_date', selectedDate);
+        //     }
+        //   }}
+        // />
+        <CommonDatePickerModal
+          visible={showBirthdayPicker}
+          title="Birthday Date"
           value={birthdayPickerValue}
-          mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          maximumDate={new Date()}
-          onChange={(event, selectedDate) => {
+          onClose={() => setShowBirthdayPicker(false)}
+          onConfirm={date => {
+            updateField('birthday_date', date);
             setShowBirthdayPicker(false);
-
-            if (event?.type === 'dismissed') return;
-
-            if (selectedDate) {
-              updateField('birthday_date', selectedDate);
-            }
           }}
         />
       )}
 
       {showAnniversaryPicker && (
-        <DateTimePicker
-          value={anniversaryPickerValue}
-          mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+        // <DateTimePicker
+        //   value={anniversaryPickerValue}
+        //   mode="date"
+        //   display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+        //   maximumDate={new Date()}
+        //   onChange={(event, selectedDate) => {
+        //     setShowAnniversaryPicker(false);
+
+        //     if (event?.type === 'dismissed') return;
+
+        //     if (selectedDate) {
+        //       updateField('anniversary_date', selectedDate);
+        //     }
+        //   }}
+        // />
+        <CommonDatePickerModal
+          visible={showAnniversaryPicker}
+          title="Anniversary Date"
+          value={
+            form.anniversary_date ? new Date(form.anniversary_date) : new Date()
+          }
           maximumDate={new Date()}
-          onChange={(event, selectedDate) => {
-            setShowAnniversaryPicker(false);
-
-            if (event?.type === 'dismissed') return;
-
-            if (selectedDate) {
-              updateField('anniversary_date', selectedDate);
-            }
-          }}
+          onClose={() => setShowAnniversaryPicker(false)}
+          onConfirm={date => updateField('anniversary_date', date)}
         />
       )}
     </View>
@@ -679,7 +701,7 @@ const styles = StyleSheet.create({
 
   updateBtn: {
     flex: 1,
-    backgroundColor: T.tomato || '#D84A2B',
+    backgroundColor: PremiumTheme.ink || '#D84A2B',
     borderRadius: 22,
     paddingVertical: 15,
     alignItems: 'center',

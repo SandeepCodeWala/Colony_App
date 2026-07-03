@@ -15,6 +15,7 @@ import { postApi } from '../services/network/api';
 import { AppImages, Fonts } from '../res';
 import PremiumTheme from '../res/PremiumTheme';
 import { CravPage, PremiumCard } from '../components/CravPremium';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Settings() {
   const dispatch = useDispatch();
@@ -30,6 +31,7 @@ export default function Settings() {
   const points = user?.loyalty_points ?? 0;
   const spent = user?.total_spent || '0.00';
 
+  const [isLogout, setIsLogout] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const menuItems = [
@@ -95,28 +97,78 @@ export default function Settings() {
     },
   ];
 
+  // const handleLogout = () => {
+  //   Alert.alert('Logout', 'Are you sure you want to log out of Colony?', [
+  //     { text: 'Cancel', style: 'cancel' },
+  //     {
+  //       text: 'Logout',
+  //       style: 'destructive',
+  //       onPress: async () => {
+  //         setIsLogout(true);
+  //         try {
+  //           await postApi('logout', {}, token);
+  //           dispatch(logout());
+  //         } catch (error) {
+  //           dispatch(logout());
+  //         } finally {
+  //           setIsLogout(false);
+  //           navigation.navigate('Login');
+  //         }
+  //       },
+  //     },
+  //   ]);
+  // };
+
   const handleLogout = () => {
     Alert.alert('Logout', 'Are you sure you want to log out of Colony?', [
-      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
       {
         text: 'Logout',
         style: 'destructive',
         onPress: async () => {
-          setIsLoading(true);
+          setIsLogout(true);
+
           try {
+            // Logout API
             await postApi('logout', {}, token);
-            dispatch(logout());
           } catch (error) {
-            dispatch(logout());
+            console.log('Logout API Error:', error);
           } finally {
-            setIsLoading(false);
-            navigation.navigate('Login');
+            try {
+              // Clear AsyncStorage
+              await AsyncStorage.multiRemove([
+                'token',
+                'user',
+                'name',
+                'membershipNumber',
+              ]);
+
+              // Agar aur keys save ki hain to yaha add kar dena
+              // 'phone',
+              // 'rememberMe',
+              // 'loginField',
+
+              // Clear Redux
+              dispatch(logout());
+
+              // Reset Navigation
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'Login' }],
+              });
+            } catch (e) {
+              console.log('Storage clear error:', e);
+            } finally {
+              setIsLogout(false);
+            }
           }
         },
       },
     ]);
   };
-
   const handleDeleteAccount = () => {
     Alert.alert(
       'Delete Account',
@@ -236,10 +288,10 @@ export default function Settings() {
         <TouchableOpacity
           style={styles.actionRow}
           onPress={handleLogout}
-          disabled={isLoading}
+          disabled={isLogout}
           activeOpacity={0.8}
         >
-          {isLoading ? (
+          {isLogout ? (
             <ActivityIndicator size="small" color={T.ketchup} />
           ) : (
             <>

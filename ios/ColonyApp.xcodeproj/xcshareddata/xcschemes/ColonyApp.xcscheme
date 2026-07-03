@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "colony_frontend.app"
-               BlueprintName = "colony_frontend"
-               ReferencedContainer = "container:colony_frontend.xcodeproj">
+               BuildableName = "ColonyApp.app"
+               BlueprintName = "ColonyApp"
+               ReferencedContainer = "container:ColonyApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "colony_frontendTests.xctest"
-               BlueprintName = "colony_frontendTests"
-               ReferencedContainer = "container:colony_frontend.xcodeproj">
+               BuildableName = "ColonyAppTests.xctest"
+               BlueprintName = "ColonyAppTests"
+               ReferencedContainer = "container:ColonyApp.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "colony_frontend.app"
-            BlueprintName = "colony_frontend"
-            ReferencedContainer = "container:colony_frontend.xcodeproj">
+            BuildableName = "ColonyApp.app"
+            BlueprintName = "ColonyApp"
+            ReferencedContainer = "container:ColonyApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "colony_frontend.app"
-            BlueprintName = "colony_frontend"
-            ReferencedContainer = "container:colony_frontend.xcodeproj">
+            BuildableName = "ColonyApp.app"
+            BlueprintName = "ColonyApp"
+            ReferencedContainer = "container:ColonyApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     window = UIWindow(frame: UIScreen.main.bounds)
 
     factory.startReactNative(
-      withModuleName: "colony_frontend",
+      withModuleName: "ColonyApp",
       in: window,
       launchOptions: launchOptions
     )

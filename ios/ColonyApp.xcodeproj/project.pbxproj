@@ -17,7 +17,6 @@
 		379F12500F084B8B9291D1D4 /* InstrumentSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2DD2ECF756BB4997A1B046CA /* InstrumentSans-SemiBold.ttf */; };
 		3B33739D2BFC4A5E83D35B10 /* Montserrat-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B784F19AF97647E3927DD6D5 /* Montserrat-ExtraLightItalic.ttf */; };
 		3C64489C5EBE4CA0ADE329D8 /* InstrumentSans-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6299E6BB96F84304B288CE2F /* InstrumentSans-SemiBoldItalic.ttf */; };
-		3E3C51181E0F64B66B27ACB4 /* libPods-colony_frontend.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D5A9D63B1FF1094A17DA4F67 /* libPods-colony_frontend.a */; };
 		45F8AE793F314D889EE3D52F /* InstrumentSans_Condensed-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2E83C38C624E49818E2AE5C7 /* InstrumentSans_Condensed-BoldItalic.ttf */; };
 		480F13CDD42A46DBB855783D /* InstrumentSans_Condensed-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AD9F8699D3DA4F729AD648C2 /* InstrumentSans_Condensed-MediumItalic.ttf */; };
 		48DF4742562D4008A3C95238 /* InstrumentSans_SemiCondensed-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 180828DB51EF4089B6793A26 /* InstrumentSans_SemiCondensed-SemiBold.ttf */; };
@@ -33,6 +32,7 @@
 		90C8BA3EB88F4F6598EAD09D /* InstrumentSans-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9CA5809C944D4743880DE899 /* InstrumentSans-BoldItalic.ttf */; };
 		90CA6800AEA44A82AECD40A5 /* InstrumentSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F19B5493CB034DF4AC94622B /* InstrumentSans-Regular.ttf */; };
 		92B2A7F1E4F14D4BB5DCACFD /* InstrumentSans_SemiCondensed-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C253BBB0C98444789AD5CD59 /* InstrumentSans_SemiCondensed-Medium.ttf */; };
+		B54E4CB4AE9982A36AAC3D2C /* libPods-ColonyApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3043C677B115A84DF4C787CE /* libPods-ColonyApp.a */; };
 		CA5789B51D204495AA6157A2 /* InstrumentSans_Condensed-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ABCA5A4C84564188A62E5967 /* InstrumentSans_Condensed-Italic.ttf */; };
 		CE92E2275B384A5A98BF2D0E /* InstrumentSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F34E96A174F64CE3968ECE66 /* InstrumentSans-Italic.ttf */; };
 		D0FB19D1EB5346008426947E /* InstrumentSans_Condensed-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8E1468B24AA44C3BA68586B0 /* InstrumentSans_Condensed-SemiBold.ttf */; };
@@ -45,34 +45,37 @@
 /* Begin PBXFileReference section */
 		00E3F75DB42E41FD9F6F9C1C /* InstrumentSans_SemiCondensed-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_SemiCondensed-BoldItalic.ttf"; path = "../assets/fonts/InstrumentSans_SemiCondensed-BoldItalic.ttf"; sourceTree = "<group>"; };
 		056B8D80EB6D46348AA21FBB /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Regular.ttf"; path = "../assets/fonts/Montserrat-Regular.ttf"; sourceTree = "<group>"; };
+		0D4DDFC3CAF13B677819EDC4 /* Pods-ColonyApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ColonyApp.release.xcconfig"; path = "Target Support Files/Pods-ColonyApp/Pods-ColonyApp.release.xcconfig"; sourceTree = "<group>"; };
 		1021BAACDFDF492C8CDEE475 /* Montserrat-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-ExtraBold.ttf"; path = "../assets/fonts/Montserrat-ExtraBold.ttf"; sourceTree = "<group>"; };
 		11060695D9CF490B813AC03E /* Montserrat-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-BoldItalic.ttf"; path = "../assets/fonts/Montserrat-BoldItalic.ttf"; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* colony_frontend.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = colony_frontend.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = colony_frontend/Images.xcassets; sourceTree = "<group>"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = colony_frontend/Info.plist; sourceTree = "<group>"; };
-		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = colony_frontend/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		13B07F961A680F5B00A75B9A /* ColonyApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ColonyApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ColonyApp/Images.xcassets; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ColonyApp/Info.plist; sourceTree = "<group>"; };
+		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = ColonyApp/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		151DC26C330F493F9EAE87E8 /* Montserrat-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-SemiBoldItalic.ttf"; path = "../assets/fonts/Montserrat-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		180828DB51EF4089B6793A26 /* InstrumentSans_SemiCondensed-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_SemiCondensed-SemiBold.ttf"; path = "../assets/fonts/InstrumentSans_SemiCondensed-SemiBold.ttf"; sourceTree = "<group>"; };
 		2254C2FF0BF04E46A21C4B78 /* Montserrat-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-SemiBold.ttf"; path = "../assets/fonts/Montserrat-SemiBold.ttf"; sourceTree = "<group>"; };
 		28A48C6165394A409A5D1B53 /* InstrumentSans-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans-Medium.ttf"; path = "../assets/fonts/InstrumentSans-Medium.ttf"; sourceTree = "<group>"; };
 		2DD2ECF756BB4997A1B046CA /* InstrumentSans-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans-SemiBold.ttf"; path = "../assets/fonts/InstrumentSans-SemiBold.ttf"; sourceTree = "<group>"; };
 		2E83C38C624E49818E2AE5C7 /* InstrumentSans_Condensed-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_Condensed-BoldItalic.ttf"; path = "../assets/fonts/InstrumentSans_Condensed-BoldItalic.ttf"; sourceTree = "<group>"; };
+		3043C677B115A84DF4C787CE /* libPods-ColonyApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ColonyApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3981BF5E8399459496351627 /* InstrumentSans_Condensed-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_Condensed-Regular.ttf"; path = "../assets/fonts/InstrumentSans_Condensed-Regular.ttf"; sourceTree = "<group>"; };
 		3F99433C6BA24997912E08F2 /* InstrumentSans-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans-MediumItalic.ttf"; path = "../assets/fonts/InstrumentSans-MediumItalic.ttf"; sourceTree = "<group>"; };
 		5AE1D120941047338315AFE6 /* InstrumentSans_SemiCondensed-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_SemiCondensed-Italic.ttf"; path = "../assets/fonts/InstrumentSans_SemiCondensed-Italic.ttf"; sourceTree = "<group>"; };
 		5CA0860CCD7149199A6121A4 /* InstrumentSans_SemiCondensed-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_SemiCondensed-Regular.ttf"; path = "../assets/fonts/InstrumentSans_SemiCondensed-Regular.ttf"; sourceTree = "<group>"; };
 		5E8F5F8C9713428A807C814F /* Montserrat-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-MediumItalic.ttf"; path = "../assets/fonts/Montserrat-MediumItalic.ttf"; sourceTree = "<group>"; };
 		6299E6BB96F84304B288CE2F /* InstrumentSans-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans-SemiBoldItalic.ttf"; path = "../assets/fonts/InstrumentSans-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
-		6D7B158C846C9F81642DC9BA /* Pods-colony_frontend.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-colony_frontend.debug.xcconfig"; path = "Target Support Files/Pods-colony_frontend/Pods-colony_frontend.debug.xcconfig"; sourceTree = "<group>"; };
+		6D7B158C846C9F81642DC9BA /* Pods-ColonyApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ColonyApp.debug.xcconfig"; path = "Target Support Files/Pods-ColonyApp/Pods-ColonyApp.debug.xcconfig"; sourceTree = "<group>"; };
 		727D16BA353949038C290B0C /* Montserrat-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-ExtraBoldItalic.ttf"; path = "../assets/fonts/Montserrat-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
-		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = colony_frontend/AppDelegate.swift; sourceTree = "<group>"; };
+		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = ColonyApp/AppDelegate.swift; sourceTree = "<group>"; };
 		7ABE170B26CE4E8AA9B840B1 /* Montserrat-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-ExtraLight.ttf"; path = "../assets/fonts/Montserrat-ExtraLight.ttf"; sourceTree = "<group>"; };
 		7E2CA08633BB4576B99542C8 /* InstrumentSans_SemiCondensed-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_SemiCondensed-MediumItalic.ttf"; path = "../assets/fonts/InstrumentSans_SemiCondensed-MediumItalic.ttf"; sourceTree = "<group>"; };
-		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = colony_frontend/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ColonyApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		84D89996917D4F4CA703D160 /* Montserrat-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Medium.ttf"; path = "../assets/fonts/Montserrat-Medium.ttf"; sourceTree = "<group>"; };
 		8667A42576F142FEA7CE9E67 /* InstrumentSans_SemiCondensed-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_SemiCondensed-SemiBoldItalic.ttf"; path = "../assets/fonts/InstrumentSans_SemiCondensed-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		8C0F76DC35CD4A28805EF453 /* InstrumentSans_Condensed-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_Condensed-SemiBoldItalic.ttf"; path = "../assets/fonts/InstrumentSans_Condensed-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		8E1468B24AA44C3BA68586B0 /* InstrumentSans_Condensed-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_Condensed-SemiBold.ttf"; path = "../assets/fonts/InstrumentSans_Condensed-SemiBold.ttf"; sourceTree = "<group>"; };
+		8E9BA663B760F22BD5AEB84B /* Pods-ColonyApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ColonyApp.debug.xcconfig"; path = "Target Support Files/Pods-ColonyApp/Pods-ColonyApp.debug.xcconfig"; sourceTree = "<group>"; };
 		8F45AF02E1794DAA9647949F /* Montserrat-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Light.ttf"; path = "../assets/fonts/Montserrat-Light.ttf"; sourceTree = "<group>"; };
 		9CA5809C944D4743880DE899 /* InstrumentSans-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans-BoldItalic.ttf"; path = "../assets/fonts/InstrumentSans-BoldItalic.ttf"; sourceTree = "<group>"; };
 		9DFB8F272D6A40E987E3084A /* Montserrat-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Bold.ttf"; path = "../assets/fonts/Montserrat-Bold.ttf"; sourceTree = "<group>"; };
@@ -86,9 +89,8 @@
 		B9AA15B93E8F4434988F04BE /* InstrumentSans_Condensed-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_Condensed-Bold.ttf"; path = "../assets/fonts/InstrumentSans_Condensed-Bold.ttf"; sourceTree = "<group>"; };
 		C253BBB0C98444789AD5CD59 /* InstrumentSans_SemiCondensed-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_SemiCondensed-Medium.ttf"; path = "../assets/fonts/InstrumentSans_SemiCondensed-Medium.ttf"; sourceTree = "<group>"; };
 		C2CBC7F065DF42C9ACA2BE39 /* InstrumentSans_SemiCondensed-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans_SemiCondensed-Bold.ttf"; path = "../assets/fonts/InstrumentSans_SemiCondensed-Bold.ttf"; sourceTree = "<group>"; };
-		D5A9D63B1FF1094A17DA4F67 /* libPods-colony_frontend.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-colony_frontend.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E34B49C048CE4B70B6F8655F /* Montserrat-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-BlackItalic.ttf"; path = "../assets/fonts/Montserrat-BlackItalic.ttf"; sourceTree = "<group>"; };
-		E7527045D77AE5121DF01147 /* Pods-colony_frontend.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-colony_frontend.release.xcconfig"; path = "Target Support Files/Pods-colony_frontend/Pods-colony_frontend.release.xcconfig"; sourceTree = "<group>"; };
+		E7527045D77AE5121DF01147 /* Pods-ColonyApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ColonyApp.release.xcconfig"; path = "Target Support Files/Pods-ColonyApp/Pods-ColonyApp.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		EDCAEC106D1D4AE38219621C /* Montserrat-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-ThinItalic.ttf"; path = "../assets/fonts/Montserrat-ThinItalic.ttf"; sourceTree = "<group>"; };
 		F19B5493CB034DF4AC94622B /* InstrumentSans-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InstrumentSans-Regular.ttf"; path = "../assets/fonts/InstrumentSans-Regular.ttf"; sourceTree = "<group>"; };
@@ -102,14 +104,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3E3C51181E0F64B66B27ACB4 /* libPods-colony_frontend.a in Frameworks */,
+				B54E4CB4AE9982A36AAC3D2C /* libPods-ColonyApp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		13B07FAE1A68108700A75B9A /* colony_frontend */ = {
+		13B07FAE1A68108700A75B9A /* ColonyApp */ = {
 			isa = PBXGroup;
 			children = (
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -118,14 +120,14 @@
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
 			);
-			name = colony_frontend;
+			name = ColonyApp;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				D5A9D63B1FF1094A17DA4F67 /* libPods-colony_frontend.a */,
+				3043C677B115A84DF4C787CE /* libPods-ColonyApp.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -140,7 +142,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				13B07FAE1A68108700A75B9A /* colony_frontend */,
+				13B07FAE1A68108700A75B9A /* ColonyApp */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
@@ -155,7 +157,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* colony_frontend.app */,
+				13B07F961A680F5B00A75B9A /* ColonyApp.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -163,8 +165,10 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				6D7B158C846C9F81642DC9BA /* Pods-colony_frontend.debug.xcconfig */,
-				E7527045D77AE5121DF01147 /* Pods-colony_frontend.release.xcconfig */,
+				6D7B158C846C9F81642DC9BA /* Pods-ColonyApp.debug.xcconfig */,
+				E7527045D77AE5121DF01147 /* Pods-ColonyApp.release.xcconfig */,
+				8E9BA663B760F22BD5AEB84B /* Pods-ColonyApp.debug.xcconfig */,
+				0D4DDFC3CAF13B677819EDC4 /* Pods-ColonyApp.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -221,9 +225,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		13B07F861A680F5B00A75B9A /* colony_frontend */ = {
+		13B07F861A680F5B00A75B9A /* ColonyApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "colony_frontend" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "ColonyApp" */;
 			buildPhases = (
 				B7417F35E0C34FA22039C143 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
@@ -237,9 +241,9 @@
 			);
 			dependencies = (
 			);
-			name = colony_frontend;
-			productName = colony_frontend;
-			productReference = 13B07F961A680F5B00A75B9A /* colony_frontend.app */;
+			name = ColonyApp;
+			productName = ColonyApp;
+			productReference = 13B07F961A680F5B00A75B9A /* ColonyApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -255,7 +259,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "colony_frontend" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "ColonyApp" */;
 			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -268,7 +272,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* colony_frontend */,
+				13B07F861A680F5B00A75B9A /* ColonyApp */,
 			);
 		};
 /* End PBXProject section */
@@ -337,15 +341,19 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-colony_frontend/Pods-colony_frontend-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-ColonyApp/Pods-ColonyApp-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-colony_frontend/Pods-colony_frontend-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-ColonyApp/Pods-ColonyApp-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-colony_frontend/Pods-colony_frontend-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ColonyApp/Pods-ColonyApp-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		657D51AB2BB19F199BE9CA22 /* [CP] Embed Pods Frameworks */ = {
@@ -354,15 +362,19 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-colony_frontend/Pods-colony_frontend-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-ColonyApp/Pods-ColonyApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-colony_frontend/Pods-colony_frontend-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-ColonyApp/Pods-ColonyApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-colony_frontend/Pods-colony_frontend-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ColonyApp/Pods-ColonyApp-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		B7417F35E0C34FA22039C143 /* [CP] Check Pods Manifest.lock */ = {
@@ -380,7 +392,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-colony_frontend-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-ColonyApp-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -403,16 +415,17 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6D7B158C846C9F81642DC9BA /* Pods-colony_frontend.debug.xcconfig */;
+			baseConfigurationReference = 8E9BA663B760F22BD5AEB84B /* Pods-ColonyApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 3J4R5RRCHP;
 				ENABLE_BITCODE = NO;
-				INFOPLIST_FILE = colony_frontend/Info.plist;
+				INFOPLIST_FILE = ColonyApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ColonyApp;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -426,7 +439,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.colonyapp;
-				PRODUCT_NAME = colony_frontend;
+				PRODUCT_NAME = ColonyApp;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -436,15 +449,16 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E7527045D77AE5121DF01147 /* Pods-colony_frontend.release.xcconfig */;
+			baseConfigurationReference = 0D4DDFC3CAF13B677819EDC4 /* Pods-ColonyApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = DMB977G2NP;
-				INFOPLIST_FILE = colony_frontend/Info.plist;
+				INFOPLIST_FILE = ColonyApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ColonyApp;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -458,7 +472,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.colonyapp;
-				PRODUCT_NAME = colony_frontend;
+				PRODUCT_NAME = ColonyApp;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -612,7 +626,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "colony_frontend" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "ColonyApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -621,7 +635,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "colony_frontend" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "ColonyApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,

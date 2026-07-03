@@ -64,10 +64,12 @@ const MemberScreen = () => {
             <Text style={styles.memberId}>{memberShip}</Text>
             <Text style={styles.memberType}>MEMBER</Text>
           </View>
-
-          <TouchableOpacity>
+<TouchableOpacity onPress={() => navigation.navigate('LoyaltyCardScreen')}>
+  <Text style={styles.viewECard}>VIEW E-CARD</Text>
+</TouchableOpacity>
+          {/* <TouchableOpacity>
             <Text style={styles.viewECard}>VIEW E-CARD</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         {/* Points Section */}

@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
   btn: {
     height: 52,
     borderRadius: 26,
-    backgroundColor: PremiumTheme.ink,
+    backgroundColor: PremiumTheme.primary || '#B7782E',
     borderWidth: 0,
   },
   btnLoading: {

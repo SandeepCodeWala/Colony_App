@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
   },
   activeDot: { width: 24, backgroundColor: PremiumTheme.gold },
   button: {
-    backgroundColor: PremiumTheme.ink,
+    backgroundColor: PremiumTheme.primary || '#B7782E',
     width: '100%',
     height: 52,
     borderRadius: 50,

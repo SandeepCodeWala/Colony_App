@@ -63,11 +63,11 @@ const styles = StyleSheet.create({
     height: 42,
     width: 42,
     borderRadius: 21,
-    backgroundColor: '#FFF3EA',
+    backgroundColor: '#FFF2DF',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#F0D8C7',
+    borderColor: '#ECD7BA',
   },
 
   backIcon: {
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.instrumentSansMedium,
     fontSize: 10,
     letterSpacing: 2,
-    color: T.tomato || '#D84A2B',
+    color: T.primary || '#B7782E',
     textTransform: 'uppercase',
   },
 
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     height: 34,
     paddingHorizontal: 12,
     borderRadius: 17,
-    backgroundColor: T.gold || '#F5B544',
+    backgroundColor: T.primary || '#B7782E',
     justifyContent: 'center',
     alignItems: 'center',
   },

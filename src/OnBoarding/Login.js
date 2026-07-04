@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
   signInBtn: {
     alignSelf: 'center',
     marginTop: 25,
-    // backgroundColor: '#b49b5e', // golden brown tone
+    // backgroundColor: '#B7782E', // golden brown tone
     borderRadius: 25,
   },
   signInBtnText: {

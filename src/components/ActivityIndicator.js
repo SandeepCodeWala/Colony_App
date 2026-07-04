@@ -136,7 +136,9 @@ const styles = StyleSheet.create({
   card: {
     width: 220,
     height: 240,
-    backgroundColor: '#FFFDF9',
+    backgroundColor: T.surface || '#FFFDF9',
+    borderWidth: 1,
+    borderColor: T.border || '#F1DFCD',
     borderRadius: 32,
     justifyContent: 'center',
     alignItems: 'center',
@@ -165,8 +167,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     borderWidth: 3,
     borderColor: '#F1DEC7',
-    borderTopColor: '#D96A39',
-    borderRightColor: '#EFB54F',
+    borderTopColor: T.primary || '#B7782E',
+    borderRightColor: T.gold || '#B7782E',
   },
 
   middleRing: {
@@ -176,17 +178,17 @@ const styles = StyleSheet.create({
     borderRadius: 35,
     borderWidth: 3,
     borderColor: '#FFEAD6',
-    borderBottomColor: '#D96A39',
-    borderLeftColor: '#F6C767',
+    borderBottomColor: T.primary || '#B7782E',
+    borderLeftColor: T.primary || '#B7782E',
   },
 
   centerCircle: {
     width: 18,
     height: 18,
     borderRadius: 9,
-    backgroundColor: '#D96A39',
+    backgroundColor: T.primary || '#B7782E',
 
-    shadowColor: '#D96A39',
+    shadowColor: T.primary || '#B7782E',
     shadowOpacity: 0.8,
     shadowRadius: 12,
     elevation: 8,
@@ -196,13 +198,13 @@ const styles = StyleSheet.create({
     marginTop: 28,
     fontSize: 22,
     letterSpacing: 7,
-    color: T.ink,
+    color: T.ink || '#21110A',
     fontFamily: Fonts.instrumentSansMedium,
   },
 
   text: {
     marginTop: 10,
-    color: T.muted,
+    color: T.muted || '#7B6654',
     fontSize: 13,
     fontFamily: Fonts.instrumentSansRegular,
   },

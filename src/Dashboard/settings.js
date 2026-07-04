@@ -16,7 +16,7 @@ import { AppImages, Fonts } from '../res';
 import PremiumTheme from '../res/PremiumTheme';
 import { CravPage, PremiumCard } from '../components/CravPremium';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import Ionicons from 'react-native-vector-icons/Ionicons';
 export default function Settings() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -36,15 +36,15 @@ export default function Settings() {
 
   const menuItems = [
     {
-      id: 1,
       title: 'Edit Profile',
       sub: 'Personal details and address',
+      icon: 'person-outline',
       onPress: () => navigation.navigate('EditProfile'),
     },
     {
-      id: 10,
       title: 'My Reservations',
       sub: 'Upcoming and past bookings',
+      icon: 'calendar-outline',
       onPress: () => navigation.navigate('ReservationHistory'),
     },
     // {
@@ -66,9 +66,9 @@ export default function Settings() {
     //   onPress: () => navigation.navigate('RegisteredOffers'),
     // },
     {
-      id: 5,
       title: 'Change Password',
       sub: 'Update account security',
+      icon: 'lock-closed-outline',
       onPress: () => navigation.navigate('ChangePassword'),
     },
     // {
@@ -84,40 +84,18 @@ export default function Settings() {
     //   onPress: () => navigation.navigate('Settings'),
     // },
     {
-      id: 8,
       title: 'Terms & Conditions',
       sub: 'Membership terms',
+      icon: 'document-text-outline',
       onPress: () => navigation.navigate('TermsConditions'),
     },
     {
-      id: 9,
       title: 'Help & Support',
       sub: 'Contact support team',
+      icon: 'headset-outline',
       onPress: () => navigation.navigate('HelpSupport'),
     },
   ];
-
-  // const handleLogout = () => {
-  //   Alert.alert('Logout', 'Are you sure you want to log out of Colony?', [
-  //     { text: 'Cancel', style: 'cancel' },
-  //     {
-  //       text: 'Logout',
-  //       style: 'destructive',
-  //       onPress: async () => {
-  //         setIsLogout(true);
-  //         try {
-  //           await postApi('logout', {}, token);
-  //           dispatch(logout());
-  //         } catch (error) {
-  //           dispatch(logout());
-  //         } finally {
-  //           setIsLogout(false);
-  //           navigation.navigate('Login');
-  //         }
-  //       },
-  //     },
-  //   ]);
-  // };
 
   const handleLogout = () => {
     Alert.alert('Logout', 'Are you sure you want to log out of Colony?', [
@@ -264,10 +242,8 @@ export default function Settings() {
             onPress={item.onPress}
             style={[styles.menuRow, index === 0 && styles.featuredMenuRow]}
           >
-            <View style={styles.menuNumber}>
-              <Text style={styles.menuNumberText}>
-                {String(index + 1).padStart(2, '0')}
-              </Text>
+            <View style={styles.iconContainer}>
+              <Ionicons name={item.icon} size={22} color="#B7782E" />
             </View>
 
             <View style={styles.menuContent}>
@@ -328,6 +304,27 @@ const fontReg = Fonts.instrumentSansRegular;
 const T = PremiumTheme;
 
 const styles = StyleSheet.create({
+  iconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 18,
+    backgroundColor: '#FFF4E8',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+
+    borderWidth: 1,
+    borderColor: '#F1DFC9',
+
+    shadowColor: '#B7782E',
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    elevation: 3,
+  },
   hero: {
     paddingTop: 30,
     paddingBottom: 24,

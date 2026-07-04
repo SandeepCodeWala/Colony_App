@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
   },
   tierBadge: {
-    backgroundColor: PremiumTheme.ink,
+    backgroundColor: PremiumTheme.primary || '#B7782E',
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 20,
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   authBtn: {
-    backgroundColor: PremiumTheme.ink,
+    backgroundColor: PremiumTheme.primary || '#B7782E',
     width: '100%',
     marginTop: 8,
     marginHorizontal: 0,

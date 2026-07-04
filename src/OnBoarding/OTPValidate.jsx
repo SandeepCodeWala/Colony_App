@@ -139,7 +139,7 @@ export default function OTPValidate({ navigation, route }) {
               handleTextChange={setOtp}
               containerStyle={styles.otpContainer}
               textInputStyle={styles.otpInput}
-              tintColor="#b49b5e"
+              tintColor="#B7782E"
               inputCount={6}
               keyboardType="numeric"
             />
@@ -180,11 +180,11 @@ const styles = StyleSheet.create({
   title: { textAlign: 'center', fontSize: fonts.fs_28, color: '#1A1A1A', fontFamily: 'InstrumentSans_Condensed-medium' },
   subtitle: { textAlign: 'center', fontSize: fonts.fs_18, color: colors.txtColor, fontFamily: 'InstrumentSans_Condensed-regular', marginTop: 10, marginHorizontal: 20 },
   otpContainer: { width: '80%', alignSelf: 'center' },
-  otpInput: { borderWidth: 1, borderRadius: 10, borderColor: '#b49b5e', backgroundColor: '#F7F7F7', color: '#000', fontSize: fonts.fs_20, fontFamily: 'InstrumentSans_Condensed-medium' },
-  verifyBtn: { alignSelf: 'center', backgroundColor: '#b49b5e', borderRadius: 25, marginTop: 10 },
+  otpInput: { borderWidth: 1, borderRadius: 10, borderColor: '#B7782E', backgroundColor: '#F7F7F7', color: '#000', fontSize: fonts.fs_20, fontFamily: 'InstrumentSans_Condensed-medium' },
+  verifyBtn: { alignSelf: 'center', backgroundColor: '#B7782E', borderRadius: 25, marginTop: 10 },
   verifyBtnText: { color: colors.white, fontFamily: 'InstrumentSans_Condensed-medium', fontSize: fonts.fs_16 },
   resendText: { textAlign: 'center', fontSize: fonts.fs_16, color: colors.txtColor, fontFamily: 'InstrumentSans_Condensed-regular' },
   resendLink: { fontFamily: 'InstrumentSans_Condensed-medium', color: '#2E43C5' },
   timerText: { textAlign: 'center', fontSize: fonts.fs_16, color: colors.txtColor, fontFamily: 'InstrumentSans_Condensed-regular' },
-  timerNumber: { fontFamily: 'InstrumentSans_Condensed-medium', color: '#b49b5e' },
+  timerNumber: { fontFamily: 'InstrumentSans_Condensed-medium', color: '#B7782E' },
 });

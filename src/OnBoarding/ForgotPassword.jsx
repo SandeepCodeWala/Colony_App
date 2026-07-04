@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#b49b5e',
+    borderColor: '#B7782E',
     borderRadius: 10,
     padding: 14,
     marginTop: 15,
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
   },
   verifyBtn: {
     alignSelf: 'center',
-    backgroundColor: '#b49b5e',
+    backgroundColor: '#B7782E',
     borderRadius: 25,
     marginTop: 25,
     paddingHorizontal: 20,
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
   otpInput: {
     borderWidth: 1,
     borderRadius: 10,
-    borderColor: '#b49b5e',
+    borderColor: '#B7782E',
     backgroundColor: '#F7F7F7',
     color: '#000',
     fontSize: fonts.fs_20,

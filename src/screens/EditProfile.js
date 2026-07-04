@@ -251,7 +251,7 @@ const EditProfile = () => {
 
       {pageLoading ? (
         <View style={styles.loaderBox}>
-          <ActivityIndicator size="large" color={T.tomato || '#D84A2B'} />
+          <ActivityIndicator size="large" color={T.tomato || '#B7782E'} />
           <Text style={styles.loaderText}>Loading profile...</Text>
         </View>
       ) : (
@@ -549,7 +549,7 @@ const styles = StyleSheet.create({
     fontFamily: fontMed,
     fontSize: 11,
     letterSpacing: 2.8,
-    color: T.tomato || '#D84A2B',
+    color: T.tomato || '#B7782E',
     textTransform: 'uppercase',
   },
 
@@ -606,7 +606,7 @@ const styles = StyleSheet.create({
   },
 
   editBtn: {
-    backgroundColor: T.gold || '#F5B544',
+    backgroundColor: T.gold || '#B7782E',
     paddingHorizontal: 18,
     paddingVertical: 9,
     borderRadius: 18,
@@ -625,7 +625,7 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: fontMed,
     fontSize: 11,
-    color: T.tomato || '#D84A2B',
+    color: T.tomato || '#B7782E',
     letterSpacing: 1.4,
     textTransform: 'uppercase',
     marginBottom: 7,
@@ -649,7 +649,7 @@ const styles = StyleSheet.create({
     color: T.ink || '#201A17',
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: T.gold || '#F5B544',
+    borderColor: T.gold || '#B7782E',
     borderRadius: 18,
     paddingHorizontal: 14,
     paddingVertical: 13,
@@ -658,7 +658,7 @@ const styles = StyleSheet.create({
   dateButton: {
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: T.gold || '#F5B544',
+    borderColor: T.gold || '#B7782E',
     borderRadius: 18,
     paddingHorizontal: 14,
     paddingVertical: 13,
@@ -701,7 +701,7 @@ const styles = StyleSheet.create({
 
   updateBtn: {
     flex: 1,
-    backgroundColor: PremiumTheme.ink || '#D84A2B',
+    backgroundColor: PremiumTheme.primary || '#B7782E',
     borderRadius: 22,
     paddingVertical: 15,
     alignItems: 'center',

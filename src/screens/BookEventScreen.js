@@ -298,12 +298,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: fonts.fs_22,
     color: '#1A1A1A',
-    fontFamily: 'InstrumentSans_Condensed-medium',
+    fontFamily: 'Poppins-Medium',
   },
   inputText: {
     fontSize: fonts.fs_16,
     color: colors.black,
-    fontFamily: 'InstrumentSans_Condensed-medium',
+    fontFamily: 'Poppins-Medium',
     minHeight: 40,
   },
   submitBtn: {
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
     minHeight: 50,
   },
   submitBtnText: {
-    fontFamily: 'InstrumentSans_Condensed-medium',
+    fontFamily: 'Poppins-Medium',
     fontSize: fonts.fs_16,
     color: colors.white,
   },

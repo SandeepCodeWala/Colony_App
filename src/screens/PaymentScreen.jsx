@@ -10,7 +10,8 @@ import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { CardField, useStripe } from '@stripe/stripe-react-native';
 
-import { AppImages, Colors } from '../res';
+import { AppImages, Colors, Fonts } from '../res';
+import PremiumTheme from '../res/PremiumTheme';
 import ReserveHeader from '../components/ReserveHeader';
 import { showToast } from '../services/Toast';
 import baseURL from '../services/network/base_url';
@@ -281,7 +282,7 @@ const SavedCardList = () => (
 
   return (
     <ImageBackground source={AppImages.ccc} style={styles.bg} resizeMode="cover">
-      <View style={{backgroundColor: 'white'}}><ReserveHeader title={'Payment Details'} onBack={() => navigation.goBack()} /></View>
+      <View style={{ backgroundColor: PremiumTheme.paper }}><ReserveHeader title={'Payment Details'} onBack={() => navigation.goBack()} /></View>
 
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.overlay}>
@@ -299,7 +300,7 @@ const SavedCardList = () => (
                   <TextInput 
                     style={styles.input} 
                     placeholder="Card Holder Name" 
-                    placeholderTextColor="#999"
+                    placeholderTextColor={PremiumTheme.softMuted}
                     value={name} 
                     onChangeText={setName} 
                   />
@@ -308,9 +309,9 @@ const SavedCardList = () => (
                   <CardField
                     postalCodeEnabled={false}
                     cardStyle={{
-                      backgroundColor: '#FFFFFF',
-                      textColor: '#000000',
-                      borderRadius: 8,
+                      backgroundColor: PremiumTheme.surface,
+                      textColor: PremiumTheme.ink,
+                      borderRadius: 16,
                     }}
                     style={styles.cardField}
                     onCardChange={(details) => setCardDetails(details)}
@@ -364,28 +365,29 @@ const SavedCardList = () => (
   );
 };
 
+const T = PremiumTheme;
 const styles = StyleSheet.create({
-  bg: { flex: 1 },
-  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)' },
-  container: { padding: 20 },
-  policyBox: { backgroundColor: '#FFF9EF', borderRadius: 10, padding: 15, marginBottom: 20 },
-  policyTitle: { fontWeight: 'bold', fontSize: 16, color: '#333' },
-  policyText: { fontSize: 13, color: '#666' },
-  sectionHeader: { color: '#fff', fontSize: 18, fontWeight: 'bold', marginBottom: 15 },
-  cardItem: { backgroundColor: '#FFF9EF', padding: 15, borderRadius: 10, marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  selectedCardItem: { borderWidth: 2, borderColor: Colors.Muted_Gold },
-  cardTypeText: { color: Colors.Muted_Gold, fontWeight: 'bold', fontSize: 12 },
-  cardText: { fontSize: 16, color: '#333' },
-  checkCircle: { width: 20, height: 20, borderRadius: 10, backgroundColor: Colors.Muted_Gold },
+  bg: { flex: 1, backgroundColor: T.paper },
+  overlay: { flex: 1, backgroundColor: 'rgba(27,23,19,0.58)' },
+  container: { padding: 18, paddingBottom: 80 },
+  policyBox: { backgroundColor: T.glass, borderRadius: 28, padding: 18, marginBottom: 20, borderWidth: 1, borderColor: T.border },
+  policyTitle: { fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium, fontSize: 17, color: T.ink },
+  policyText: { fontSize: 13, color: T.muted, marginTop: 6, fontFamily: Fonts.instrumentSansRegular, lineHeight: 20 },
+  sectionHeader: { color: T.surface, fontSize: 18, fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium, marginBottom: 15 },
+  cardItem: { backgroundColor: T.glass, padding: 16, borderRadius: 24, marginBottom: 12, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderWidth: 1, borderColor: T.border },
+  selectedCardItem: { borderWidth: 2, borderColor: T.primary },
+  cardTypeText: { color: T.primary, fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium, fontSize: 12 },
+  cardText: { fontSize: 16, color: T.ink, fontFamily: Fonts.instrumentSansRegular },
+  checkCircle: { width: 20, height: 20, borderRadius: 10, backgroundColor: T.primary },
   addNewCardButton: { padding: 10, alignItems: 'center' },
-  addNewCardButtonText: { color: '#fff', textDecorationLine: 'underline' },
-  input: { backgroundColor: '#FFF9EF', borderRadius: 8, padding: 12, marginBottom: 10, color: '#000' },
-  cardField: { width: '100%', height: 50, marginVertical: 10 },
+  addNewCardButtonText: { color: T.surface, textDecorationLine: 'underline', fontFamily: Fonts.instrumentSansMedium },
+  input: { backgroundColor: T.surface, borderRadius: 20, padding: 14, marginBottom: 12, color: T.ink, borderWidth: 1, borderColor: T.border, fontFamily: Fonts.instrumentSansRegular },
+  cardField: { width: '100%', height: 54, marginVertical: 10 },
   checkboxContainer: { flexDirection: 'row', alignItems: 'center', marginVertical: 20 },
-  checkboxLabel: { color: '#fff', marginLeft: 10, fontSize: 13, flex: 1 },
-  button: { backgroundColor: Colors.Muted_Gold, padding: 16, borderRadius: 30, alignItems: 'center' },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
-  linkText: { color: '#fff', textAlign: 'center', marginTop: 15, textDecorationLine: 'underline' }
+  checkboxLabel: { color: T.surface, marginLeft: 10, fontSize: 13, flex: 1, fontFamily: Fonts.instrumentSansRegular, lineHeight: 19 },
+  button: { backgroundColor: T.primary, padding: 16, borderRadius: 999, alignItems: 'center', shadowColor: T.primary, shadowOpacity: 0.24, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 5 },
+  buttonText: { color: T.surface, fontSize: 14, fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium, letterSpacing: 1.2, textTransform: 'uppercase' },
+  linkText: { color: T.surface, textAlign: 'center', marginTop: 15, textDecorationLine: 'underline', fontFamily: Fonts.instrumentSansRegular },
 });
 
 export default CardDetailsScreen;

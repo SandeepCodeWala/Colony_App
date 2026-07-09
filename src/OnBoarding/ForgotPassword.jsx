@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: fonts.fs_28,
     color: '#1A1A1A',
-    fontFamily: 'InstrumentSans_Condensed-medium',
+    fontFamily: 'Poppins-Medium',
   },
   subtitle: {
     textAlign: 'center',
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
   },
   verifyBtnText: {
     color: colors.white,
-    fontFamily: 'InstrumentSans_Condensed-medium',
+    fontFamily: 'Poppins-Medium',
     fontSize: fonts.fs_16,
   },
   sheetTitle: {
@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
     fontSize: fonts.fs_24,
     marginTop: 10,
     marginBottom: 20,
-    fontFamily: 'InstrumentSans_Condensed-medium',
+    fontFamily: 'Poppins-Medium',
   },
   otpInput: {
     borderWidth: 1,

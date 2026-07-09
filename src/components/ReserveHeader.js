@@ -1,80 +1,79 @@
-// components/ReserveHeader.js
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  Platform,
-} from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet, Platform } from 'react-native';
 import { AppImages, Fonts } from '../res';
 import PremiumTheme from '../res/PremiumTheme';
 
 const ReserveHeader = ({ onBack, title, containerStyle }) => {
   return (
-    <View style={[styles.header, containerStyle]}>
-      <TouchableOpacity
-        onPress={onBack}
-        style={styles.iconButton}
-        activeOpacity={0.75}
-      >
-        <Image source={AppImages.Back} style={styles.backIcon} />
-      </TouchableOpacity>
+    <View style={[styles.wrapper, containerStyle]}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={onBack} style={styles.iconButton} activeOpacity={0.78}>
+          <Image source={AppImages.Back} style={styles.backIcon} />
+        </TouchableOpacity>
 
-      <View style={styles.titleWrap}>
-        {/* <Text style={styles.kicker}>CRAV</Text> */}
-        <Text style={styles.headerTitle}>{title}</Text>
+        <View style={styles.titleWrap}>
+          <Text style={styles.kicker}>Luxury Dining</Text>
+          <Text numberOfLines={1} style={styles.headerTitle}>{title}</Text>
+        </View>
+
+        <TouchableOpacity style={styles.iconButton} activeOpacity={0.78}>
+          <Image source={AppImages.bell} style={styles.bellIcon} />
+        </TouchableOpacity>
       </View>
-
-      <TouchableOpacity style={styles.iconButton} activeOpacity={0.75}>
-        <Image source={AppImages.bell} style={styles.bellIcon} />
-      </TouchableOpacity>
     </View>
   );
 };
 
+const T = PremiumTheme;
+
 const styles = StyleSheet.create({
+  wrapper: {
+    backgroundColor: T.paper,
+    paddingTop: Platform.OS === 'ios' ? 52 : 38,
+    paddingHorizontal: 16,
+    paddingBottom: 14,
+  },
   header: {
+    minHeight: 72,
+    borderRadius: 28,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: Platform.OS === 'ios' ? 54 : 40,
-    paddingBottom: 14,
-    backgroundColor: PremiumTheme.paper,
-    borderBottomWidth: 1,
-    borderBottomColor: PremiumTheme.border,
+    paddingHorizontal: 12,
+    backgroundColor: T.glass,
+    borderWidth: 1,
+    borderColor: T.border,
+    shadowColor: T.shadow,
+    shadowOpacity: 0.12,
+    shadowRadius: 22,
+    shadowOffset: { width: 0, height: 12 },
+    elevation: 5,
   },
   iconButton: {
-    height: 42,
-    width: 42,
-    borderRadius: 21,
+    height: 44,
+    width: 44,
+    borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: PremiumTheme.surface,
+    backgroundColor: T.primarySoft,
     borderWidth: 1,
-    borderColor: PremiumTheme.border,
-    shadowColor: PremiumTheme.primary || PremiumTheme.shadow,
-    shadowOpacity: 0.12,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 3,
+    borderColor: T.border,
   },
-  titleWrap: { alignItems: 'center' },
+  titleWrap: { flex: 1, alignItems: 'center', marginHorizontal: 10 },
   kicker: {
-    fontSize: 10,
-    letterSpacing: 2.4,
-    color: PremiumTheme.primary || PremiumTheme.gold,
-    fontFamily: Fonts.instrumentSansMedium,
+    fontSize: 9,
+    letterSpacing: 1.8,
+    textTransform: 'uppercase',
+    color: T.primary,
+    fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium,
   },
-  backIcon: { height: 22, width: 22, tintColor: PremiumTheme.ink },
-  bellIcon: { height: 21, width: 21, tintColor: PremiumTheme.ink },
+  backIcon: { height: 21, width: 21, tintColor: T.ink, resizeMode: 'contain' },
+  bellIcon: { height: 20, width: 20, tintColor: T.ink, resizeMode: 'contain' },
   headerTitle: {
-    fontFamily: Fonts.instrumentSansMedium,
-    fontSize: 20,
-    color: PremiumTheme.ink,
-    marginTop: 2,
+    fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium,
+    fontSize: 18,
+    color: T.ink,
+    marginTop: 3,
   },
 });
 

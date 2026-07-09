@@ -217,7 +217,7 @@ const handleSignUp = async () => {
           >
             <Text
               style={{
-                fontFamily: 'InstrumentSans_Condensed-medium',
+                fontFamily: 'Poppins-Medium',
                 textAlign: 'center',
                 fontSize: fonts.fs_32,
                 color: '#1A1A1A',
@@ -227,7 +227,7 @@ const handleSignUp = async () => {
             </Text>
             <Text
               style={{
-                fontFamily: 'InstrumentSans_Condensed-medium',
+                fontFamily: 'Poppins-Medium',
                 textAlign: 'center',
                 fontSize: fonts.fs_22,
                 color: colors.txtColor,
@@ -311,7 +311,7 @@ const handleSignUp = async () => {
               <Text
                 style={{
                   fontSize: fonts.fs_16,
-                  fontFamily: 'InstrumentSans_Condensed-regular',
+                  fontFamily: 'Poppins-Regular',
                   color: colors.txtColor,
                   textAlign: 'center',
                 }}

@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AppImages, Fonts } from '../res';
 import { showToast } from '../services/Toast';
 import { useSelector } from 'react-redux';
-import { CravPage, FoodImageCard, CravButton } from '../components/CravPremium';
+import { CravPage, FoodImageCard, CravButton, Hero, LuxeTabs, LuxeSectionHeader, PremiumCard } from '../components/CravPremium';
 import PremiumTheme from '../res/PremiumTheme';
 
 const BookScreen = () => {
@@ -14,6 +14,7 @@ const BookScreen = () => {
 
   const [UserName, setUserName] = useState('');
   const [membership, setMembership] = useState('');
+  const [activeTab, setActiveTab] = useState('dining');
 
   useEffect(() => {
     setUserName(user?.name || '');
@@ -22,9 +23,7 @@ const BookScreen = () => {
 
   const handleReserveTable = () => {
     if (user?.membership_number || membershipNumber || UserName || membership) {
-      navigation.navigate('ReserveLounge', {
-        screen: 'table',
-      });
+      navigation.navigate('ReserveLounge', { screen: 'table' });
     } else {
       navigation.navigate('Login');
       showToast('error', 'User details not found. Please log in again.');
@@ -33,125 +32,75 @@ const BookScreen = () => {
 
   const sections = [
     {
-      title: 'LOUNGE',
-      tag: 'SIGNATURE VIBE',
-      image: AppImages.lounge,
-      desc: 'Relax, unwind, and enjoy every moment as we serve comfort, luxury, and happiness—one refreshing sip and soothing vibe at a time.',
-      cta: 'Coming Soon',
-      disabled: true,
-    },
-    {
-      title: 'RESTAURANT',
-      tag: 'SMASHED FRESH',
+      title: 'Restaurant',
+      tag: 'Signature dining',
       image: AppImages.restaurant,
-      desc: 'We bring joy to your table every day, crafting memorable dining experiences with love, flavor, and one delicious plate at a time.',
+      desc: 'Choose your time, guest count and enjoy a premium Colony dining experience with seamless reservation flow.',
       cta: 'Reserve a Table',
       onPress: handleReserveTable,
+      key: 'dining',
+    },
+    {
+      title: 'Lounge',
+      tag: 'Private ambience',
+      image: AppImages.lounge,
+      desc: 'A refined lounge experience with intimate comfort, premium service and curated ambience is coming soon.',
+      cta: 'Coming Soon',
+      disabled: true,
+      key: 'lounge',
     },
   ];
 
+  const visibleSections = activeTab === 'all' ? sections : sections.filter(item => item.key === activeTab);
+
   return (
     <CravPage title="" header="reserve">
-      <View style={styles.hero}>
-        <Text style={styles.kicker}></Text>
+      <Hero
+        kicker="Reservation"
+        title="Reserve Your Experience"
+        subtitle="A lighter, premium booking journey with luxury-inspired cards, animated tabs and refined spacing."
+      />
 
-        <Text style={styles.heroTitle}>Reserve Your Experience</Text>
+      <LuxeTabs
+        tabs={[
+          { key: 'dining', label: 'Dining' },
+          { key: 'lounge', label: 'Lounge' },
+          { key: 'all', label: 'All' },
+        ]}
+        activeKey={activeTab}
+        onChange={setActiveTab}
+        style={styles.tabs}
+      />
 
-        <Text style={styles.heroSub}>
-          Reserve your table in seconds and enjoy the complete Colony dining
-          experience.
-        </Text>
+      <PremiumCard style={styles.memberCard} delay={80}>
+        <Text style={styles.memberKicker}>Fast booking</Text>
+        <Text style={styles.memberTitle}>{UserName ? `Welcome, ${UserName}` : 'Sign in for member booking'}</Text>
+        <Text style={styles.memberSub}>{membership ? `Membership ${membership}` : 'Your member details will auto-fill after login.'}</Text>
+      </PremiumCard>
 
-        {/* {!!UserName && (
-          <View style={styles.infoCard}>
-            <Text style={styles.name}>{UserName}</Text>
-
-            {!!membership && (
-              <Text style={styles.member}>Membership #{membership}</Text>
-            )}
-          </View>
-        )} */}
-      </View>
-
-      {sections.map(item => (
-        <FoodImageCard
-          key={item.title}
-          image={item.image}
-          title={item.title}
-          kicker={item.tag}
-          subtitle={item.desc}
-          disabled={item.disabled}
-        >
-          <CravButton
-            title={item.cta}
-            disabled={item.disabled}
-            onPress={item.onPress}
-          />
+      <LuxeSectionHeader eyebrow="Curated sections" title="Choose a destination" />
+      {visibleSections.map((item, index) => (
+        <FoodImageCard key={item.title} image={item.image} title={item.title} kicker={item.tag} subtitle={item.desc} disabled={item.disabled} delay={index * 80}>
+          <CravButton title={item.cta} disabled={item.disabled} onPress={item.onPress} />
         </FoodImageCard>
       ))}
 
-      <View style={{ height: 20 }} />
+      <View style={{ height: 28 }} />
     </CravPage>
   );
 };
 
 export default BookScreen;
 
+const T = PremiumTheme;
 const fontMed = Fonts.instrumentSansMedium;
 const fontReg = Fonts.instrumentSansRegular;
-
-const T = PremiumTheme;
+const fontBold = Fonts.instrumentSansBold || Fonts.instrumentSansMedium;
 
 const styles = StyleSheet.create({
-  hero: {
-    paddingTop: 30,
-    paddingBottom: 25,
-  },
-
-  kicker: {
-    color: T.tomato,
-    fontFamily: fontMed,
-    fontSize: 11,
-    letterSpacing: 3,
-    textTransform: 'uppercase',
-  },
-
-  heroTitle: {
-    color: T.ink,
-    fontFamily: fontMed,
-    fontSize: 30,
-    lineHeight: 40,
-    marginTop: 8,
-    textTransform: 'uppercase',
-  },
-
-  heroSub: {
-    marginTop: 12,
-    color: T.muted,
-    fontFamily: fontReg,
-    fontSize: 15,
-    lineHeight: 24,
-  },
-
-  infoCard: {
-    marginTop: 22,
-    backgroundColor: '#FFF8F3',
-    borderRadius: 20,
-    padding: 18,
-    borderWidth: 1,
-    borderColor: '#F2E3D7',
-  },
-
-  name: {
-    color: T.ink,
-    fontFamily: fontMed,
-    fontSize: 18,
-  },
-
-  member: {
-    marginTop: 5,
-    color: T.muted,
-    fontFamily: fontReg,
-    fontSize: 14,
-  },
+  tabs: { marginBottom: 18 },
+  memberCard: { marginBottom: 18, padding: 18, backgroundColor: T.pearl },
+  memberKicker: { color: T.primary, fontFamily: fontBold, fontSize: 10, letterSpacing: 2, textTransform: 'uppercase' },
+  memberTitle: { color: T.ink, fontFamily: fontMed, fontSize: 19, marginTop: 6 },
+  memberSub: { color: T.muted, fontFamily: fontReg, fontSize: 13, marginTop: 4, lineHeight: 20 },
 });

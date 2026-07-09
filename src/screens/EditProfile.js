@@ -503,7 +503,10 @@ const EditProfile = () => {
           }
           maximumDate={new Date()}
           onClose={() => setShowAnniversaryPicker(false)}
-          onConfirm={date => updateField('anniversary_date', date)}
+          onConfirm={date => {
+            updateField('anniversary_date', date);
+            setShowAnniversaryPicker(false);
+          }}
         />
       )}
     </View>
@@ -519,7 +522,7 @@ const fontReg = Fonts.instrumentSansRegular;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: T.cream || '#FFF8F2',
+    backgroundColor: T.paper || '#F7F1E8',
   },
 
   loaderBox: {
@@ -572,7 +575,7 @@ const styles = StyleSheet.create({
 
   card: {
     backgroundColor: T.surface || '#FFFFFF',
-    borderRadius: 26,
+    borderRadius: 30,
     borderWidth: 1,
     borderColor: T.border || '#F1DFCD',
     padding: 16,
@@ -609,7 +612,7 @@ const styles = StyleSheet.create({
     backgroundColor: T.gold || '#B7782E',
     paddingHorizontal: 18,
     paddingVertical: 9,
-    borderRadius: 18,
+    borderRadius: 20,
   },
 
   editText: {
@@ -635,10 +638,10 @@ const styles = StyleSheet.create({
     fontFamily: fontReg,
     fontSize: 15,
     color: T.ink || '#201A17',
-    backgroundColor: '#FFF8F1',
+    backgroundColor: T.surfaceSoft || '#FBF7F1',
     borderWidth: 1,
-    borderColor: '#F0DECD',
-    borderRadius: 18,
+    borderColor: T.line || '#EFE4D6',
+    borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 14,
   },
@@ -647,19 +650,19 @@ const styles = StyleSheet.create({
     fontFamily: fontReg,
     fontSize: 15,
     color: T.ink || '#201A17',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: T.surface || '#FFFFFF',
     borderWidth: 1,
-    borderColor: T.gold || '#B7782E',
-    borderRadius: 18,
+    borderColor: T.border || '#E4D4BF',
+    borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 13,
   },
 
   dateButton: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: T.surface || '#FFFFFF',
     borderWidth: 1,
-    borderColor: T.gold || '#B7782E',
-    borderRadius: 18,
+    borderColor: T.border || '#E4D4BF',
+    borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 13,
     flexDirection: 'row',
@@ -701,7 +704,7 @@ const styles = StyleSheet.create({
 
   updateBtn: {
     flex: 1,
-    backgroundColor: PremiumTheme.primary || '#B7782E',
+    backgroundColor: T.primary || '#B7782E',
     borderRadius: 22,
     paddingVertical: 15,
     alignItems: 'center',

@@ -1,47 +1,25 @@
-// components/LoungeDetails.js
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
-import { Colors, Fonts } from '../res';
-// const ic_pin = require('../res/images/icons/pin.png');
+import { View, Text, StyleSheet } from 'react-native';
+import { Fonts } from '../res';
+import PremiumTheme from '../res/PremiumTheme';
 
 const LoungeDetails = () => {
   return (
     <View style={styles.container}>
-      <View style={styles.locationRow}>
-        {/* <Image source={ic_pin} style={styles.pinIcon} /> */}
-        <Text style={styles.location}>UK</Text>
-      </View>
+      <View style={styles.locationPill}><Text style={styles.location}>UK · COLONY</Text></View>
       <Text style={styles.restaurantName}>Colony Restaurant</Text>
-      <Text style={styles.description}>
-        Hypnotic views of the cityscape inspire exquisite mixology in an inviting atmosphere
-      </Text>
+      <Text style={styles.description}>Hypnotic views, refined hospitality and exquisite mixology in an inviting premium atmosphere.</Text>
     </View>
   );
 };
 
+const T = PremiumTheme;
 const styles = StyleSheet.create({
   container: { marginBottom: 10 },
-  locationRow: { flexDirection: 'row' },
-  pinIcon: { width: 15, height: 15 },
-  location: {
-    fontFamily: Fonts.instrumentSansRegular,
-    fontSize: 13,
-    color: Colors.Muted_Gold,
-    paddingLeft: 5,
-  },
-  restaurantName: {
-    fontFamily: Fonts.instrumentSansBold,
-    fontSize: 20,
-    color: Colors.BLACK,
-    marginTop: 6,
-  },
-  description: {
-    fontFamily: Fonts.instrumentSansRegular,
-    fontSize: 14,
-    color: Colors.DARK_GREY,
-    marginTop: 4,
-    lineHeight: 20,
-  },
+  locationPill: { alignSelf: 'flex-start', backgroundColor: T.primarySoft, borderWidth: 1, borderColor: T.border, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 7 },
+  location: { fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium, fontSize: 10, color: T.primaryDark, letterSpacing: 1.6 },
+  restaurantName: { fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium, fontSize: 24, color: T.ink, marginTop: 12, letterSpacing: -0.3 },
+  description: { fontFamily: Fonts.instrumentSansRegular, fontSize: 14, color: T.muted, marginTop: 6, lineHeight: 22 },
 });
 
 export default LoungeDetails;

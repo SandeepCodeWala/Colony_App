@@ -19,6 +19,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Colors, Fonts, AppImages } from '../res';
+import PremiumTheme from '../res/PremiumTheme';
 import Button from '../components/Button';
 import PopupDropdown from '../components/PopupDropdown';
 import CustomModal from '../components/ModalComponent';
@@ -26,7 +27,6 @@ import { showToast } from '../services/Toast';
 import { useStripe } from '@stripe/stripe-react-native';
 import axios from 'axios';
 import baseURL from '../services/network/base_url';
-import { setMembershipNumber } from '../redux/authSlice';
 import ReserveHeader from '../components/ReserveHeader';
 
 const ReserveTableScreen = ({ route }) => {
@@ -209,7 +209,7 @@ const ReserveTableScreen = ({ route }) => {
   // ---- Render ----
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF9EF" />
+      <StatusBar barStyle="dark-content" backgroundColor={PremiumTheme.paper} />
       <ReserveHeader
         title={'Confirmation'}
         onBack={() => navigation.goBack()}
@@ -219,7 +219,7 @@ const ReserveTableScreen = ({ route }) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 140 }}
       >
-        <Image source={AppImages.restaurant} style={styles.image} />
+        <Image source={screen === 'Lounge' ? AppImages.lounge : AppImages.restaurant} style={styles.image} />
         <View style={styles.detailsContainer}>
           <Text style={styles.summaryTitle}>Afternoon tea on top</Text>
           <Text style={styles.summaryText}>{`${
@@ -237,7 +237,7 @@ const ReserveTableScreen = ({ route }) => {
           {screen !== 'Lounge' && (
             <>
               <Text style={styles.subSectionTitle}>Special Occasion?</Text>
-              {occasionsList.map(item => (
+              {(occasionsList || []).map(item => (
                 <TouchableOpacity
                   key={item}
                   style={styles.checkboxRow}
@@ -247,8 +247,8 @@ const ReserveTableScreen = ({ route }) => {
                     style={[
                       styles.checkboxBox,
                       occasions[item] && {
-                        backgroundColor: '#FFF9EF',
-                        borderColor: Colors.Muted_Gold,
+                        backgroundColor: PremiumTheme.primary,
+                        borderColor: PremiumTheme.primary,
                       },
                     ]}
                   >
@@ -256,14 +256,14 @@ const ReserveTableScreen = ({ route }) => {
                       <Text style={{ color: '#fff' }}>✔️</Text>
                     )}
                   </View>
-                  <Text style={{ marginLeft: 8 }}>{item}</Text>
+                  <Text style={styles.checkboxText}>{item}</Text>
                 </TouchableOpacity>
               ))}
 
               <Text style={[styles.subSectionTitle, { marginTop: 14 }]}>
                 Dietary restrictions
               </Text>
-              {dietaryList.map(item => (
+              {(dietaryList || []).map(item => (
                 <TouchableOpacity
                   key={item}
                   style={styles.checkboxRow}
@@ -273,14 +273,14 @@ const ReserveTableScreen = ({ route }) => {
                     style={[
                       styles.checkboxBox,
                       dietary[item] && {
-                        backgroundColor: '#FFF9EF',
-                        borderColor: Colors.Muted_Gold,
+                        backgroundColor: PremiumTheme.primary,
+                        borderColor: PremiumTheme.primary,
                       },
                     ]}
                   >
                     {dietary[item] && <Text style={{ color: '#fff' }}>✔️</Text>}
                   </View>
-                  <Text style={{ marginLeft: 8 }}>{item}</Text>
+                  <Text style={styles.checkboxText}>{item}</Text>
                 </TouchableOpacity>
               ))}
             </>
@@ -297,7 +297,6 @@ const ReserveTableScreen = ({ route }) => {
           />
         </View>
       </ScrollView>
-      Anything
       {/* Footer */}
       <View style={styles.footer}>
         <Button
@@ -331,82 +330,127 @@ const ReserveTableScreen = ({ route }) => {
 
 export default ReserveTableScreen;
 
+const T = PremiumTheme;
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF9EF' },
+  container: { flex: 1, backgroundColor: T.paper },
   image: {
-    width: '92%',
-    height: 200,
-    borderRadius: 16,
+    width: '91%',
+    height: 220,
+    borderRadius: 32,
     alignSelf: 'center',
-    marginTop: 15,
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: T.border,
   },
-  detailsContainer: { paddingHorizontal: 20, paddingVertical: 20 },
+  detailsContainer: {
+    marginHorizontal: 18,
+    marginTop: 18,
+    padding: 16,
+    backgroundColor: T.glass,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: T.border,
+    shadowColor: T.shadow,
+    shadowOpacity: 0.08,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 9 },
+    elevation: 3,
+  },
   summaryTitle: {
-    fontFamily: Fonts.instrumentSansRegular,
-    fontSize: 12,
-    color: Colors.DARK_GREY,
+    fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium,
+    fontSize: 11,
+    color: T.primary,
+    letterSpacing: 1.8,
+    textTransform: 'uppercase',
   },
   summaryText: {
-    fontFamily: Fonts.instrumentSansMedium,
-    fontSize: 14,
-    color: Colors.BLACK,
-    marginVertical: 6,
+    fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium,
+    fontSize: 16,
+    color: T.ink,
+    marginTop: 7,
+    marginBottom: 12,
+    lineHeight: 23,
   },
   label: {
-    fontFamily: Fonts.instrumentSansMedium,
-    fontSize: 16,
-    color: Colors.BLACK,
+    fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium,
+    fontSize: 11,
+    color: T.primary,
     marginTop: 16,
     marginBottom: 8,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
   },
   textInput: {
     borderWidth: 1,
-    borderColor: Colors.BORDERGREY,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    height: 48,
+    borderColor: T.border,
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    minHeight: 54,
     fontFamily: Fonts.instrumentSansRegular,
     fontSize: 15,
-    color: Colors.BLACK,
+    color: T.ink,
+    backgroundColor: T.surface,
   },
   subSectionTitle: {
-    fontFamily: Fonts.instrumentSansMedium,
+    fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium,
     fontSize: 14,
-    color: Colors.BLACK,
-    marginTop: 16,
-    marginBottom: 8,
+    color: T.ink,
+    marginTop: 18,
+    marginBottom: 10,
   },
-  checkboxRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
-  checkboxBox: {
-    height: 18,
-    width: 18,
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    backgroundColor: T.surfaceSoft,
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     borderWidth: 1,
-    borderColor: Colors.BORDERGREY,
-    borderRadius: 4,
+    borderColor: T.line,
+  },
+  checkboxText: {
+    marginLeft: 10,
+    fontFamily: Fonts.instrumentSansRegular,
+    color: T.ink,
+    flex: 1,
+  },
+  checkboxBox: {
+    height: 20,
+    width: 20,
+    borderWidth: 1,
+    borderColor: T.border,
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: T.surface,
   },
   footer: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#FFF9EF',
+    backgroundColor: T.glass,
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    elevation: 8,
+    paddingVertical: 14,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    borderWidth: 1,
+    borderColor: T.border,
+    elevation: 12,
+    shadowColor: T.shadow,
+    shadowOpacity: 0.12,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: -6 },
   },
   payButton: {
-    // backgroundColor: Colors.Muted_Gold,
-    borderRadius: 30,
+    borderRadius: 999,
     paddingVertical: 10,
     width: '100%',
   },
   payText: {
-    fontFamily: Fonts.instrumentSansMedium,
-    color: Colors.WHITE,
-    fontSize: 14,
+    fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium,
+    color: T.surface,
+    fontSize: 13,
   },
 });

@@ -4,6 +4,7 @@ import { View, ScrollView, Image, StyleSheet, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Colors, Fonts, AppImages } from '../res';
+import PremiumTheme from '../res/PremiumTheme';
 import Button from '../components/Button';
 import ReserveHeader from '../components/ReserveHeader';
 import LoungeDetails from '../components/LoungeDetails';
@@ -201,12 +202,6 @@ const ReserveLoungeScreen = ({ route }) => {
         partySize: guests,
       };
 
-      navigation.navigate('ReserveTableScreen', {
-        userData: response?.data,
-        selectedData: data,
-        screen: 'Lounge',
-      });
-
       const response = await axios.post(
         `${baseURL.base_url1}reservations/createRes`,
         data,
@@ -226,6 +221,7 @@ const ReserveLoungeScreen = ({ route }) => {
           navigation.navigate('ReserveTableScreen', {
             userData: response?.data,
             selectedData: data,
+            screen: 'Lounge',
           });
         } else {
           showToast('error', 'User details not found. Please log in again.');
@@ -261,13 +257,13 @@ const ReserveLoungeScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <ReserveHeader title={'Restaurant'} onBack={() => navigation.goBack()} />
+      <ReserveHeader title={screen == 'Lounge' ? 'Lounge' : 'Restaurant'} onBack={() => navigation.goBack()} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
       >
-        <Image source={AppImages.restaurant} style={styles.image} />
+        <Image source={screen == 'Lounge' ? AppImages.lounge : AppImages.restaurant} style={styles.image} />
         <View style={styles.detailsContainer}>
           <LoungeDetails />
 
@@ -339,55 +335,77 @@ const ReserveLoungeScreen = ({ route }) => {
   );
 };
 
+const T = PremiumTheme;
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF9EF' },
+  container: { flex: 1, backgroundColor: T.paper },
   image: {
-    width: '92%',
-    height: 200,
-    borderRadius: 16,
+    width: '91%',
+    height: 220,
+    borderRadius: 32,
     alignSelf: 'center',
-    marginTop: 15,
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: T.border,
   },
-  detailsContainer: { paddingHorizontal: 20, paddingVertical: 20 },
+  detailsContainer: {
+    marginHorizontal: 18,
+    marginTop: 18,
+    paddingHorizontal: 16,
+    paddingVertical: 18,
+    backgroundColor: T.glass,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: T.border,
+    shadowColor: T.shadow,
+    shadowOpacity: 0.08,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 9 },
+    elevation: 3,
+  },
   label: {
-    fontFamily: Fonts.instrumentSansMedium,
-    fontSize: 16,
-    color: Colors.BLACK,
+    fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium,
+    fontSize: 12,
+    color: T.primary,
     marginTop: 20,
     marginBottom: 8,
+    letterSpacing: 1.7,
+    textTransform: 'uppercase',
   },
   dropdown: {
     borderWidth: 1,
-    borderColor: Colors.BORDERGREY,
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    height: 50,
+    borderColor: T.border,
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    height: 54,
+    backgroundColor: T.surface,
   },
   dropdownText: {
     fontFamily: Fonts.instrumentSansRegular,
     fontSize: 14,
-    color: Colors.BLACK,
+    color: T.ink,
   },
   footer: {
     width: '100%',
-    backgroundColor: '#FFF9EF',
-    elevation: 8,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    backgroundColor: T.glass,
+    elevation: 12,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    borderWidth: 1,
+    borderColor: T.border,
+    paddingTop: 8,
   },
   confirmButton: {
-    // backgroundColor: Colors.Muted_Gold,
-    marginTop: 25,
-    borderRadius: 30,
+    marginTop: 14,
+    borderRadius: 999,
     paddingVertical: 12,
     alignSelf: 'center',
     width: '90%',
-    marginBottom: 10,
+    marginBottom: 14,
   },
   confirmText: {
-    fontFamily: Fonts.instrumentSansMedium,
-    color: Colors.WHITE,
-    fontSize: 15,
+    fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium,
+    color: T.surface,
+    fontSize: 13,
   },
 });
 

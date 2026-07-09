@@ -28,6 +28,8 @@ import { postApi } from '../services/network/api';
 import { colors, fonts, styles as commonStyles } from '../themes';
 import { showToast } from '../services/Toast';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // ✅ correct import
+import PremiumTheme from '../res/PremiumTheme';
+import { Fonts } from '../res';
 
 export default function SignIn(props) {
   const dispatch = useDispatch();
@@ -145,7 +147,7 @@ export default function SignIn(props) {
         >
           <Image
             source={AppImages.Back}
-            style={{ height: 25, width: 25, tintColor: 'white' }}
+            style={{ height: 25, width: 25, tintColor: PremiumTheme.surface }}
           />
         </TouchableOpacity>
 
@@ -270,7 +272,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // semi-transparent black overlay
+    backgroundColor: 'rgba(27,23,19,0.38)', // semi-transparent black overlay
   },
   logoContainer: {
     alignSelf: 'center',
@@ -279,7 +281,7 @@ const styles = StyleSheet.create({
   logo: {
     height: 140,
     width: 200,
-    tintColor: colors.white,
+    tintColor: PremiumTheme.surface,
   },
   bottomSheetWrapper: {
     flex: 1,
@@ -288,9 +290,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   bottomSheet: {
-    backgroundColor: 'white',
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
+    backgroundColor: PremiumTheme.glass,
+    borderTopLeftRadius: 34,
+    borderTopRightRadius: 34,
     paddingHorizontal: 0,
     paddingBottom: 30,
     paddingTop: 25,
@@ -298,19 +300,19 @@ const styles = StyleSheet.create({
   title: {
     textAlign: 'center',
     fontSize: fonts.fs_32,
-    color: '#1A1A1A',
-    fontFamily: 'InstrumentSans_Condensed-medium',
+    color: PremiumTheme.ink,
+    fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium,
   },
   subtitle: {
     textAlign: 'center',
     fontSize: fonts.fs_22,
-    color: colors.txtColor,
-    fontFamily: 'InstrumentSans_Condensed-medium',
+    color: PremiumTheme.muted,
+    fontFamily: Fonts.instrumentSansRegular,
   },
   inputText: {
     fontSize: fonts.fs_16,
-    color: colors.black,
-    fontFamily: 'InstrumentSans_Condensed-medium',
+    color: PremiumTheme.ink,
+    fontFamily: Fonts.instrumentSansRegular,
   },
   passwordContainer: {
     flexDirection: 'row',
@@ -325,15 +327,15 @@ const styles = StyleSheet.create({
   eyeImg: {
     height: 24,
     width: 24,
-    tintColor: colors.black,
+    tintColor: PremiumTheme.primary,
     marginTop: 15,
   },
   forgot: {
     textAlign: 'center',
     marginTop: 15,
     fontSize: fonts.fs_18,
-    color: colors.txtColor,
-    fontFamily: 'InstrumentSans_Condensed-medium',
+    color: PremiumTheme.muted,
+    fontFamily: Fonts.instrumentSansRegular,
     // marginBottom: 20,
   },
   signInBtn: {
@@ -343,9 +345,9 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   signInBtnText: {
-    fontFamily: 'InstrumentSans_Condensed-medium',
+    fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium,
     fontSize: fonts.fs_16,
-    color: colors.white,
+    color: PremiumTheme.surface,
   },
   footer: {
     position: 'absolute',
@@ -354,10 +356,10 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: fonts.fs_16,
-    fontFamily: 'InstrumentSans_Condensed-regular',
-    color: colors.txtColor,
+    fontFamily: Fonts.instrumentSansRegular,
+    color: PremiumTheme.muted,
   },
   signUpText: {
-    color: '#2E43C5',
+    color: PremiumTheme.primary,
   },
 });

@@ -1,9 +1,8 @@
 import React, { useRef, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ImageBackground, Image, Animated, Easing } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ImageBackground, Image, Animated, Easing, StatusBar, Platform } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { Fonts, AppImages } from '../res';
-import AppButton from '../components/AppButton';
 import PremiumTheme from '../res/PremiumTheme';
 import { CravPage, Hero, PremiumCard, MiniStat, CravButton, LuxeTabs } from '../components/CravPremium';
 
@@ -29,14 +28,24 @@ export default function Loyalty() {
 
   if (!token) {
     return (
-      <ImageBackground source={AppImages.loginBg} style={styles.guestContainer}>
-        <View style={styles.guestOverlay} />
+      <ImageBackground source={AppImages.loginBg} style={styles.guestContainer} resizeMode="cover">
+        <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+        <View style={styles.guestDim} />
+        <View style={styles.guestBottomFade} />
         <View style={styles.guestCard}>
+          <View style={styles.guestHandle} />
           <Text style={styles.guestKicker}>COLONY PRIVILEGE</Text>
           <Text style={styles.colonyTitle}>Fresh rewards, served with luxury.</Text>
           <Text style={styles.guestSub}>Sign in or join to unlock benefits, offers and quick member access.</Text>
-          <AppButton text="LOGIN" onPress={() => navigation.navigate('Login')} style={styles.authBtn} />
-          <AppButton text="JOIN NOW" onPress={() => navigation.navigate('Signup')} style={styles.authBtnAlt} textStyle={styles.authBtnAltText} />
+
+          <View style={styles.authActions}>
+            <TouchableOpacity activeOpacity={0.86} style={styles.authPrimaryBtn} onPress={() => navigation.navigate('Login')}>
+              <Text style={styles.authPrimaryText}>LOGIN</Text>
+            </TouchableOpacity>
+            <TouchableOpacity activeOpacity={0.86} style={styles.authSecondaryBtn} onPress={() => navigation.navigate('Signup')}>
+              <Text style={styles.authSecondaryText}>JOIN NOW</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ImageBackground>
     );
@@ -108,13 +117,74 @@ const styles = StyleSheet.create({
   pointsWrapper: { marginTop: 18, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   pointsNumber: { fontSize: 54, fontFamily: fontBold, color: T.ink },
   pointsLabelText: { fontSize: 14, color: T.muted, marginTop: -8, fontFamily: fontReg },
-  guestContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
-  guestOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(27,23,19,0.22)' },
-  guestCard: { width: '100%', backgroundColor: T.glass, borderRadius: 34, padding: 24, borderWidth: 1, borderColor: 'rgba(255,255,255,0.72)', alignItems: 'center', shadowColor: T.shadow, shadowOpacity: 0.18, shadowRadius: 24, shadowOffset: { width: 0, height: 14 }, elevation: 8 },
+  guestContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === 'ios' ? 70 : 48,
+    paddingBottom: Platform.OS === 'ios' ? 124 : 112,
+    backgroundColor: T.ink,
+  },
+  guestDim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(20,15,10,0.12)' },
+  guestBottomFade: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 260,
+    backgroundColor: 'rgba(20,15,10,0.38)',
+  },
+  guestCard: {
+    width: '100%',
+    backgroundColor: 'rgba(255,253,248,0.91)',
+    borderRadius: 36,
+    paddingTop: 18,
+    paddingHorizontal: 22,
+    paddingBottom: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.78)',
+    alignItems: 'center',
+    shadowColor: T.shadow,
+    shadowOpacity: 0.28,
+    shadowRadius: 30,
+    shadowOffset: { width: 0, height: 18 },
+    elevation: 14,
+  },
+  guestHandle: {
+    width: 48,
+    height: 4,
+    borderRadius: 4,
+    backgroundColor: T.champagne,
+    marginBottom: 18,
+  },
   guestKicker: { color: T.primary, letterSpacing: 2.4, fontSize: 11, fontFamily: fontBold },
-  colonyTitle: { fontSize: 32, lineHeight: 38, color: T.ink, fontFamily: fontBold, marginTop: 14, textAlign: 'center' },
-  guestSub: { color: T.muted, fontFamily: fontReg, fontSize: 14, lineHeight: 22, textAlign: 'center', marginTop: 8, marginBottom: 10 },
-  authBtn: { backgroundColor: T.primary, width: '100%', marginTop: 8, marginHorizontal: 0 },
-  authBtnAlt: { backgroundColor: T.surface, borderWidth: 1, borderColor: T.border, width: '100%', marginTop: 12, marginHorizontal: 0, shadowOpacity: 0.06 },
-  authBtnAltText: { color: T.ink },
+  colonyTitle: { fontSize: 31, lineHeight: 38, color: T.ink, fontFamily: fontBold, marginTop: 13, textAlign: 'center', letterSpacing: -0.4 },
+  guestSub: { color: T.muted, fontFamily: fontReg, fontSize: 14, lineHeight: 22, textAlign: 'center', marginTop: 8 },
+  authActions: { width: '100%', marginTop: 20 },
+  authPrimaryBtn: {
+    width: '100%',
+    height: 58,
+    borderRadius: 999,
+    backgroundColor: T.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: T.primary,
+    shadowOpacity: 0.28,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 9 },
+    elevation: 7,
+  },
+  authPrimaryText: { color: T.surface, fontFamily: fontBold, fontSize: 13, letterSpacing: 1.6 },
+  authSecondaryBtn: {
+    width: '100%',
+    height: 58,
+    borderRadius: 999,
+    backgroundColor: T.surface,
+    borderWidth: 1,
+    borderColor: T.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 12,
+  },
+  authSecondaryText: { color: T.ink, fontFamily: fontBold, fontSize: 13, letterSpacing: 1.6 },
 });

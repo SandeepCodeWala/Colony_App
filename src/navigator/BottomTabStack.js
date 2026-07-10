@@ -16,25 +16,31 @@ const Tab = createBottomTabNavigator();
 const T = PremiumTheme;
 
 const TabItem = ({ focused, icon, label }) => {
-  const scale = useRef(new Animated.Value(focused ? 1 : 0)).current;
+  const progress = useRef(new Animated.Value(focused ? 1 : 0)).current;
 
   useEffect(() => {
-    Animated.spring(scale, {
+    Animated.spring(progress, {
       toValue: focused ? 1 : 0,
       useNativeDriver: false,
-      speed: 16,
-      bounciness: 7,
+      speed: 18,
+      bounciness: 6,
     }).start();
-  }, [focused, scale]);
+  }, [focused, progress]);
 
-  const translateY = scale.interpolate({ inputRange: [0, 1], outputRange: [2, -5] });
-  const pillOpacity = scale.interpolate({ inputRange: [0, 1], outputRange: [0, 1] });
+  const translateY = progress.interpolate({ inputRange: [0, 1], outputRange: [4, -3] });
+  const indicatorWidth = progress.interpolate({ inputRange: [0, 1], outputRange: [0, 24] });
+  const indicatorOpacity = progress.interpolate({ inputRange: [0, 1], outputRange: [0, 1] });
 
   return (
     <Animated.View style={[styles.tabItem, { transform: [{ translateY }] }]}>
-      <Animated.View style={[styles.activePill, { opacity: pillOpacity }]} />
+      <Animated.View
+        style={[
+          styles.activeIndicator,
+          { width: indicatorWidth, opacity: indicatorOpacity },
+        ]}
+      />
       <View style={[styles.iconBox, focused && styles.activeIconBox]}>
-        <Image source={icon} style={[styles.icon, { tintColor: focused ? T.surface : T.softMuted }]} />
+        <Image source={icon} style={[styles.icon, { tintColor: focused ? T.primaryDark : T.softMuted }]} />
       </View>
       <Text numberOfLines={1} style={[styles.label, focused && styles.activeLabel]}>
         {label}
@@ -71,64 +77,72 @@ export default BottomTabs;
 const styles = StyleSheet.create({
   tabBar: {
     position: 'absolute',
-    left: 14,
-    right: 14,
-    bottom: 10,
-    height: 84,
-    borderRadius: 34,
-    backgroundColor: 'rgba(255,255,255,0.94)',
+    left: 16,
+    right: 16,
+    bottom: 12,
+    height: 76,
+    borderRadius: 28,
+    backgroundColor: 'rgba(255,253,248,0.96)',
     borderTopWidth: 0,
     borderWidth: 1,
-    borderColor: T.border,
-    paddingHorizontal: 8,
-    paddingTop: 9,
-    paddingBottom: 10,
+    borderColor: T.champagne,
+    paddingHorizontal: 10,
+    paddingTop: 8,
+    paddingBottom: 8,
     shadowColor: T.shadow,
-    shadowOpacity: 0.20,
-    shadowRadius: 26,
-    shadowOffset: { width: 0, height: 13 },
-    elevation: 18,
+    shadowOpacity: 0.18,
+    shadowRadius: 24,
+    shadowOffset: { width: 0, height: 12 },
+    elevation: 16,
   },
-  tabBarItem: { height: 64, justifyContent: 'center', alignItems: 'center' },
-  tabItem: { width: 76, height: 64, borderRadius: 28, justifyContent: 'center', alignItems: 'center' },
-  activePill: {
-    position: 'absolute',
-    top: 3,
-    bottom: 0,
-    left: 6,
-    right: 6,
-    borderRadius: 26,
-    backgroundColor: T.primarySoft,
-    borderWidth: 1,
-    borderColor: T.border,
-  },
-  iconBox: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: T.surfaceSoft,
+  tabBarItem: { height: 60, justifyContent: 'center', alignItems: 'center' },
+  tabItem: {
+    width: '100%',
+    height: 60,
+    paddingHorizontal: 2,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 4,
+  },
+  activeIndicator: {
+    position: 'absolute',
+    top: 0,
+    height: 3,
+    borderRadius: 3,
+    backgroundColor: T.primary,
+    alignSelf: 'center',
+  },
+  iconBox: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 5,
     borderWidth: 1,
-    borderColor: T.line,
+    borderColor: 'transparent',
   },
   activeIconBox: {
-    backgroundColor: T.primary,
-    borderColor: T.primary,
-    shadowColor: T.primary,
-    shadowOpacity: 0.30,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 6,
+    backgroundColor: T.primarySoft,
+    borderColor: T.champagne,
+    shadowColor: T.shadow,
+    shadowOpacity: 0.14,
+    shadowRadius: 9,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 4,
   },
   icon: { width: 18, height: 18, resizeMode: 'contain' },
   label: {
     marginTop: 4,
     fontFamily: Fonts.instrumentSansMedium,
-    fontSize: 10.5,
+    fontSize: 10.2,
     color: T.softMuted,
-    letterSpacing: 0.2,
+    letterSpacing: 0.15,
   },
-  activeLabel: { color: T.primaryDark, fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium, fontSize: 11 },
+  activeLabel: {
+    color: T.primaryDark,
+    fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium,
+    fontSize: 10.8,
+  },
 });

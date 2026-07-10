@@ -69,6 +69,7 @@ const Home = () => {
       easing: Easing.out(Easing.cubic),
       useNativeDriver: true,
     }).start();
+
   }, [intro]);
 
   useEffect(() => {
@@ -96,32 +97,34 @@ const Home = () => {
   };
 
   const renderItem = ({ item, index }) => {
-    const translateY = intro.interpolate({ inputRange: [0, 1], outputRange: [26, 0] });
+    const translateY = intro.interpolate({ inputRange: [0, 1], outputRange: [34, 0] });
+    const imageScale = intro.interpolate({ inputRange: [0, 1], outputRange: [1.08, 1] });
     return (
       <View style={styles.card}>
-        <ImageBackground source={item.image} style={styles.image} resizeMode="cover">
-          <View style={styles.imageWash} />
-          <View style={styles.deepGradient} />
-        </ImageBackground>
-
-        <Animated.View style={[styles.brandStrip, { opacity: intro, transform: [{ translateY }] }]}>
-          <Text style={styles.brandKicker}>COLONY PRIVILEGE</Text>
-          <Text style={styles.brandStripText}>Luxury dining · reservations · rewards</Text>
+        <Animated.View style={[styles.fullImageWrap, { transform: [{ scale: imageScale }] }]}>
+          <ImageBackground source={item.image} style={styles.fullImage} resizeMode="cover" />
         </Animated.View>
 
         <View style={styles.overlay}>
-          <Animated.View style={[styles.copyCard, item.disabled && styles.disabledCard, { opacity: intro, transform: [{ translateY }] }]}>
-            <View style={styles.cardHandle} />
-            <Text style={styles.slideCount}>0{index + 1} / 03</Text>
+          <Animated.View style={[styles.copyWrap, item.disabled && styles.disabledCard, { opacity: intro, transform: [{ translateY }] }]}> 
+            <View style={styles.floatMetaRow}>
+              <Text style={styles.slideCount}>0{index + 1} / 03</Text>
+              <View style={styles.statusPill}>
+                <Text style={styles.statusPillText}>{item.disabled ? 'SOON' : 'OPEN'}</Text>
+              </View>
+            </View>
+
             <Text style={styles.eyebrow}>{item.eyebrow}</Text>
             <Text style={styles.title}>{item.title}</Text>
             <Text style={styles.subtitle}>{item.subtitle}</Text>
 
             <View style={styles.paginationContainer}>
-              {DATA.map((_, dotIndex) => <View key={dotIndex} style={[styles.dot, currentIndex === dotIndex && styles.activeDot]} />)}
+              {DATA.map((_, dotIndex) => (
+                <View key={dotIndex} style={[styles.dot, currentIndex === dotIndex && styles.activeDot]} />
+              ))}
             </View>
 
-            <TouchableOpacity activeOpacity={0.82} disabled={item.disabled} style={[styles.button, item.disabled && styles.disabledButton]} onPress={() => handleReserveTable(item)}>
+            <TouchableOpacity activeOpacity={0.84} disabled={item.disabled} style={[styles.button, item.disabled && styles.disabledButton]} onPress={() => handleReserveTable(item)}>
               <Text style={[styles.buttonText, item.disabled && styles.disabledButtonText]}>{item.buttonText}</Text>
             </TouchableOpacity>
           </Animated.View>
@@ -150,60 +153,144 @@ const Home = () => {
 };
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: T.paper },
-  card: { width, height, backgroundColor: T.paper },
-  image: { width, height: height * 0.77 },
-  imageWash: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(27,23,19,0.20)' },
-  deepGradient: { position: 'absolute', left: 0, right: 0, bottom: 0, height: height * 0.36, backgroundColor: 'rgba(27,23,19,0.45)' },
-  brandStrip: {
-    position: 'absolute',
-    top: Platform.OS === 'ios' ? 58 : 44,
-    left: 18,
-    right: 18,
-    backgroundColor: 'rgba(255,255,255,0.84)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.66)',
-    borderRadius: 28,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-    shadowColor: T.shadow,
-    shadowOpacity: 0.14,
-    shadowRadius: 20,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 5,
+  root: {
+    flex: 1,
+    backgroundColor: T.ink,
   },
-  brandKicker: { color: T.primary, fontFamily: fontBold, fontSize: 9, letterSpacing: 2.2, textTransform: 'uppercase' },
-  brandStripText: { color: T.ink, fontFamily: fontMed, fontSize: 12, marginTop: 2 },
-  overlay: { position: 'absolute', left: 0, right: 0, bottom: Platform.OS === 'ios' ? 110 : 96, alignItems: 'center', paddingHorizontal: 18 },
-  copyCard: {
+  card: {
+    width,
+    height,
+    overflow: 'hidden',
+    backgroundColor: T.ink,
+  },
+  fullImageWrap: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  fullImage: {
+    width,
+    height,
+  },
+  overlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: Platform.OS === 'ios' ? 112 : 98,
+    paddingHorizontal: 18,
+  },
+  copyWrap: {
     width: '100%',
-    backgroundColor: T.glass,
-    borderRadius: 36,
-    paddingVertical: 24,
-    paddingHorizontal: 22,
-    alignItems: 'center',
+    borderRadius: 34,
+    paddingTop: 18,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    backgroundColor: 'rgba(255,250,244,0.82)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.74)',
-    shadowColor: T.shadow,
-    shadowOpacity: 0.20,
+    borderColor: 'rgba(255,255,255,0.82)',
+    shadowColor: '#000',
+    shadowOpacity: 0.28,
     shadowRadius: 28,
     shadowOffset: { width: 0, height: 16 },
-    elevation: 10,
+    elevation: 12,
   },
-  cardHandle: { width: 42, height: 4, borderRadius: 4, backgroundColor: T.border, marginBottom: 15 },
-  disabledCard: { opacity: 0.78 },
-  slideCount: { fontFamily: fontBold, fontSize: 10, color: T.softMuted, letterSpacing: 2.2, marginBottom: 8 },
-  eyebrow: { fontFamily: fontBold, fontSize: 11, letterSpacing: 2.4, color: T.primary, textTransform: 'uppercase' },
-  title: { fontFamily: fontBold, fontSize: 41, lineHeight: 48, textAlign: 'center', color: T.ink, textTransform: 'uppercase', marginTop: 4, letterSpacing: -0.8 },
-  subtitle: { fontFamily: fontReg, fontSize: 14, lineHeight: 22, textAlign: 'center', color: T.muted, marginTop: 8, marginBottom: 18 },
-  paginationContainer: { flexDirection: 'row', marginBottom: 18 },
-  dot: { width: 7, height: 7, borderRadius: 7, backgroundColor: T.champagne, marginHorizontal: 4 },
-  activeDot: { width: 26, backgroundColor: T.primary },
-  button: { backgroundColor: T.primary, width: '100%', height: 54, borderRadius: 999, alignItems: 'center', justifyContent: 'center', shadowColor: T.primary, shadowOpacity: 0.28, shadowRadius: 16, shadowOffset: { width: 0, height: 9 }, elevation: 6 },
-  disabledButton: { backgroundColor: T.line, borderWidth: 1, borderColor: T.border, shadowOpacity: 0 },
-  buttonText: { fontFamily: fontBold, color: T.surface, fontSize: 13, letterSpacing: 1.5, textTransform: 'uppercase' },
-  disabledButtonText: { color: T.softMuted },
+  disabledCard: {
+    opacity: 0.82,
+  },
+  floatMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  slideCount: {
+    fontFamily: fontBold,
+    fontSize: 10,
+    color: T.softMuted,
+    letterSpacing: 2.3,
+  },
+  statusPill: {
+    paddingHorizontal: 12,
+    height: 26,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(183,120,46,0.13)',
+    borderWidth: 1,
+    borderColor: 'rgba(183,120,46,0.28)',
+  },
+  statusPillText: {
+    color: T.primaryDark,
+    fontFamily: fontBold,
+    fontSize: 9,
+    letterSpacing: 1.5,
+  },
+  eyebrow: {
+    fontFamily: fontBold,
+    fontSize: 11,
+    letterSpacing: 2.4,
+    color: T.primary,
+    textTransform: 'uppercase',
+    marginBottom: 4,
+  },
+  title: {
+    fontFamily: fontBold,
+    fontSize: Math.min(44, width * 0.112),
+    lineHeight: Math.min(52, width * 0.132),
+    color: T.ink,
+    textTransform: 'uppercase',
+    letterSpacing: -0.8,
+  },
+  subtitle: {
+    fontFamily: fontReg,
+    fontSize: 14,
+    lineHeight: 22,
+    color: T.muted,
+    marginTop: 8,
+    marginBottom: 16,
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    marginBottom: 16,
+  },
+  dot: {
+    width: 7,
+    height: 7,
+    borderRadius: 7,
+    backgroundColor: T.champagne,
+    marginRight: 7,
+  },
+  activeDot: {
+    width: 30,
+    backgroundColor: T.primary,
+  },
+  button: {
+    backgroundColor: T.primary,
+    width: '100%',
+    height: 54,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: T.primary,
+    shadowOpacity: 0.30,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 9 },
+    elevation: 7,
+  },
+  disabledButton: {
+    backgroundColor: T.line,
+    borderWidth: 1,
+    borderColor: T.border,
+    shadowOpacity: 0,
+  },
+  buttonText: {
+    fontFamily: fontBold,
+    color: T.surface,
+    fontSize: 13,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  disabledButtonText: {
+    color: T.softMuted,
+  },
 });
 
 export default Home;

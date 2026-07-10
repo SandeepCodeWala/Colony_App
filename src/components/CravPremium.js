@@ -98,7 +98,7 @@ export const CravPage = ({
       {scroll ? (
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 56 }}
+          contentContainerStyle={{ paddingBottom: 120 }}
         >
           {body}
         </ScrollView>
@@ -141,12 +141,22 @@ export const LuxeSectionHeader = ({ eyebrow, title, right }) => (
 
 export const LuxeTabs = ({ tabs = [], activeKey, onChange, style }) => (
   <View style={[styles.tabsWrap, style]}>
-    {tabs.map(tab => {
+    {tabs.map((tab, index) => {
       const active = tab.key === activeKey;
       return (
-        <PressScale key={tab.key} onPress={() => onChange?.(tab.key)} style={styles.tabPress}>
+        <PressScale
+          key={tab.key}
+          onPress={() => onChange?.(tab.key)}
+          style={[
+            styles.tabPress,
+            index !== 0 && styles.tabPressSpacing,
+          ]}
+        >
           <View style={[styles.tabItem, active && styles.tabItemActive]}>
-            <Text style={[styles.tabText, active && styles.tabTextActive]}>{tab.label}</Text>
+            <Text numberOfLines={1} style={[styles.tabText, active && styles.tabTextActive]}>
+              {tab.label}
+            </Text>
+            <View style={[styles.tabUnderline, active && styles.tabUnderlineActive]} />
           </View>
         </PressScale>
       );
@@ -339,41 +349,60 @@ const styles = StyleSheet.create({
   },
   tabsWrap: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(255,255,255,0.72)',
-    borderRadius: 999,
-    padding: 5,
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,253,248,0.92)',
+    borderRadius: 28,
+    padding: 6,
     borderWidth: 1,
-    borderColor: T.border,
+    borderColor: T.champagne,
     shadowColor: T.shadow,
-    shadowOpacity: 0.07,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 9 },
+    elevation: 3,
+    overflow: 'hidden',
   },
   tabPress: { flex: 1 },
+  tabPressSpacing: { marginLeft: 6 },
   tabItem: {
-    minHeight: 38,
-    borderRadius: 999,
+    minHeight: 50,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
   tabItemActive: {
-    backgroundColor: T.primary,
-    shadowColor: T.primary,
-    shadowOpacity: 0.24,
+    backgroundColor: T.surface,
+    borderColor: T.primarySoft,
+    shadowColor: T.shadow,
+    shadowOpacity: 0.10,
     shadowRadius: 10,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 4,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 2,
   },
   tabText: {
     color: T.muted,
     fontFamily: fontBold,
-    fontSize: 11,
-    letterSpacing: 1,
+    fontSize: 10.2,
+    letterSpacing: 1.05,
     textTransform: 'uppercase',
+    textAlign: 'center',
   },
-  tabTextActive: { color: T.surface },
+  tabTextActive: { color: T.primaryDark },
+  tabUnderline: {
+    width: 0,
+    height: 3,
+    borderRadius: 3,
+    marginTop: 7,
+    backgroundColor: 'transparent',
+  },
+  tabUnderlineActive: {
+    width: 24,
+    backgroundColor: T.primary,
+  },
   foodCard: {
     backgroundColor: T.surface,
     borderRadius: 34,

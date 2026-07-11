@@ -1,296 +1,192 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React from 'react';
 import {
-  View,
-  Text,
-  FlatList,
   ImageBackground,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-  StatusBar,
   Platform,
-  Animated,
-  Easing,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
 } from 'react-native';
-import { AppImages, Fonts } from '../res';
-import PremiumTheme from '../res/PremiumTheme';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
+import { AppImages, Fonts } from '../res';
+import PremiumTheme from '../res/PremiumTheme';
+import { ScreenSkeleton, useFirstRenderSkeleton } from '../components/LuxurySkeleton';
 
-const { width, height } = Dimensions.get('window');
 const T = PremiumTheme;
-const fontReg = Fonts.instrumentSansRegular;
-const fontMed = Fonts.instrumentSansMedium;
-const fontBold = Fonts.instrumentSansBold || Fonts.instrumentSansMedium;
 
-const DATA = [
+const EXPERIENCES = [
   {
-    id: '1',
-    eyebrow: 'SIGNATURE DINING',
-    title: 'Restaurant',
-    subtitle: 'Reserve a table for a polished dining experience with warm hospitality and fresh cuisine.',
+    id: 'restaurant',
+    eyebrow: 'RESTAURANTS',
+    title: 'Exceptional taste',
+    description: 'Discover thoughtful menus, warm hospitality and memorable dining moments at Colony.',
+    cta: 'RESERVE A TABLE',
     image: AppImages.restaurant,
-    buttonText: 'Reserve a Table',
-    screen: 'RightArrow',
+    destination: 'table',
   },
   {
-    id: '2',
-    eyebrow: 'PRIVATE LOUNGE',
-    title: 'Lounge',
-    subtitle: 'A refined lounge experience is being crafted for your next premium evening.',
-    image: AppImages.lounge,
-    buttonText: 'Coming Soon',
-    screen: 'Lounge',
-    disabled: true,
-  },
-  {
-    id: '3',
-    eyebrow: 'CURATED MOMENTS',
-    title: 'Events',
-    subtitle: 'Discover intimate events, live ambience, celebrations and memorable experiences.',
+    id: 'events',
+    eyebrow: 'CURATED EVENTS',
+    title: 'Moments to remember',
+    description: 'Celebrate intimate occasions, live ambience and carefully curated Colony experiences.',
+    cta: 'DISCOVER EVENTS',
     image: AppImages.events,
-    buttonText: 'Reserve an Event',
-    screen: 'Event',
+    destination: 'event',
+  },
+  {
+    id: 'lounge',
+    eyebrow: 'PRIVATE LOUNGE',
+    title: 'A refined escape',
+    description: 'A private lounge experience is being prepared for evenings of comfort and understated luxury.',
+    cta: 'COMING SOON',
+    image: AppImages.lounge,
+    disabled: true,
   },
 ];
 
-const Home = () => {
+export default function Home() {
   const navigation = useNavigation();
-  const flatListRef = useRef(null);
-  const intro = useRef(new Animated.Value(0)).current;
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const { height } = useWindowDimensions();
   const user = useSelector(state => state.auth?.user);
   const membership = useSelector(state => state.auth?.membershipNumber);
+  const loading = useFirstRenderSkeleton(900);
+  const sectionHeight = Math.max(590, height - (Platform.OS === 'ios' ? 94 : 78));
 
-  useEffect(() => {
-    Animated.timing(intro, {
-      toValue: 1,
-      duration: 760,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    }).start();
+  const openExperience = item => {
+    if (item.disabled) return;
+    if (item.destination === 'event') {
+      navigation.navigate('BookEvent');
+      return;
+    }
 
-  }, [intro]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const nextIndex = (currentIndex + 1) % DATA.length;
-      flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
-      setCurrentIndex(nextIndex);
-    }, 5200);
-    return () => clearInterval(interval);
-  }, [currentIndex]);
-
-  const onViewableItemsChanged = useRef(({ viewableItems }) => {
-    if (viewableItems.length > 0) setCurrentIndex(viewableItems[0].index);
-  }).current;
-
-  const handleReserveTable = item => {
-    if (item?.disabled) return;
-    if (item?.screen === 'Event') return navigation.navigate('BookEvent');
-    if (item?.screen === 'Lounge') return;
-    if ((user?.name && membership) || user?.name != null) {
+    if (user?.name || user?.membership_number || membership) {
       navigation.navigate('ReserveLounge', { screen: 'table' });
     } else {
       navigation.navigate('Login');
     }
   };
 
-  const renderItem = ({ item, index }) => {
-    const translateY = intro.interpolate({ inputRange: [0, 1], outputRange: [34, 0] });
-    const imageScale = intro.interpolate({ inputRange: [0, 1], outputRange: [1.08, 1] });
-    return (
-      <View style={styles.card}>
-        <Animated.View style={[styles.fullImageWrap, { transform: [{ scale: imageScale }] }]}>
-          <ImageBackground source={item.image} style={styles.fullImage} resizeMode="cover" />
-        </Animated.View>
-
-        <View style={styles.overlay}>
-          <Animated.View style={[styles.copyWrap, item.disabled && styles.disabledCard, { opacity: intro, transform: [{ translateY }] }]}> 
-            <View style={styles.floatMetaRow}>
-              <Text style={styles.slideCount}>0{index + 1} / 03</Text>
-              <View style={styles.statusPill}>
-                <Text style={styles.statusPillText}>{item.disabled ? 'SOON' : 'OPEN'}</Text>
-              </View>
-            </View>
-
-            <Text style={styles.eyebrow}>{item.eyebrow}</Text>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.subtitle}>{item.subtitle}</Text>
-
-            <View style={styles.paginationContainer}>
-              {DATA.map((_, dotIndex) => (
-                <View key={dotIndex} style={[styles.dot, currentIndex === dotIndex && styles.activeDot]} />
-              ))}
-            </View>
-
-            <TouchableOpacity activeOpacity={0.84} disabled={item.disabled} style={[styles.button, item.disabled && styles.disabledButton]} onPress={() => handleReserveTable(item)}>
-              <Text style={[styles.buttonText, item.disabled && styles.disabledButtonText]}>{item.buttonText}</Text>
-            </TouchableOpacity>
-          </Animated.View>
-        </View>
-      </View>
-    );
-  };
+  if (loading) return <ScreenSkeleton variant="image" />;
 
   return (
     <View style={styles.root}>
       <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
-      <FlatList
-        ref={flatListRef}
-        data={DATA}
-        keyExtractor={item => item.id}
-        renderItem={renderItem}
-        pagingEnabled
-        horizontal
-        showsHorizontalScrollIndicator={false}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
         bounces={false}
-        onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={{ viewAreaCoveragePercentThreshold: 50 }}
-      />
+        contentContainerStyle={styles.scrollContent}
+      >
+        {EXPERIENCES.map((item, index) => (
+          <ImageBackground
+            key={item.id}
+            source={item.image}
+            resizeMode="cover"
+            style={[styles.section, { minHeight: sectionHeight }]}
+          >
+            <View style={styles.darkWash} />
+            <View style={styles.topWash} />
+            <View style={styles.copy}>
+              <Text style={styles.eyebrow}>{item.eyebrow}</Text>
+              <Text style={styles.title}>{item.title}</Text>
+              <Text style={styles.description}>{item.description}</Text>
+              <TouchableOpacity
+                activeOpacity={0.86}
+                disabled={item.disabled}
+                onPress={() => openExperience(item)}
+                style={[styles.cta, item.disabled && styles.ctaDisabled]}
+              >
+                <Text style={[styles.ctaText, item.disabled && styles.ctaDisabledText]}>
+                  {item.cta}
+                </Text>
+              </TouchableOpacity>
+              <Text style={styles.sectionNumber}>0{index + 1} / 03</Text>
+            </View>
+          </ImageBackground>
+        ))}
+      </ScrollView>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: T.ink,
-  },
-  card: {
-    width,
-    height,
-    overflow: 'hidden',
-    backgroundColor: T.ink,
-  },
-  fullImageWrap: {
+  root: { flex: 1, backgroundColor: T.ink },
+  scrollContent: { backgroundColor: T.ink },
+  section: { width: '100%', justifyContent: 'flex-end' },
+  darkWash: {
     ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(12,10,8,0.30)',
   },
-  fullImage: {
-    width,
-    height,
-  },
-  overlay: {
+  topWash: {
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: Platform.OS === 'ios' ? 112 : 98,
-    paddingHorizontal: 18,
+    top: 0,
+    height: 190,
+    backgroundColor: 'rgba(15,12,9,0.12)',
   },
-  copyWrap: {
-    width: '100%',
-    borderRadius: 34,
-    paddingTop: 18,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-    backgroundColor: 'rgba(255,250,244,0.82)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.82)',
-    shadowColor: '#000',
-    shadowOpacity: 0.28,
-    shadowRadius: 28,
-    shadowOffset: { width: 0, height: 16 },
-    elevation: 12,
-  },
-  disabledCard: {
-    opacity: 0.82,
-  },
-  floatMetaRow: {
-    flexDirection: 'row',
+  copy: {
+    paddingHorizontal: 26,
+    paddingBottom: 48,
+    paddingTop: 120,
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  slideCount: {
-    fontFamily: fontBold,
-    fontSize: 10,
-    color: T.softMuted,
-    letterSpacing: 2.3,
-  },
-  statusPill: {
-    paddingHorizontal: 12,
-    height: 26,
-    borderRadius: 999,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(183,120,46,0.13)',
-    borderWidth: 1,
-    borderColor: 'rgba(183,120,46,0.28)',
-  },
-  statusPillText: {
-    color: T.primaryDark,
-    fontFamily: fontBold,
-    fontSize: 9,
-    letterSpacing: 1.5,
   },
   eyebrow: {
-    fontFamily: fontBold,
-    fontSize: 11,
-    letterSpacing: 2.4,
-    color: T.primary,
-    textTransform: 'uppercase',
-    marginBottom: 4,
+    color: T.surface,
+    fontFamily: Fonts.luxurySansLight,
+    fontSize: 14,
+    letterSpacing: 2.2,
+    textAlign: 'center',
   },
   title: {
-    fontFamily: fontBold,
-    fontSize: Math.min(44, width * 0.112),
-    lineHeight: Math.min(52, width * 0.132),
-    color: T.ink,
-    textTransform: 'uppercase',
-    letterSpacing: -0.8,
+    color: T.surface,
+    fontFamily: Fonts.displaySerif,
+    fontSize: 48,
+    lineHeight: 56,
+    textAlign: 'center',
+    marginTop: 22,
   },
-  subtitle: {
-    fontFamily: fontReg,
-    fontSize: 14,
-    lineHeight: 22,
-    color: T.muted,
-    marginTop: 8,
-    marginBottom: 16,
+  description: {
+    color: 'rgba(255,255,255,0.94)',
+    fontFamily: Fonts.luxurySansLight,
+    fontSize: 17,
+    lineHeight: 28,
+    textAlign: 'center',
+    marginTop: 16,
+    maxWidth: 620,
   },
-  paginationContainer: {
-    flexDirection: 'row',
-    marginBottom: 16,
-  },
-  dot: {
-    width: 7,
-    height: 7,
-    borderRadius: 7,
-    backgroundColor: T.champagne,
-    marginRight: 7,
-  },
-  activeDot: {
-    width: 30,
-    backgroundColor: T.primary,
-  },
-  button: {
-    backgroundColor: T.primary,
+  cta: {
     width: '100%',
-    height: 54,
-    borderRadius: 999,
+    maxWidth: 620,
+    minHeight: 62,
+    marginTop: 30,
+    backgroundColor: T.surface,
+    borderWidth: 1,
+    borderColor: T.ink,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: T.primary,
-    shadowOpacity: 0.30,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 9 },
-    elevation: 7,
+    paddingHorizontal: 18,
   },
-  disabledButton: {
-    backgroundColor: T.line,
-    borderWidth: 1,
-    borderColor: T.border,
-    shadowOpacity: 0,
+  ctaDisabled: {
+    backgroundColor: 'rgba(255,255,255,0.72)',
+    borderColor: 'rgba(255,255,255,0.65)',
   },
-  buttonText: {
-    fontFamily: fontBold,
-    color: T.surface,
+  ctaText: {
+    color: T.ink,
+    fontFamily: Fonts.luxurySansMedium,
     fontSize: 13,
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
+    letterSpacing: 3,
+    textAlign: 'center',
   },
-  disabledButtonText: {
-    color: T.softMuted,
+  ctaDisabledText: { color: T.muted },
+  sectionNumber: {
+    color: 'rgba(255,255,255,0.75)',
+    fontFamily: Fonts.luxurySansLight,
+    fontSize: 11,
+    letterSpacing: 1.8,
+    marginTop: 20,
   },
 });
-
-export default Home;

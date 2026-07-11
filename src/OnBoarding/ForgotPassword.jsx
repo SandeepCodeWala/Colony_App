@@ -1,355 +1,186 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ImageBackground,
   Image,
-  TextInput,
+  ImageBackground,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
 } from 'react-native';
-import { AppImages } from '../res';
+import ActivityIndicator from '../components/ActivityIndicator';
 import Button from '../components/Button';
-// import BottomSheet from '../components/BottomSheet';
-import OTPTextView from 'react-native-otp-textinput';
-import { postApi } from '../services/network/api';
+import InputText from '../components/InputText';
+import ErrorView from '../components/ErrorView';
+import { ScreenSkeleton, useFirstRenderSkeleton } from '../components/LuxurySkeleton';
+import { postAbsoluteApi } from '../services/network/api';
 import { showToast } from '../services/Toast';
-import { colors, fonts } from '../themes';
-import RBSheet from 'react-native-raw-bottom-sheet';
-import { useDispatch, useSelector } from 'react-redux';
-import { setLoginField, setMembershipNumber } from '../redux/slices/authSlice';
-import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import { AppImages, Fonts } from '../res';
+import PremiumTheme from '../res/PremiumTheme';
+
+const T = PremiumTheme;
+const FORGOT_PASSWORD_URL =
+  'https://moistness-shudder-partition.ngrok-free.dev/user/forgat-password';
 
 export default function ForgotPassword({ navigation }) {
-   const dispatch = useDispatch();
-  const membershipNumber = useSelector(state => state.auth.membershipNumber);
-  const [phone, setPhone] = useState('');
+  const { height } = useWindowDimensions();
+  const firstLoad = useFirstRenderSkeleton(620);
+  const [identifier, setIdentifier] = useState('');
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Sheets
-  const otpSheetRef = useRef(null);
-  const newPassSheetRef = useRef(null);
-
-  // OTP
-  const [otp, setOtp] = useState('');
-
-  // New Password
-  const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
-
-  useEffect(() => {
-  async function loadData() {
-    const stored = await AsyncStorage.getItem('membershipNumber');
-    if (stored) {
-      dispatch(setMembershipNumber(stored));
-    }
-  }
-  loadData();
-}, []);
-
-  // 1️⃣ ✅ SEND OTP API
-  // const sendOtp = async () => {
-  //   if (!phone || phone.length < 10) {
-  //     showToast('error', 'Please enter valid mobile number');
-  //     return;
-  //   }
-
-  //   setIsLoading(true);
-  //   const res = await postApi('send-otp', { phone });
-  //   setIsLoading(false);
-
-  //   if (res?.success) {
-  //     showToast('success', 'OTP Sent Successfully');
-  //     otpSheetRef.current.open(); // ✅ OPEN OTP SHEET
-  //   } else {
-  //     showToast('error', res?.message || 'Failed to send OTP');
-  //     otpSheetRef.current.open();
-  //   }
-  // };
-
   const sendOtp = async () => {
-  if (!phone || phone.length < 10) {
-    showToast('error', 'Please enter valid mobile number');
-    return;
-  }
+    Keyboard.dismiss();
+    const cleanIdentifier = identifier.trim();
 
-  // Get membership number from Redux
-  const storedMembership = membershipNumber;
-
-  if (!storedMembership) {
-    showToast('error', 'Membership number not found. Please login again.');
-    return;
-  }
-
-  setIsLoading(true);
-
-  const res = await postApi('send-otp', {
-    phone,
-    membership_number: storedMembership, // ✅ Auto from Redux
-  });
-
-  setIsLoading(false);
-
-  if (res?.success) {
-    showToast('success', 'OTP Sent Successfully');
-    otpSheetRef.current.open();
-  } else {
-    showToast('error', res?.message || 'Failed to send OTP');
-  }
-};
-
-
-  // 2️⃣ ✅ VERIFY OTP
-  const verifyOtp = async () => {
-    if (otp.length < 6) {
-      showToast('error', 'Enter valid 6-digit OTP');
+    if (!cleanIdentifier) {
+      setError('Enter your phone number or membership number.');
       return;
     }
 
+    setError('');
     setIsLoading(true);
-    const res = await postApi('verify-otp', { phone, code: otp });
+    const response = await postAbsoluteApi(FORGOT_PASSWORD_URL, {
+      identifier: cleanIdentifier,
+    });
     setIsLoading(false);
 
-    if (res?.success) {
-      otpSheetRef.current.close(); // ✅ CLOSE OTP SHEET
-      newPassSheetRef.current.open(); // ✅ OPEN NEW PASSWORD SHEET
-    } else {
-      showToast('error', 'Invalid OTP');
-      setOtp('');
-    }
-  };
-
-  // 3️⃣ ✅ SET NEW PASSWORD
-  const handleResetPassword = async () => {
-    if (!password || !confirm) {
-      showToast('error', 'All fields required');
-      return;
-    }
-    if (password !== confirm) {
-      showToast('error', 'Password mismatch');
+    if (!response?.success) {
+      showToast('error', response?.message || 'Unable to send OTP.');
       return;
     }
 
-    setIsLoading(true);
-    const res = await postApi('reset-password', { phone, password });
-    setIsLoading(false);
-
-    if (res?.success) {
-      showToast('success', 'Password Updated!');
-      newPassSheetRef.current.close();
-
-      setTimeout(() => {
-        navigation.replace('Login'); // ✅ GO TO LOGIN
-      }, 500);
-    } else {
-      showToast('error', res?.message || 'Failed to set password');
-    }
+    showToast('success', response?.message || 'OTP sent successfully via voice call.');
+    navigation.navigate('OTPValidate', { identifier: cleanIdentifier });
   };
+
+  if (firstLoad) return <ScreenSkeleton variant="page" />;
+
+  const heroHeight = Math.max(260, Math.min(height * 0.4, 360));
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'white' }}>
+    <View style={styles.root}>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
       <ImageBackground
-        source={AppImages.ccc}
-        style={styles.bgImage}
+        source={AppImages.cc}
+        style={[styles.hero, { height: heroHeight }]}
         resizeMode="cover"
       >
         <View style={styles.overlay} />
-
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={styles.backBtn}
+          style={styles.backButton}
+          activeOpacity={0.8}
         >
-          <Image
-            source={AppImages.Back}
-            style={{ height: 25, width: 25, tintColor: 'white' }}
-          />
+          <Image source={AppImages.Back} style={styles.backIcon} />
         </TouchableOpacity>
-
-        <View style={styles.logoContainer}>
-          <Image
-            source={AppImages.logo}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-        </View>
+        <Text style={styles.heroEyebrow}>ACCOUNT RECOVERY</Text>
+        <Text style={styles.heroTitle}>Forgot password</Text>
       </ImageBackground>
 
-      {/* ✅ MAIN MOBILE INPUT BOTTOMSHEET STYLE */}
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : null}
-        style={styles.bottomWrapper}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.keyboard}
       >
-        <View style={styles.bottomSheet}>
-          <Text style={styles.title}>Forgot Password</Text>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.form}
+        >
+          <Text style={styles.title}>Verify your account</Text>
           <Text style={styles.subtitle}>
-            Enter your mobile number to receive OTP
+            Enter your registered phone number or membership number. We will call you with a six-digit OTP.
           </Text>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Enter Mobile Number"
-            keyboardType="numeric"
-            maxLength={10}
-            value={phone}
-            onChangeText={setPhone}
+          <InputText
+            label="Phone or membership number"
+            placeholder="Enter identifier"
+            value={identifier}
+            containerStyle={styles.input}
+            onChangeText={value => {
+              setIdentifier(value);
+              if (value.trim()) setError('');
+            }}
           />
+          <ErrorView text={error} show={Boolean(error)} />
 
-          <Button
-            title="Send OTP===="
-            style={styles.verifyBtn}
-            textTitle={styles.verifyBtnText}
-            onPress={sendOtp}
-          />
-        </View>
+          <Button title="Send voice OTP" onPress={sendOtp} style={styles.button} />
+
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => navigation.replace('Login')}
+            style={styles.loginLink}
+          >
+            <Text style={styles.loginText}>Return to sign in</Text>
+          </TouchableOpacity>
+        </ScrollView>
       </KeyboardAvoidingView>
 
-      {/* ✅ OTP SHEET */}
-      <RBSheet
-        ref={otpSheetRef}
-        height={350}
-        openDuration={250}
-        closeOnDragDown={true}
-        customStyles={{
-          container: {
-            borderTopLeftRadius: 25,
-            borderTopRightRadius: 25,
-            padding: 20,
-          },
-          draggableIcon: { backgroundColor: '#ccc' },
-        }}
-      >
-        <Text style={styles.sheetTitle}>Verify OTP====</Text>
-
-        <OTPTextView
-          handleTextChange={setOtp}
-          containerStyle={{
-            width: '100%',
-            alignSelf: 'center',
-            marginVertical: 20,
-            // marginHorizontal: 20,
-          }}
-          textInputStyle={styles.otpInput}
-          inputCount={6}
-        />
-
-        <Button
-          title="Verify OTP===="
-          onPress={verifyOtp}
-          style={styles.verifyBtn}
-          textTitle={styles.verifyBtnText}
-        />
-      </RBSheet>
-
-      {/* ✅ NEW PASSWORD SHEET */}
-      <RBSheet
-        ref={newPassSheetRef}
-        height={420}
-        openDuration={250}
-        closeOnDragDown={true}
-        customStyles={{
-          container: {
-            borderTopLeftRadius: 25,
-            borderTopRightRadius: 25,
-            padding: 20,
-          },
-          draggableIcon: { backgroundColor: '#ccc' },
-        }}
-      >
-        <Text style={styles.sheetTitle}>Set New Password</Text>
-
-        <TextInput
-          style={styles.input}
-          placeholder="New Password"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Confirm Password"
-          secureTextEntry
-          value={confirm}
-          onChangeText={setConfirm}
-        />
-
-        <Button
-          title="Update Password"
-          onPress={handleResetPassword}
-          style={styles.verifyBtn}
-          textTitle={styles.verifyBtnText}
-        />
-      </RBSheet>
+      <ActivityIndicator isLoading={isLoading} text="Calling with your OTP..." />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  bgImage: { height: '85%', width: '100%' },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+  root: { flex: 1, backgroundColor: T.surfaceSoft },
+  hero: { width: '100%', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 54 },
+  overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(14,11,8,0.42)' },
+  backButton: {
+    position: 'absolute',
+    left: 20,
+    top: Platform.OS === 'ios' ? 54 : 36,
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  backBtn: { position: 'absolute', top: 50, left: 20, zIndex: 10 },
-  logoContainer: { alignSelf: 'center', marginTop: 150 },
-  logo: { height: 140, width: 200, tintColor: colors.white },
-  bottomWrapper: { flex: 1, position: 'absolute', bottom: 0, width: '100%' },
-  bottomSheet: {
-    backgroundColor: 'white',
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
-    paddingHorizontal: 20,
-    paddingBottom: 40,
-    paddingTop: 30,
+  backIcon: { width: 24, height: 24, tintColor: T.surface },
+  heroEyebrow: {
+    color: T.surface,
+    fontFamily: Fonts.luxurySansLight,
+    fontSize: 12,
+    letterSpacing: 2.4,
+  },
+  heroTitle: {
+    color: T.surface,
+    fontFamily: Fonts.displaySerif,
+    fontSize: 44,
+    lineHeight: 52,
+    textAlign: 'center',
+    marginTop: 12,
+  },
+  keyboard: { flex: 1, marginTop: -24 },
+  form: {
+    flexGrow: 1,
+    paddingHorizontal: 22,
+    paddingTop: 34,
+    paddingBottom: 36,
+    backgroundColor: T.surfaceSoft,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
   },
   title: {
+    color: T.ink,
+    fontFamily: Fonts.displaySerif,
+    fontSize: 34,
     textAlign: 'center',
-    fontSize: fonts.fs_28,
-    color: '#1A1A1A',
-    fontFamily: 'Poppins-Medium',
   },
   subtitle: {
+    color: T.muted,
+    fontFamily: Fonts.luxurySansLight,
+    fontSize: 14,
+    lineHeight: 23,
     textAlign: 'center',
-    fontSize: fonts.fs_16,
-    color: colors.txtColor,
-    marginVertical: 10,
+    marginTop: 12,
+    paddingHorizontal: 12,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#B7782E',
-    borderRadius: 10,
-    padding: 14,
-    marginTop: 15,
-    fontSize: fonts.fs_16,
-    backgroundColor: '#F7F7F7',
-  },
-  verifyBtn: {
-    alignSelf: 'center',
-    backgroundColor: '#B7782E',
-    borderRadius: 25,
-    marginTop: 25,
-    paddingHorizontal: 20,
-  },
-  verifyBtnText: {
-    color: colors.white,
-    fontFamily: 'Poppins-Medium',
-    fontSize: fonts.fs_16,
-  },
-  sheetTitle: {
-    textAlign: 'center',
-    fontSize: fonts.fs_24,
-    marginTop: 10,
-    marginBottom: 20,
-    fontFamily: 'Poppins-Medium',
-  },
-  otpInput: {
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: '#B7782E',
-    backgroundColor: '#F7F7F7',
-    color: '#000',
-    fontSize: fonts.fs_20,
-  },
+  input: { marginTop: 28 },
+  button: { marginTop: 24 },
+  loginLink: { alignItems: 'center', paddingVertical: 24 },
+  loginText: { color: T.primaryDark, fontFamily: Fonts.luxurySans, fontSize: 13 },
 });

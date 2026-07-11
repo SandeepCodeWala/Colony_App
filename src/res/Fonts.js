@@ -1,5 +1,28 @@
+import { Platform } from 'react-native';
+
+/**
+ * Typography system inspired by luxury hospitality apps.
+ * Poppins is bundled with the project and remains the reliable cross-platform sans.
+ * The display face uses the native serif family so it renders on both iOS and Android
+ * without adding another font dependency.
+ */
 export default {
-  // Actual bundled font files are Poppins, so the app-wide luxury aliases map to Poppins.
+  displaySerif: Platform.select({
+    ios: 'Georgia',
+    android: 'serif',
+    default: 'serif',
+  }),
+  displaySerifBold: Platform.select({
+    ios: 'Georgia-Bold',
+    android: 'serif',
+    default: 'serif',
+  }),
+  luxurySansLight: 'Poppins-Light',
+  luxurySans: 'Poppins-Regular',
+  luxurySansMedium: 'Poppins-Medium',
+  luxurySansBold: 'Poppins-SemiBold',
+
+  // Backward-compatible aliases used throughout the existing app.
   instrumentSansMedium: 'Poppins-Medium',
   instrumentSansRegular: 'Poppins-Regular',
   instrumentSansBold: 'Poppins-SemiBold',

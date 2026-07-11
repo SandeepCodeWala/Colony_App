@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Splash from '../OnBoarding/Splash';
 import Login from '../OnBoarding/Login';
 import Signup from '../OnBoarding/Signup';
 import RestaurantList from '../OnBoarding/RestorentList';
@@ -12,8 +11,8 @@ import ManageConsents from '../screens/ManageConsents';
 import TermsConditions from '../screens/TermsConditions';
 import ReserveTable from '../screens/ReserveTable1';
 import ReserveTable2 from '../screens/ReserveTable2';
-import ReserveLounge from '../screens/ReserveLounge';
 import OTPValidate from '../OnBoarding/OTPValidate';
+import SignupOTPValidate from '../OnBoarding/SignupOTPValidate';
 import ReserveTableScreen from '../screens/ReserveTableScreen';
 import PaymentScreen from '../screens/PaymentScreen';
 import ReserveLoungeScreen from '../screens/ReserveTable1';
@@ -27,60 +26,75 @@ import { useSelector } from 'react-redux';
 import MyBenefits from '../screens/MyBenefits';
 import RegisteredOffers from '../screens/RegisteredOffers';
 import HelpSupport from '../screens/HelpSupportScreen';
+import { ScreenSkeleton, useFirstRenderSkeleton } from '../components/LuxurySkeleton';
 
 const Stack = createNativeStackNavigator();
+
+const withPageSkeleton = (Component, duration = 620) => {
+  const WrappedScreen = props => {
+    const loading = useFirstRenderSkeleton(duration);
+    if (loading) return <ScreenSkeleton variant="page" />;
+    return <Component {...props} />;
+  };
+  WrappedScreen.displayName = `WithPageSkeleton(${Component.displayName || Component.name || 'Screen'})`;
+  return WrappedScreen;
+};
+
+const SignupScreen = withPageSkeleton(Signup);
+const RestaurantListScreen = withPageSkeleton(RestaurantList);
+const ChangePasswordScreen = withPageSkeleton(ChangePassword);
+const EditProfileScreen = withPageSkeleton(EditProfile);
+const ReserveTableScreenOne = withPageSkeleton(ReserveTable);
+const ReserveTableScreenTwo = withPageSkeleton(ReserveTable2);
+const ReserveLoungeWrapped = withPageSkeleton(ReserveLoungeScreen);
+const ReserveTableFlowScreen = withPageSkeleton(ReserveTableScreen);
+const PaymentWrapped = withPageSkeleton(PaymentScreen);
+const BookEventWrapped = withPageSkeleton(BookEventScreen);
+const ReservationHistoryWrapped = withPageSkeleton(ReservationHistory);
+const LoyaltyPassWrapped = withPageSkeleton(LoyaltyPass);
+
 function MainStack() {
-  const [enableSplash, setEnableSplash] = useState(true);
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
+  const isBooting = useFirstRenderSkeleton(1150);
 
-  const timerRef = useRef(null);
-  useEffect(() => {
-    timerRef.current = setTimeout(() => {
-      setEnableSplash(false);
-    }, 2000);
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
-  }, []);
-
-  const initialRoute = isLoggedIn ? 'BottomTabs' : 'Login';
+  if (isBooting) return <ScreenSkeleton variant="page" />;
 
   return (
     <Stack.Navigator
-      initialRouteName={enableSplash ? 'Splash' : initialRoute}
-      screenOptions={{ headerShown: false }}
+      initialRouteName={isLoggedIn ? 'BottomTabs' : 'Login'}
+      screenOptions={{
+        headerShown: false,
+        animation: 'fade_from_bottom',
+        contentStyle: { backgroundColor: '#F7F1E8' },
+      }}
     >
-      {enableSplash && <Stack.Screen name="Splash" component={Splash} />}
       <Stack.Screen name="BottomTabs" component={BottomTabs} />
-      <Stack.Screen name="ChangePassword" component={ChangePassword} />
-      <Stack.Screen name="EditProfile" component={EditProfile} />
+      <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+      <Stack.Screen name="EditProfile" component={EditProfileScreen} />
       <Stack.Screen name="HelpSupport" component={HelpSupport} />
       <Stack.Screen name="ManageConsents" component={ManageConsents} />
       <Stack.Screen name="MyStatement" component={MyStatement} />
-      <Stack.Screen name="LoyaltyPass" component={LoyaltyPass} />
+      <Stack.Screen name="LoyaltyPass" component={LoyaltyPassWrapped} />
       <Stack.Screen name="TermsConditions" component={TermsConditions} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
-      <Stack.Screen name="Signup" component={Signup} />
-      <Stack.Screen name="RestaurantList" component={RestaurantList} />
-      <Stack.Screen name="RightArrow" component={RightArrow} />
-      <Stack.Screen name="ReserveTable" component={ReserveTable} />
-      <Stack.Screen name="ReserveTable2" component={ReserveTable2} />
-      <Stack.Screen name="ReserveLounge" component={ReserveLoungeScreen} />
-      <Stack.Screen name="MemberScreen" component={MemberScreen} />
-      <Stack.Screen name="ReserveTableScreen" component={ReserveTableScreen} />
       <Stack.Screen name="OTPValidate" component={OTPValidate} />
-      <Stack.Screen name="Payment" component={PaymentScreen} />
-      <Stack.Screen name="BookEvent" component={BookEventScreen} />
-      <Stack.Screen name="ReservationHistory" component={ReservationHistory} />
-
+      <Stack.Screen name="SignupOTPValidate" component={SignupOTPValidate} />
+      <Stack.Screen name="Signup" component={SignupScreen} />
+      <Stack.Screen name="RestaurantList" component={RestaurantListScreen} />
+      <Stack.Screen name="RightArrow" component={RightArrow} />
+      <Stack.Screen name="ReserveTable" component={ReserveTableScreenOne} />
+      <Stack.Screen name="ReserveTable2" component={ReserveTableScreenTwo} />
+      <Stack.Screen name="ReserveLounge" component={ReserveLoungeWrapped} />
+      <Stack.Screen name="MemberScreen" component={MemberScreen} />
+      <Stack.Screen name="ReserveTableScreen" component={ReserveTableFlowScreen} />
+      <Stack.Screen name="Payment" component={PaymentWrapped} />
+      <Stack.Screen name="BookEvent" component={BookEventWrapped} />
+      <Stack.Screen name="ReservationHistory" component={ReservationHistoryWrapped} />
       <Stack.Screen name="MyBenefits" component={MyBenefits} />
       <Stack.Screen name="RegisteredOffers" component={RegisteredOffers} />
-
-      {/* <Stack.Screen name="BottomTabs" component={BottomTabs} /> */}
     </Stack.Navigator>
   );
 }
+
 export default MainStack;

@@ -1,106 +1,121 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import React from 'react';
+import {
+  ImageBackground,
+  Platform,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 import { AppImages, Fonts } from '../res';
 import { showToast } from '../services/Toast';
-import { useSelector } from 'react-redux';
-import { CravPage, FoodImageCard, CravButton, Hero, LuxeTabs, LuxeSectionHeader, PremiumCard } from '../components/CravPremium';
 import PremiumTheme from '../res/PremiumTheme';
+import { ScreenSkeleton, useFirstRenderSkeleton } from '../components/LuxurySkeleton';
 
-const BookScreen = () => {
+const T = PremiumTheme;
+
+export default function BookScreen() {
   const navigation = useNavigation();
+  const { height } = useWindowDimensions();
   const user = useSelector(state => state.auth?.user);
   const membershipNumber = useSelector(state => state.auth?.membershipNumber);
+  const loading = useFirstRenderSkeleton(820);
+  const sectionHeight = Math.max(560, (height - (Platform.OS === 'ios' ? 94 : 78)) * 0.76);
 
-  const [UserName, setUserName] = useState('');
-  const [membership, setMembership] = useState('');
-  const [activeTab, setActiveTab] = useState('dining');
-
-  useEffect(() => {
-    setUserName(user?.name || '');
-    setMembership(user?.membership_number || membershipNumber || '');
-  }, [user, membershipNumber]);
-
-  const handleReserveTable = () => {
-    if (user?.membership_number || membershipNumber || UserName || membership) {
+  const reserveTable = () => {
+    if (user?.name || user?.membership_number || membershipNumber) {
       navigation.navigate('ReserveLounge', { screen: 'table' });
     } else {
       navigation.navigate('Login');
-      showToast('error', 'User details not found. Please log in again.');
+      showToast('error', 'Please sign in to reserve your table.');
     }
   };
 
-  const sections = [
-    {
-      title: 'Restaurant',
-      tag: 'Signature dining',
-      image: AppImages.restaurant,
-      desc: 'Choose your time, guest count and enjoy a premium Colony dining experience with seamless reservation flow.',
-      cta: 'Reserve a Table',
-      onPress: handleReserveTable,
-      key: 'dining',
-    },
-    {
-      title: 'Lounge',
-      tag: 'Private ambience',
-      image: AppImages.lounge,
-      desc: 'A refined lounge experience with intimate comfort, premium service and curated ambience is coming soon.',
-      cta: 'Coming Soon',
-      disabled: true,
-      key: 'lounge',
-    },
-  ];
-
-  const visibleSections = activeTab === 'all' ? sections : sections.filter(item => item.key === activeTab);
+  if (loading) return <ScreenSkeleton variant="image" />;
 
   return (
-    <CravPage title="" header="reserve">
-      <Hero
-        kicker="Reservation"
-        title="Reserve Your Experience"
-        subtitle="A lighter, premium booking journey with luxury-inspired cards, animated tabs and refined spacing."
-      />
+    <View style={styles.root}>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+      <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+        <ImageBackground source={AppImages.restaurant} style={[styles.section, { minHeight: sectionHeight }]} resizeMode="cover">
+          <View style={styles.overlay} />
+          <View style={styles.copy}>
+            <Text style={styles.category}>RESTAURANTS</Text>
+            <Text style={styles.title}>Reserve your table</Text>
+            <TouchableOpacity activeOpacity={0.86} style={styles.button} onPress={reserveTable}>
+              <Text style={styles.buttonText}>RESERVE A TABLE</Text>
+            </TouchableOpacity>
+          </View>
+        </ImageBackground>
 
-      <LuxeTabs
-        tabs={[
-          { key: 'dining', label: 'Dining' },
-          { key: 'lounge', label: 'Lounge' },
-          { key: 'all', label: 'All' },
-        ]}
-        activeKey={activeTab}
-        onChange={setActiveTab}
-        style={styles.tabs}
-      />
+        <ImageBackground source={AppImages.lounge} style={[styles.section, { minHeight: sectionHeight }]} resizeMode="cover">
+          <View style={styles.overlay} />
+          <View style={styles.copy}>
+            <Text style={styles.category}>PRIVATE LOUNGE</Text>
+            <Text style={styles.title}>An intimate escape</Text>
+            <TouchableOpacity activeOpacity={1} disabled style={[styles.button, styles.disabledButton]}>
+              <Text style={[styles.buttonText, styles.disabledButtonText]}>COMING SOON</Text>
+            </TouchableOpacity>
+          </View>
+        </ImageBackground>
 
-      <PremiumCard style={styles.memberCard} delay={80}>
-        <Text style={styles.memberKicker}>Fast booking</Text>
-        <Text style={styles.memberTitle}>{UserName ? `Welcome, ${UserName}` : 'Sign in for member booking'}</Text>
-        <Text style={styles.memberSub}>{membership ? `Membership ${membership}` : 'Your member details will auto-fill after login.'}</Text>
-      </PremiumCard>
-
-      <LuxeSectionHeader eyebrow="Curated sections" title="Choose a destination" />
-      {visibleSections.map((item, index) => (
-        <FoodImageCard key={item.title} image={item.image} title={item.title} kicker={item.tag} subtitle={item.desc} disabled={item.disabled} delay={index * 80}>
-          <CravButton title={item.cta} disabled={item.disabled} onPress={item.onPress} />
-        </FoodImageCard>
-      ))}
-
-      <View style={{ height: 28 }} />
-    </CravPage>
+        <ImageBackground source={AppImages.events} style={[styles.section, { minHeight: sectionHeight }]} resizeMode="cover">
+          <View style={styles.overlay} />
+          <View style={styles.copy}>
+            <Text style={styles.category}>COLONY EVENTS</Text>
+            <Text style={styles.title}>Celebrate beautifully</Text>
+            <TouchableOpacity activeOpacity={0.86} style={styles.button} onPress={() => navigation.navigate('BookEvent')}>
+              <Text style={styles.buttonText}>RESERVE AN EVENT</Text>
+            </TouchableOpacity>
+          </View>
+        </ImageBackground>
+      </ScrollView>
+    </View>
   );
-};
-
-export default BookScreen;
-
-const T = PremiumTheme;
-const fontMed = Fonts.instrumentSansMedium;
-const fontReg = Fonts.instrumentSansRegular;
-const fontBold = Fonts.instrumentSansBold || Fonts.instrumentSansMedium;
+}
 
 const styles = StyleSheet.create({
-  tabs: { marginBottom: 18 },
-  memberCard: { marginBottom: 18, padding: 18, backgroundColor: T.pearl },
-  memberKicker: { color: T.primary, fontFamily: fontBold, fontSize: 10, letterSpacing: 2, textTransform: 'uppercase' },
-  memberTitle: { color: T.ink, fontFamily: fontMed, fontSize: 19, marginTop: 6 },
-  memberSub: { color: T.muted, fontFamily: fontReg, fontSize: 13, marginTop: 4, lineHeight: 20 },
+  root: { flex: 1, backgroundColor: T.ink },
+  section: { width: '100%', justifyContent: 'flex-end' },
+  overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(10,8,6,0.31)' },
+  copy: { paddingHorizontal: 28, paddingBottom: 54, alignItems: 'center' },
+  category: {
+    color: T.surface,
+    fontFamily: Fonts.luxurySansLight,
+    fontSize: 14,
+    letterSpacing: 2.4,
+    textAlign: 'center',
+  },
+  title: {
+    color: T.surface,
+    fontFamily: Fonts.displaySerif,
+    fontSize: 48,
+    lineHeight: 56,
+    textAlign: 'center',
+    marginTop: 22,
+  },
+  button: {
+    width: '100%',
+    minHeight: 64,
+    marginTop: 34,
+    backgroundColor: T.surface,
+    borderWidth: 1,
+    borderColor: T.ink,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 18,
+  },
+  buttonText: {
+    color: T.ink,
+    fontFamily: Fonts.luxurySansMedium,
+    fontSize: 13,
+    letterSpacing: 3.1,
+  },
+  disabledButton: { backgroundColor: 'rgba(255,255,255,0.72)' },
+  disabledButtonText: { color: T.muted },
 });

@@ -13,12 +13,13 @@ import { Fonts } from '../res';
 import PremiumTheme from '../res/PremiumTheme';
 import SettingHeader from './SettingHeader';
 import ReserveHeader from './ReserveHeader';
+import { ScreenSkeleton, useFirstRenderSkeleton } from './LuxurySkeleton';
 
 export const T = PremiumTheme;
 
-const fontMed = Fonts.instrumentSansMedium;
-const fontReg = Fonts.instrumentSansRegular;
-const fontBold = Fonts.instrumentSansBold || Fonts.instrumentSansMedium;
+const fontMed = Fonts.luxurySansMedium;
+const fontReg = Fonts.luxurySansLight;
+const fontBold = Fonts.luxurySansMedium;
 
 export const FadeInUp = ({ children, delay = 0, style }) => {
   const opacity = useRef(new Animated.Value(0)).current;
@@ -84,11 +85,16 @@ export const CravPage = ({
   header = 'setting',
   scroll = true,
   contentStyle,
+  skeleton = true,
+  skeletonDuration = 650,
 }) => {
   const Header = header === 'reserve' ? ReserveHeader : SettingHeader;
+  const isSkeletonVisible = useFirstRenderSkeleton(skeletonDuration);
   const body = (
     <FadeInUp style={[styles.content, contentStyle]}>{children}</FadeInUp>
   );
+
+  if (skeleton && isSkeletonVisible) return <ScreenSkeleton variant="page" />;
 
   return (
     <View style={styles.page}>
@@ -300,12 +306,11 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     color: T.ink,
-    fontFamily: fontBold,
-    fontSize: 36,
-    lineHeight: 43,
-    letterSpacing: -0.7,
+    fontFamily: Fonts.displaySerif,
+    fontSize: 38,
+    lineHeight: 46,
+    letterSpacing: 0,
     marginTop: 12,
-    textTransform: 'uppercase',
   },
   heroSub: {
     color: T.muted,
@@ -316,7 +321,7 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: T.glass,
-    borderRadius: 30,
+    borderRadius: 4,
     padding: 20,
     borderWidth: 1,
     borderColor: T.border,
@@ -342,9 +347,9 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   sectionTitle: {
-    fontFamily: fontBold,
+    fontFamily: Fonts.displaySerif,
     color: T.ink,
-    fontSize: 19,
+    fontSize: 24,
     letterSpacing: -0.2,
   },
   tabsWrap: {

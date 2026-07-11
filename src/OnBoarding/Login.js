@@ -1,365 +1,276 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
-  Text,
-  StyleSheet,
-  View,
-  ImageBackground,
   Image,
-  TouchableOpacity,
-  Alert,
-  KeyboardAvoidingView,
-  ScrollView,
-  Platform,
+  ImageBackground,
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   setLoginField,
   setMembershipNumber,
   setUserData,
 } from '../redux/slices/authSlice';
-import { checkNormalData } from '../components/Validation';
 import ActivityIndicator from '../components/ActivityIndicator';
-import { AppImages } from '../res';
 import InputText from '../components/InputText';
 import ErrorView from '../components/ErrorView';
 import Button from '../components/Button';
+import { ScreenSkeleton, useFirstRenderSkeleton } from '../components/LuxurySkeleton';
 import { postApi } from '../services/network/api';
-import { colors, fonts, styles as commonStyles } from '../themes';
 import { showToast } from '../services/Toast';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // ✅ correct import
+import { AppImages, Fonts } from '../res';
 import PremiumTheme from '../res/PremiumTheme';
-import { Fonts } from '../res';
 
-export default function SignIn(props) {
+const T = PremiumTheme;
+
+export default function Login({ navigation }) {
   const dispatch = useDispatch();
-  const membershipNumber = useSelector(state => state.auth.membershipNumber);
+  const savedMembership = useSelector(state => state.auth.membershipNumber);
+  const { height } = useWindowDimensions();
+  const firstLoad = useFirstRenderSkeleton(720);
 
-  const [loginField, setUserName] = useState(membershipNumber || '');
+  const [loginField, setLoginValue] = useState(savedMembership || '');
   const [password, setPassword] = useState('');
   const [hidePassword, setHidePassword] = useState(true);
-  const [userNameError, setUserNameError] = useState({
-    status: false,
-    text: '',
-  });
-  const [passwordError, setPasswordError] = useState({
-    status: false,
-    text: '',
-  });
+  const [identifierError, setIdentifierError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const setErrorState = () => {
-    if (password === '') {
-      setPasswordError(checkNormalData(password, 'Please enter password'));
-    }
+  const validate = () => {
+    const cleanIdentifier = loginField.trim();
+    const cleanPassword = password.trim();
+    setIdentifierError(cleanIdentifier ? '' : 'Enter your phone or membership number.');
+    setPasswordError(cleanPassword ? '' : 'Enter your password.');
+    return Boolean(cleanIdentifier && cleanPassword);
   };
-
-  // const signIn = async () => {
-  //   const data = { loginField, password };
-  //   setIsLoading(true);
-  //   const response = await postApi('login', data);
-  //   setIsLoading(false);
-
-  //   if (response.success) {
-  //     dispatch(setLoginField(loginField));
-  //     await AsyncStorage.setItem('token', response.data.access_token);
-  //     await AsyncStorage.setItem('phone', response.data.phone);
-  //     await AsyncStorage.setItem('name', response.data.name);
-  //     dispatch(setMembershipNumber(loginField));
-  //     await AsyncStorage.setItem('membershipNumber', loginField);
-  //     props.navigation.navigate('BottomTabs', { screen: 'Book' });
-
-  //     showToast('success', response.message);
-  //   } else {
-  //     showToast('error', response.message);
-  //   }
-  // };
 
   const signIn = async () => {
-    const data = { loginField, password };
-    console.log(data, '=====>data fathima');
-    setIsLoading(true);
+    Keyboard.dismiss();
+    if (!validate()) return;
 
-    const response = await postApi('login', data);
+    setIsLoading(true);
+    const response = await postApi('login', {
+      loginField: loginField.trim(),
+      password,
+    });
     setIsLoading(false);
 
-    if (response.success) {
-      const userData = {
-        name: response.data.name,
-        phone: response.data.phone,
-        membership_number: response.data.membership_number,
-      };
-
-      await AsyncStorage.setItem('token', response.data.access_token);
-      await AsyncStorage.setItem('user', JSON.stringify(userData));
-      await AsyncStorage.setItem('name', response.data.name || '');
-      await AsyncStorage.setItem(
-        'membershipNumber',
-        response.data.membership_number || '',
-      );
-
-      dispatch(
-        setUserData({
-          user: userData,
-          token: response.data.access_token,
-        }),
-      );
-
-      props.navigation.reset({
-        index: 0,
-        routes: [{ name: 'BottomTabs', params: { screen: 'Book' } }],
-      });
-
-      showToast('success', response.message);
-    } else {
-      showToast('error', response.message);
+    if (!response?.success) {
+      showToast('error', response?.message || 'Unable to sign in.');
+      return;
     }
+
+    const responseData = response?.data || {};
+    const userData = {
+      ...responseData,
+      name: responseData.name || '',
+      phone: responseData.phone || '',
+      membership_number:
+        responseData.membership_number || loginField.trim(),
+    };
+    const token = responseData.access_token || responseData.token || '';
+
+    await AsyncStorage.multiSet([
+      ['token', token],
+      ['user', JSON.stringify(userData)],
+      ['name', userData.name],
+      ['phone', String(userData.phone || '')],
+      ['membershipNumber', String(userData.membership_number || '')],
+    ]);
+
+    dispatch(setLoginField(loginField.trim()));
+    dispatch(setMembershipNumber(userData.membership_number));
+    dispatch(setUserData({ user: userData, token }));
+
+    showToast('success', response?.message || 'Welcome back.');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'BottomTabs', params: { screen: 'Book' } }],
+    });
   };
 
-  const submit = () => {
-    Keyboard.dismiss();
-    if (
-      !checkNormalData(loginField, '').status &&
-      !checkNormalData(password, '').status
-    ) {
-      setErrorState();
-      signIn();
-    } else {
-      setErrorState();
-    }
-  };
+  if (firstLoad) return <ScreenSkeleton variant="page" />;
+
+  const heroHeight = Math.max(280, Math.min(height * 0.43, 390));
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'white' }}>
-      {/* Fixed Background */}
+    <View style={styles.root}>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
       <ImageBackground
         source={AppImages.ccc}
-        style={styles.bgImage}
+        style={[styles.hero, { height: heroHeight }]}
         resizeMode="cover"
       >
-        <View style={styles.overlay} />
-        {/* Back Button */}
+        <View style={styles.heroOverlay} />
         <TouchableOpacity
-          onPress={() =>
-            props.navigation.navigate('BottomTabs', { screen: 'Explore' })
-          }
-          style={styles.backBtn}
+          onPress={() => navigation.navigate('BottomTabs', { screen: 'Explore' })}
+          style={styles.backButton}
+          activeOpacity={0.8}
         >
-          <Image
-            source={AppImages.Back}
-            style={{ height: 25, width: 25, tintColor: PremiumTheme.surface }}
-          />
+          <Image source={AppImages.Back} style={styles.backIcon} />
         </TouchableOpacity>
-
-        {/* Logo */}
-        <View style={styles.logoContainer}>
-          <Image
-            source={AppImages.logo}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-        </View>
+        <Image source={AppImages.logo} style={styles.logo} resizeMode="contain" />
       </ImageBackground>
 
-      {/* Bottom Sheet (Moves with Keyboard) */}
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : null}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-        style={styles.bottomSheetWrapper}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.keyboard}
       >
         <ScrollView
-          contentContainerStyle={styles.bottomSheet}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.formContent}
         >
-          <Text style={styles.title}>SIGN IN</Text>
-          <Text style={styles.subtitle}>Your Colony Account</Text>
+          <Text style={styles.eyebrow}>COLONY MEMBERSHIP</Text>
+          <Text style={styles.title}>Welcome back</Text>
+          <Text style={styles.subtitle}>
+            Sign in with your phone number or membership number.
+          </Text>
 
           <InputText
-            placeholder="Enter membership no."
-            label="Membership number"
-            placeholderTextColor="#6D6D6D"
-            containerStyle={{ marginTop: 30, marginBottom: 0 }}
-            inputStyle={styles.inputText}
+            label="Phone or membership number"
+            placeholder="Enter identifier"
             value={loginField}
+            keyboardType="default"
+            containerStyle={styles.firstInput}
             onChangeText={value => {
-              setUserName(value);
-              setUserNameError(
-                checkNormalData(value, 'Please enter Email ID.'),
-              );
+              setLoginValue(value);
+              if (value.trim()) setIdentifierError('');
             }}
           />
-          <ErrorView text={userNameError.text} show={userNameError.status} />
+          <ErrorView text={identifierError} show={Boolean(identifierError)} />
 
-          {/* Password Field */}
-          <View style={styles.passwordContainer}>
+          <View style={styles.passwordWrap}>
             <InputText
-              placeholder="Enter Password"
               label="Password"
-              placeholderTextColor="#6D6D6D"
-              secureTextEntry={hidePassword}
+              placeholder="Enter password"
               value={password}
-              containerStyle={{ flex: 1, marginBottom: 0 }}
-              inputStyle={styles.inputText}
+              secureTextEntry={hidePassword}
+              containerStyle={styles.passwordInput}
               onChangeText={value => {
                 setPassword(value);
-                setPasswordError(
-                  checkNormalData(value, 'Please enter password'),
-                );
+                if (value.trim()) setPasswordError('');
               }}
             />
             <TouchableOpacity
-              style={styles.eyeIcon}
-              activeOpacity={0.3}
-              onPress={() => setHidePassword(!hidePassword)}
+              onPress={() => setHidePassword(value => !value)}
+              style={styles.eyeButton}
+              activeOpacity={0.7}
             >
               <Image
-                style={styles.eyeImg}
                 source={hidePassword ? AppImages.closeeye : AppImages.openeye}
+                style={styles.eyeIcon}
               />
             </TouchableOpacity>
           </View>
+          <ErrorView text={passwordError} show={Boolean(passwordError)} />
 
-          <ErrorView text={passwordError.text} show={passwordError.status} />
-          <View style={{ paddingHorizontal: 25 }}>
-            <Button
-              title="Sign In"
-              style={styles.signInBtn}
-              textTitle={styles.signInBtnText}
-              onPress={submit}
-            />
-          </View>
-          <Text
-            style={styles.forgot}
-            onPress={() => props.navigation.navigate('ForgotPassword')}
+          <TouchableOpacity
+            onPress={() => navigation.navigate('ForgotPassword')}
+            style={styles.forgotButton}
+            activeOpacity={0.7}
           >
-            Forgot Password?
-          </Text>
+            <Text style={styles.forgotText}>Forgot password?</Text>
+          </TouchableOpacity>
 
-          <View style={{ height: 50 }} />
+          <Button title="Sign in" onPress={signIn} style={styles.primaryButton} />
+
+          <TouchableOpacity
+            onPress={() => navigation.push('Signup')}
+            style={styles.createAccount}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.createText}>
+              New to Colony? <Text style={styles.createLink}>Create an account</Text>
+            </Text>
+          </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
 
-      {/* Footer (Fixed) */}
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>
-          Don't have an account?{' '}
-          <Text
-            style={styles.signUpText}
-            onPress={() => props.navigation.push('Signup')}
-          >
-            Sign Up.
-          </Text>
-        </Text>
-      </View>
-
-      <ActivityIndicator onRequestClose={false} isLoading={isLoading} />
+      <ActivityIndicator isLoading={isLoading} text="Signing you in..." />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  bgImage: {
-    height: '70%',
-    width: '100%',
-    // justifyContent: 'center',
-  },
-  backBtn: {
+  root: { flex: 1, backgroundColor: T.surfaceSoft },
+  hero: { width: '100%', alignItems: 'center', justifyContent: 'center' },
+  heroOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(14,11,8,0.34)' },
+  backButton: {
     position: 'absolute',
-    top: 50,
+    top: Platform.OS === 'ios' ? 54 : 36,
     left: 20,
-    zIndex: 10,
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(27,23,19,0.38)', // semi-transparent black overlay
+  backIcon: { width: 24, height: 24, tintColor: T.surface },
+  logo: { width: 190, height: 118, tintColor: T.surface },
+  keyboard: { flex: 1, marginTop: -26 },
+  formContent: {
+    flexGrow: 1,
+    backgroundColor: T.surfaceSoft,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    paddingHorizontal: 22,
+    paddingTop: 34,
+    paddingBottom: Platform.OS === 'ios' ? 42 : 28,
   },
-  logoContainer: {
-    alignSelf: 'center',
-    marginTop: 100,
-  },
-  logo: {
-    height: 140,
-    width: 200,
-    tintColor: PremiumTheme.surface,
-  },
-  bottomSheetWrapper: {
-    flex: 1,
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-  },
-  bottomSheet: {
-    backgroundColor: PremiumTheme.glass,
-    borderTopLeftRadius: 34,
-    borderTopRightRadius: 34,
-    paddingHorizontal: 0,
-    paddingBottom: 30,
-    paddingTop: 25,
+  eyebrow: {
+    color: T.primary,
+    fontFamily: Fonts.luxurySansMedium,
+    fontSize: 10,
+    letterSpacing: 2.3,
+    textAlign: 'center',
   },
   title: {
+    color: T.ink,
+    fontFamily: Fonts.displaySerif,
+    fontSize: 40,
+    lineHeight: 48,
     textAlign: 'center',
-    fontSize: fonts.fs_32,
-    color: PremiumTheme.ink,
-    fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium,
-  },
-  subtitle: {
-    textAlign: 'center',
-    fontSize: fonts.fs_22,
-    color: PremiumTheme.muted,
-    fontFamily: Fonts.instrumentSansRegular,
-  },
-  inputText: {
-    fontSize: fonts.fs_16,
-    color: PremiumTheme.ink,
-    fontFamily: Fonts.instrumentSansRegular,
-  },
-  passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
     marginTop: 10,
   },
-  eyeIcon: {
-    position: 'absolute',
-    right: 30,
-    top: 32,
-  },
-  eyeImg: {
-    height: 24,
-    width: 24,
-    tintColor: PremiumTheme.primary,
-    marginTop: 15,
-  },
-  forgot: {
+  subtitle: {
+    color: T.muted,
+    fontFamily: Fonts.luxurySansLight,
+    fontSize: 14,
+    lineHeight: 22,
     textAlign: 'center',
-    marginTop: 15,
-    fontSize: fonts.fs_18,
-    color: PremiumTheme.muted,
-    fontFamily: Fonts.instrumentSansRegular,
-    // marginBottom: 20,
+    marginTop: 8,
+    paddingHorizontal: 18,
   },
-  signInBtn: {
-    alignSelf: 'center',
-    marginTop: 25,
-    // backgroundColor: '#B7782E', // golden brown tone
-    borderRadius: 25,
-  },
-  signInBtnText: {
-    fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium,
-    fontSize: fonts.fs_16,
-    color: PremiumTheme.surface,
-  },
-  footer: {
+  firstInput: { marginTop: 24 },
+  passwordWrap: { position: 'relative' },
+  passwordInput: { marginTop: 2 },
+  eyeButton: {
     position: 'absolute',
+    right: 23,
     bottom: 20,
-    alignSelf: 'center',
+    width: 38,
+    height: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  footerText: {
-    fontSize: fonts.fs_16,
-    fontFamily: Fonts.instrumentSansRegular,
-    color: PremiumTheme.muted,
+  eyeIcon: { width: 21, height: 21, tintColor: T.muted },
+  forgotButton: { alignSelf: 'flex-end', paddingVertical: 10, paddingHorizontal: 5 },
+  forgotText: {
+    color: T.primaryDark,
+    fontFamily: Fonts.luxurySans,
+    fontSize: 13,
   },
-  signUpText: {
-    color: PremiumTheme.primary,
-  },
+  primaryButton: { marginTop: 14 },
+  createAccount: { alignItems: 'center', paddingVertical: 24 },
+  createText: { color: T.muted, fontFamily: Fonts.luxurySansLight, fontSize: 13 },
+  createLink: { color: T.primaryDark, fontFamily: Fonts.luxurySansMedium },
 });

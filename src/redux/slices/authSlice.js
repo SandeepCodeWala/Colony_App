@@ -133,6 +133,15 @@ export const authSlice = createSlice({
         state.user.name = action.payload;
       }
     },
+    updateUserProfile: (state, action) => {
+      const profile = action.payload || {};
+      state.user = { ...(state.user || {}), ...profile };
+
+      if (profile?.membership_number) {
+        state.membershipNumber = profile.membership_number;
+        state.membership_number = profile.membership_number;
+      }
+    },
   },
 });
 
@@ -143,6 +152,7 @@ export const {
   logout,
   clearUser,
   updateUserName,
+  updateUserProfile,
 } = authSlice.actions;
 
 export default authSlice.reducer;

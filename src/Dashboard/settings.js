@@ -20,10 +20,7 @@ import { showToast } from '../services/Toast';
 import { Fonts } from '../res';
 import PremiumTheme from '../res/PremiumTheme';
 import ProfileAvatar from '../components/ProfileAvatar';
-import {
-  ScreenSkeleton,
-  useFirstRenderSkeleton,
-} from '../components/LuxurySkeleton';
+import { ScreenSkeleton, useFirstRenderSkeleton } from '../components/LuxurySkeleton';
 
 const T = PremiumTheme;
 
@@ -32,7 +29,6 @@ export default function Settings() {
   const navigation = useNavigation();
   const user = useSelector(state => state.auth.user);
   const token = useSelector(state => state.auth.token);
-  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
   const membershipNumber = useSelector(
     state => state.auth.membershipNumber || state.auth.user?.membership_number,
   );
@@ -46,43 +42,36 @@ export default function Settings() {
       title: 'My Profile',
       icon: 'person-outline',
       onPress: () => navigation.navigate('EditProfile'),
-      isLogin: isLoggedIn,
     },
     {
       title: 'My Reservations',
       icon: 'calendar-clear-outline',
       onPress: () => navigation.navigate('ReservationHistory'),
-      isLogin: isLoggedIn,
     },
     {
       title: 'Change Password',
       icon: 'lock-closed-outline',
       onPress: () => navigation.navigate('ChangePassword'),
-      isLogin: isLoggedIn,
     },
-    // {
-    //   title: 'Contact Us',
-    //   icon: 'chatbox-outline',
-    //   onPress: () => navigation.navigate('HelpSupport'),
-    //   isLogin: true,
-    // },
+    {
+      title: 'Contact Us',
+      icon: 'chatbox-outline',
+      onPress: () => navigation.navigate('HelpSupport'),
+    },
     {
       title: 'Help & Support',
       icon: 'information-circle-outline',
       onPress: () => navigation.navigate('HelpSupport'),
-      isLogin: true,
     },
     {
       title: 'Privacy & Consents',
       icon: 'shield-checkmark-outline',
       onPress: () => navigation.navigate('ManageConsents'),
-      isLogin: true,
     },
     {
       title: 'Terms and Conditions',
       icon: 'list-outline',
       onPress: () => navigation.navigate('TermsConditions'),
-      isLogin: true,
     },
   ];
 
@@ -187,7 +176,6 @@ export default function Settings() {
 
   const profilePicture = user?.profilePicture || user?.profile_picture;
 
-  console.log(isLoggedIn, 'isLoggedIn');
   return (
     <View style={styles.root}>
       <StatusBar backgroundColor={T.cream} barStyle="dark-content" />
@@ -201,7 +189,7 @@ export default function Settings() {
       >
         <TouchableOpacity
           activeOpacity={0.8}
-          onPress={() => isLoggedIn && navigation.navigate('EditProfile')}
+          onPress={() => navigation.navigate('EditProfile')}
           style={styles.memberBlock}
         >
           <ProfileAvatar
@@ -220,77 +208,68 @@ export default function Settings() {
             </Text>
           </View>
 
-          <Ionicons
-            name="chevron-forward"
-            size={24}
-            color={isLoggedIn ? T.inkSoft : '#a8a7a7'}
-          />
+          <Ionicons name="chevron-forward" size={24} color={T.inkSoft} />
         </TouchableOpacity>
 
         <View style={styles.divider} />
 
-        {menuItems.map(
-          item =>
-            item?.isLogin && (
-              <TouchableOpacity
-                key={item.title}
-                activeOpacity={0.68}
-                style={styles.row}
-                onPress={item.onPress}
-              >
-                <View style={styles.rowLeft}>
-                  <Ionicons name={item.icon} size={27} color={T.ink} />
-                  <Text style={styles.rowTitle}>{item.title}</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={24} color={T.inkSoft} />
-              </TouchableOpacity>
-            ),
-        )}
+        {menuItems.map(item => (
+          <TouchableOpacity
+            key={item.title}
+            activeOpacity={0.68}
+            style={styles.row}
+            onPress={item.onPress}
+          >
+            <View style={styles.rowLeft}>
+              <Ionicons name={item.icon} size={27} color={T.ink} />
+              <Text style={styles.rowTitle}>{item.title}</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={24} color={T.inkSoft} />
+          </TouchableOpacity>
+        ))}
 
-        {isLoggedIn && (
-          <View style={styles.accountActions}>
-            <TouchableOpacity
-              activeOpacity={0.7}
-              style={styles.actionRow}
-              onPress={handleLogout}
-              disabled={isLogout || isDeleting}
-            >
-              <View style={styles.rowLeft}>
-                <Ionicons name="log-out-outline" size={26} color={T.danger} />
-                <Text style={[styles.rowTitle, styles.logoutText]}>Logout</Text>
-              </View>
-              {isLogout ? (
-                <ActivityIndicator size="small" color={T.primary} />
-              ) : (
-                <Ionicons name="chevron-forward" size={24} color={T.inkSoft} />
-              )}
-            </TouchableOpacity>
+        <View style={styles.accountActions}>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            style={styles.actionRow}
+            onPress={handleLogout}
+            disabled={isLogout || isDeleting}
+          >
+            <View style={styles.rowLeft}>
+              <Ionicons name="log-out-outline" size={26} color={T.danger} />
+              <Text style={[styles.rowTitle, styles.logoutText]}>Logout</Text>
+            </View>
+            {isLogout ? (
+              <ActivityIndicator size="small" color={T.primary} />
+            ) : (
+              <Ionicons name="chevron-forward" size={24} color={T.inkSoft} />
+            )}
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              activeOpacity={0.7}
-              style={[styles.actionRow, styles.deleteRow]}
-              onPress={handleDeleteAccount}
-              disabled={isDeleting || isLogout}
-            >
-              <View style={styles.rowLeft}>
-                <Ionicons name="trash-outline" size={26} color={T.danger} />
-                <View style={styles.deleteCopy}>
-                  <Text style={[styles.rowTitle, styles.deleteTitle]}>
-                    Delete Account
-                  </Text>
-                  <Text style={styles.deleteCaption}>
-                    Permanently remove your account
-                  </Text>
-                </View>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            style={[styles.actionRow, styles.deleteRow]}
+            onPress={handleDeleteAccount}
+            disabled={isDeleting || isLogout}
+          >
+            <View style={styles.rowLeft}>
+              <Ionicons name="trash-outline" size={26} color={T.danger} />
+              <View style={styles.deleteCopy}>
+                <Text style={[styles.rowTitle, styles.deleteTitle]}>
+                  Delete Account
+                </Text>
+                <Text style={styles.deleteCaption}>Permanently remove your account</Text>
               </View>
-              {isDeleting ? (
-                <ActivityIndicator size="small" color={T.danger} />
-              ) : (
-                <Ionicons name="chevron-forward" size={24} color={T.danger} />
-              )}
-            </TouchableOpacity>
-          </View>
-        )}
+            </View>
+            {isDeleting ? (
+              <ActivityIndicator size="small" color={T.danger} />
+            ) : (
+              <Ionicons name="chevron-forward" size={24} color={T.danger} />
+            )}
+          </TouchableOpacity>
+        </View>
+
+        <Text style={styles.version}>Version 1.0.0</Text>
       </ScrollView>
     </View>
   );

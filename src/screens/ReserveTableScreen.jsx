@@ -1,10 +1,4 @@
-//
-
-///////////
-
-////REDUX
-
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -13,219 +7,163 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
-  Modal,
   StatusBar,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
 import { Colors, Fonts, AppImages } from '../res';
 import PremiumTheme from '../res/PremiumTheme';
 import Button from '../components/Button';
-import PopupDropdown from '../components/PopupDropdown';
 import CustomModal from '../components/ModalComponent';
 import { showToast } from '../services/Toast';
-import { useStripe } from '@stripe/stripe-react-native';
-import axios from 'axios';
 import baseURL from '../services/network/base_url';
 import ReserveHeader from '../components/ReserveHeader';
 
-const ReserveTableScreen = ({ route }) => {
-  const navigation = useNavigation();
-  const { userData, selectedData, screen } = route?.params ?? {};
+const T = PremiumTheme;
+
+const toArray = value => (Array.isArray(value) ? value.filter(Boolean) : []);
+const createSelectionMap = value =>
+  Object.fromEntries(toArray(value).map(item => [String(item), false]));
+
+const getResponseObject = value => value?.obj || value?.data?.obj || value || {};
+
+const ReserveTableScreen = ({ navigation, route }) => {
+  const { userData = {}, selectedData = {}, screen = 'Restaurant' } =
+    route?.params || {};
+  const token = useSelector(state => state.auth?.token);
+  const reduxUser = useSelector(state => state.auth?.user);
+  const responseObject = getResponseObject(userData);
+  const responseUser = responseObject?.userObj || responseObject?.user || {};
+  const dropdownOptions = responseObject?.dropdownOptions || {};
+  const isLounge = String(screen).toLowerCase().includes('lounge');
+
+  const occasionList = useMemo(
+    () => toArray(dropdownOptions?.occasions).map(String),
+    [dropdownOptions?.occasions],
+  );
+  const dietaryList = useMemo(
+    () => toArray(dropdownOptions?.dietaryRestrictionByUser).map(String),
+    [dropdownOptions?.dietaryRestrictionByUser],
+  );
+
   const [bookingConfirmModal, setBookingConfirmModal] = useState(false);
-  // Redux
-  const token = useSelector(state => state.auth.token);
-  const membershipNumber = useSelector(state => state.auth.membershipNumber);
-  const dispatch = useDispatch();
-
-  // Local state
-  const [modalVisible, setModalVisible] = useState(false);
-  const [cancelModalVisible, setCancelModalVisible] = useState(false);
-  const [name, setName] = useState(userData?.obj?.userObj?.name || '');
-  const [phone, setPhone] = useState(userData?.obj?.userObj?.phone || '');
+  const [name] = useState(
+    String(responseUser?.name || reduxUser?.name || reduxUser || ''),
+  );
+  const [phone] = useState(
+    String(responseUser?.phone || reduxUser?.phone || ''),
+  );
   const [notes, setNotes] = useState('');
-  const [sheetInitialized, setSheetInitialized] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const arrayToObject = arr =>
-    Object.fromEntries((arr || []).map(item => [item, false]));
-
-  const [occasions, setOccasions] = useState(
-    arrayToObject(userData?.obj?.dropdownOptions?.occasions),
+  const [occasions, setOccasions] = useState(() =>
+    createSelectionMap(dropdownOptions?.occasions),
   );
-  const [occasionsList] = useState(userData?.obj?.dropdownOptions?.occasions);
-
-  const [dietary, setDietary] = useState(
-    arrayToObject(userData?.obj?.dropdownOptions?.dietaryRestrictionByUser),
-  );
-  const [dietaryList] = useState(
-    userData?.obj?.dropdownOptions?.dietaryRestrictionByUser,
+  const [dietary, setDietary] = useState(() =>
+    createSelectionMap(dropdownOptions?.dietaryRestrictionByUser),
   );
 
-  const [dietaryByParty, setDietaryByParty] = useState(
-    arrayToObject(userData?.obj?.dropdownOptions?.dietaryRestrictionByParty),
-  );
-  const [dietaryListbyParty] = useState(
-    userData?.obj?.dropdownOptions?.dietaryRestrictionByParty,
-  );
-
-  const { initPaymentSheet, presentPaymentSheet } = useStripe();
-
-  const guestOptions = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10+'];
-  const [showGuestPopup, setShowGuestPopup] = useState(false);
-  const [guests, setGuests] = useState(null);
-
-  // Toggle functions
   const toggleOccasion = key =>
-    setOccasions(prev => ({ ...prev, [key]: !prev[key] }));
+    setOccasions(previous => ({ ...previous, [key]: !previous[key] }));
   const toggleDietary = key =>
-    setDietary(prev => ({ ...prev, [key]: !prev[key] }));
-  const toggleDietaryByParty = key =>
-    setDietaryByParty(prev => ({ ...prev, [key]: !prev[key] }));
+    setDietary(previous => ({ ...previous, [key]: !previous[key] }));
 
-  // ---- API Calls ----
+  const reservationId =
+    responseObject?.reservation?.reservationId ||
+    responseObject?.reservation?.id ||
+    userData?.reservationId ||
+    userData?.id;
+
   const updateReservation = async () => {
-    const data = {
-      reservationId: userData?.obj?.reservation?.reservationId,
-      userOccasion: occasions,
-      userDietary: dietary,
-      userNotes: notes,
-      userDietaryByParty: dietaryByParty,
-      cancellationPolicy: userData?.obj?.cancellationPolicy,
-    };
+    if (loading) return;
+
+    if (!token) {
+      showToast('error', 'Session expired. Please log in again.');
+      navigation?.navigate?.('Login');
+      return;
+    }
+
+    if (!reservationId) {
+      showToast(
+        'error',
+        'Reservation details are incomplete. Please create the reservation again.',
+      );
+      return;
+    }
 
     try {
+      setLoading(true);
       const response = await axios.put(
         `${baseURL.base_url1}reservations/updateRes`,
-        data,
-        { headers: { Authorization: `Bearer ${token}` }, timeout: 10000 },
-      );
-      showToast('success', response.data?.message);
-      if (response.data.success) {
-        setBookingConfirmModal(true);
-      }
-      // navigation.navigate('Payment', {
-      //   reservationId: userData?.obj?.reservation?.reservationId,
-      //   NoOfGuest: selectedData?.partySize,
-      // });
-    } catch (err) {
-      console.error('API Error:', err?.response?.data || err);
-      showToast('error', 'Something went wrong, try again!');
-      navigation.navigate('Payment', {
-        reservationId: userData?.obj?.reservation?.reservationId,
-        NoOfGuest: selectedData?.partySize,
-      });
-    }
-  };
-
-  const fetchPaymentIntentClientSecret = async (amountInCents, phone) => {
-    try {
-      const response = await fetch(
-        `${baseURL.base_url1}reservations/create-payment-intent`,
         {
-          method: 'POST',
+          reservationId,
+          userOccasion: occasions,
+          userDietary: dietary,
+          userNotes: notes.trim(),
+          userDietaryByParty: {},
+          cancellationPolicy: responseObject?.cancellationPolicy || null,
+        },
+        {
           headers: {
+            Accept: 'application/json',
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
+            'ngrok-skip-browser-warning': 'true',
           },
-          body: JSON.stringify({
-            amount: amountInCents,
-            currency: 'gbp',
-            phone,
-          }),
+          timeout: 15000,
         },
       );
 
-      const data = await response.json();
-      if (!response.ok)
-        throw new Error(data.error || 'Failed to fetch payment intent.');
-      return data;
+      if (response?.data?.success === false) {
+        throw new Error(
+          response.data?.message || 'Booking could not be confirmed.',
+        );
+      }
+
+      setBookingConfirmModal(true);
     } catch (error) {
-      console.error('Payment Error:', error);
-      showToast('error', 'Failed to fetch payment intent');
-      return null;
-    }
-  };
-
-  const initializePaymentSheet = async totalAmount => {
-    setLoading(true);
-    const paymentData = await fetchPaymentIntentClientSecret(
-      totalAmount,
-      phone,
-    );
-
-    if (
-      !paymentData ||
-      !paymentData.clientSecret ||
-      !paymentData.ephemeralKey ||
-      !paymentData.customer
-    ) {
-      showToast('error', 'Payment initialization failed.');
+      if (error?.response?.status === 401) {
+        showToast('error', 'Session expired. Please log in again.');
+        navigation?.navigate?.('Login');
+      } else if (error?.code === 'ECONNABORTED') {
+        showToast('error', 'Request timed out. Please try again.');
+      } else {
+        showToast(
+          'error',
+          error?.response?.data?.message ||
+            error?.message ||
+            'Something went wrong. Please try again.',
+        );
+      }
+    } finally {
       setLoading(false);
-      return;
-    }
-
-    const { error } = await initPaymentSheet({
-      merchantDisplayName: 'Colony App',
-      customerId: paymentData.customer,
-      customerEphemeralKeySecret: paymentData.ephemeralKey,
-      paymentIntentClientSecret: paymentData.clientSecret,
-      allowsDelayedPaymentMethods: true,
-      appearance: { colors: { primary: Colors.Muted_Gold || '#D4AF37' } },
-    });
-
-    if (error) {
-      showToast('error', `Payment sheet error: ${error.message}`);
-    } else {
-      setSheetInitialized(true);
-      openPaymentSheet();
-    }
-    setLoading(false);
-  };
-
-  const openPaymentSheet = async () => {
-    if (!sheetInitialized) {
-      showToast('error', 'Payment is still initializing. Try again.');
-      return;
-    }
-
-    setLoading(true);
-    const { error } = await presentPaymentSheet();
-    setLoading(false);
-
-    if (error) {
-      if (error.code !== 'Canceled')
-        showToast('error', `Payment failed: ${error.message}`);
-    } else {
-      showToast('success', 'Payment successful and booking confirmed.');
     }
   };
 
-  const proceed = async () => {
-    await updateReservation();
-    // optionally, you can also initializePaymentSheet(totalAmount) here if you want auto payment
-  };
-
-  // ---- Render ----
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={PremiumTheme.paper} />
+      <StatusBar barStyle="dark-content" backgroundColor={T.paper} />
       <ReserveHeader
-        title={'Confirmation'}
-        onBack={() => navigation.goBack()}
+        title="Confirmation"
+        onBack={() => navigation?.goBack?.()}
       />
-      {/* Header */}
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 140 }}
       >
-        <Image source={screen === 'Lounge' ? AppImages.lounge : AppImages.restaurant} style={styles.image} />
+        <Image
+          source={isLounge ? AppImages.lounge : AppImages.restaurant}
+          style={styles.image}
+        />
+
         <View style={styles.detailsContainer}>
           <Text style={styles.summaryTitle}>Afternoon tea on top</Text>
           <Text style={styles.summaryText}>{`${
-            selectedData?.date1 || selectedData?.date
-          } | ${selectedData?.time1 || selectedData?.time} | ${
-            selectedData?.guests || selectedData?.partySize
+            selectedData?.date1 || selectedData?.date || 'Date pending'
+          } | ${
+            selectedData?.time1 || selectedData?.time || 'Time pending'
+          } | ${
+            selectedData?.guests || selectedData?.partySize || 1
           } Guests`}</Text>
 
           <Text style={styles.label}>Name</Text>
@@ -234,10 +172,10 @@ const ReserveTableScreen = ({ route }) => {
           <Text style={styles.label}>Phone Number</Text>
           <TextInput value={phone} style={styles.textInput} editable={false} />
 
-          {screen !== 'Lounge' && (
+          {!isLounge && (
             <>
               <Text style={styles.subSectionTitle}>Special Occasion?</Text>
-              {(occasionsList || []).map(item => (
+              {occasionList.map(item => (
                 <TouchableOpacity
                   key={item}
                   style={styles.checkboxRow}
@@ -246,14 +184,11 @@ const ReserveTableScreen = ({ route }) => {
                   <View
                     style={[
                       styles.checkboxBox,
-                      occasions[item] && {
-                        backgroundColor: PremiumTheme.primary,
-                        borderColor: PremiumTheme.primary,
-                      },
+                      occasions[item] && styles.checkboxBoxSelected,
                     ]}
                   >
                     {occasions[item] && (
-                      <Text style={{ color: '#fff' }}>✔️</Text>
+                      <Text style={styles.checkmark}>✓</Text>
                     )}
                   </View>
                   <Text style={styles.checkboxText}>{item}</Text>
@@ -263,7 +198,7 @@ const ReserveTableScreen = ({ route }) => {
               <Text style={[styles.subSectionTitle, { marginTop: 14 }]}>
                 Dietary restrictions
               </Text>
-              {(dietaryList || []).map(item => (
+              {dietaryList.map(item => (
                 <TouchableOpacity
                   key={item}
                   style={styles.checkboxRow}
@@ -272,13 +207,12 @@ const ReserveTableScreen = ({ route }) => {
                   <View
                     style={[
                       styles.checkboxBox,
-                      dietary[item] && {
-                        backgroundColor: PremiumTheme.primary,
-                        borderColor: PremiumTheme.primary,
-                      },
+                      dietary[item] && styles.checkboxBoxSelected,
                     ]}
                   >
-                    {dietary[item] && <Text style={{ color: '#fff' }}>✔️</Text>}
+                    {dietary[item] && (
+                      <Text style={styles.checkmark}>✓</Text>
+                    )}
                   </View>
                   <Text style={styles.checkboxText}>{item}</Text>
                 </TouchableOpacity>
@@ -292,20 +226,23 @@ const ReserveTableScreen = ({ route }) => {
           <TextInput
             value={notes}
             onChangeText={setNotes}
-            style={[styles.textInput, { height: 90, textAlignVertical: 'top' }]}
+            style={[styles.textInput, styles.notesInput]}
             multiline
+            maxLength={500}
           />
         </View>
       </ScrollView>
-      {/* Footer */}
+
       <View style={styles.footer}>
         <Button
-          title="Proceed to Pay"
+          title={loading ? 'Please wait' : 'Proceed to Pay'}
+          disabled={loading}
           style={styles.payButton}
           textStyle={styles.payText}
-          onPress={proceed}
+          onPress={updateReservation}
         />
       </View>
+
       <CustomModal
         visible={bookingConfirmModal}
         onClose={() => setBookingConfirmModal(false)}
@@ -316,13 +253,13 @@ const ReserveTableScreen = ({ route }) => {
         onButtonPress={() => {
           setBookingConfirmModal(false);
           setTimeout(
-            () => navigation.navigate('BottomTabs', { screen: 'Account' }),
+            () => navigation?.navigate?.('BottomTabs', { screen: 'Account' }),
             200,
           );
         }}
         modalStyle={{ backgroundColor: '#fafafa' }}
         buttonStyle={{ backgroundColor: Colors.Muted_Gold, marginBottom: 20 }}
-        showCloseIcon={true}
+        showCloseIcon
       />
     </View>
   );
@@ -330,7 +267,6 @@ const ReserveTableScreen = ({ route }) => {
 
 export default ReserveTableScreen;
 
-const T = PremiumTheme;
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: T.paper },
   image: {
@@ -391,6 +327,7 @@ const styles = StyleSheet.create({
     color: T.ink,
     backgroundColor: T.surface,
   },
+  notesInput: { height: 90, textAlignVertical: 'top', paddingTop: 14 },
   subSectionTitle: {
     fontFamily: Fonts.instrumentSansBold || Fonts.instrumentSansMedium,
     fontSize: 14,
@@ -425,6 +362,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: T.surface,
   },
+  checkboxBoxSelected: {
+    backgroundColor: T.primary,
+    borderColor: T.primary,
+  },
+  checkmark: { color: T.surface, fontSize: 13, lineHeight: 15 },
   footer: {
     position: 'absolute',
     left: 0,

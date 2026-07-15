@@ -50,8 +50,6 @@ export default function ProfileAvatar({
     setImageFailed(false);
   }, [uri]);
 
-  console.log(uri, imageFailed, 'uri');
-
   return (
     <View
       style={[
@@ -64,11 +62,9 @@ export default function ProfileAvatar({
         style,
       ]}
     >
-      {uri ? (
+      {uri && !imageFailed ? (
         <Image
-          source={{
-            uri: 'https://moistness-shudder-partition.ngrok-free.dev/uploads/profilePictures/profile-1783751958745-204464919.jpg',
-          }}
+          source={{ uri }}
           style={{ width: size, height: size, borderRadius }}
           resizeMode="cover"
           onError={() => setImageFailed(true)}

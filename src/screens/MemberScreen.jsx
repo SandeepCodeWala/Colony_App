@@ -28,10 +28,7 @@ import {
   PremiumCard,
   CravButton,
 } from '../components/CravPremium';
-import {
-  ScreenSkeleton,
-  useFirstRenderSkeleton,
-} from '../components/LuxurySkeleton';
+import { ScreenSkeleton, useFirstRenderSkeleton } from '../components/LuxurySkeleton';
 
 const T = PremiumTheme;
 const fontReg = Fonts.instrumentSansRegular;
@@ -41,8 +38,7 @@ const MemberScreen = () => {
   const navigation = useNavigation();
   const reduxUser = useSelector(state => state.auth?.user);
   const reduxMembership = useSelector(
-    state =>
-      state.auth?.membershipNumber || state.auth?.user?.membership_number,
+    state => state.auth?.membershipNumber || state.auth?.user?.membership_number,
   );
   const { width, height } = useWindowDimensions();
 
@@ -159,15 +155,11 @@ const MemberScreen = () => {
                 <MiniStat label="Offers" value="2" />
               </View>
               <PremiumCard style={styles.collectContainer}>
-                <Image
-                  source={AppImages.restaurant}
-                  style={styles.imageBanner}
-                />
+                <Image source={AppImages.restaurant} style={styles.imageBanner} />
                 <View style={styles.collectTextContainer}>
                   <Text style={styles.collectTitle}>Collect your points</Text>
                   <Text style={styles.collectSub}>
-                    Collect points on every eligible visit and exchange them for
-                    premium rewards.
+                    Collect points on every eligible visit and exchange them for premium rewards.
                   </Text>
                   <CravButton
                     title="Collect Points"
@@ -186,8 +178,7 @@ const MemberScreen = () => {
                 {String(reduxUser?.loyalty_points ?? 0)}
               </Text>
               <Text style={styles.tierDescription}>
-                Continue collecting Tier Points on eligible visits to unlock
-                your next Colony membership tier.
+                Continue collecting Tier Points on eligible visits to unlock your next Colony membership tier.
               </Text>
               <View style={styles.progressBar}>
                 <View style={[styles.dot, styles.dotActive]} />
@@ -253,8 +244,7 @@ const MemberScreen = () => {
             <Text style={styles.modalKicker}>COLONY PRIVILEGE</Text>
             <Text style={styles.modalTitle}>Digital membership</Text>
             <Text style={styles.modalSubtitle}>
-              Present this card at the counter to collect points and access
-              member benefits.
+              Present this card at the counter to collect points and access member benefits.
             </Text>
 
             <View style={styles.qrOuter}>
@@ -274,14 +264,8 @@ const MemberScreen = () => {
             <Text style={styles.modalMembership}>MEMBERSHIP {memberShip}</Text>
 
             <View style={styles.modalFooter}>
-              <Ionicons
-                name="shield-checkmark-outline"
-                size={17}
-                color={T.primary}
-              />
-              <Text style={styles.modalFooterText}>
-                Verified Colony member card
-              </Text>
+              <Ionicons name="shield-checkmark-outline" size={17} color={T.primary} />
+              <Text style={styles.modalFooterText}>Verified Colony member card</Text>
             </View>
           </View>
         </View>
@@ -306,7 +290,6 @@ const styles = StyleSheet.create({
     shadowRadius: 24,
     shadowOffset: { width: 0, height: 16 },
     elevation: 8,
-    marginTop: 12,
   },
   heroTop: {
     flexDirection: 'row',
@@ -391,11 +374,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontFamily: fontReg,
   },
-  progressBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 22,
-  },
+  progressBar: { flexDirection: 'row', alignItems: 'center', marginVertical: 22 },
   dot: {
     width: 18,
     height: 18,

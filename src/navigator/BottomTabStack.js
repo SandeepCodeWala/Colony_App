@@ -28,7 +28,7 @@ const TabItem = ({ focused, icon, label }) => (
 
 const BottomTabs = () => {
   const user = useSelector(state => state.auth.user);
-
+  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
   const loyaltyScreen = user?.name ? 'MemberScreen' : 'Loyalty';
 
   return (
@@ -44,46 +44,22 @@ const BottomTabs = () => {
       <Tab.Screen
         name="Explore"
         component={Home}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabItem
-              focused={focused}
-              icon={AppImages.explore}
-              label="Explore"
-            />
-          ),
-        }}
+        options={{ tabBarIcon: ({ focused }) => <TabItem focused={focused} icon={AppImages.explore} label="Explore" /> }}
       />
       <Tab.Screen
         name="Book"
         component={BookScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabItem focused={focused} icon={AppImages.calender} label="Book" />
-          ),
-        }}
+        options={{ tabBarIcon: ({ focused }) => <TabItem focused={focused} icon={AppImages.calender} label="Book" /> }}
       />
       <Tab.Screen
         name={loyaltyScreen}
         component={loyaltyScreen === 'Loyalty' ? Loyalty : MemberScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabItem
-              focused={focused}
-              icon={AppImages.loyalty}
-              label="My Colony"
-            />
-          ),
-        }}
+        options={{ tabBarIcon: ({ focused }) => <TabItem focused={focused} icon={AppImages.loyalty} label="My Colony" /> }}
       />
       <Tab.Screen
         name="Account"
-        component={Settings}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabItem focused={focused} icon={AppImages.Account} label="Menu" />
-          ),
-        }}
+        component={isLoggedIn ? Settings : Login}
+        options={{ tabBarIcon: ({ focused }) => <TabItem focused={focused} icon={AppImages.Account} label="Menu" /> }}
       />
     </Tab.Navigator>
   );
@@ -104,7 +80,7 @@ const styles = StyleSheet.create({
   },
   tabBarItem: { height: 64 },
   tabItem: {
-    width: 60,
+    width: '100%',
     height: 62,
     alignItems: 'center',
     justifyContent: 'center',

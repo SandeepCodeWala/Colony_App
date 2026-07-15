@@ -27,6 +27,7 @@ import MyBenefits from '../screens/MyBenefits';
 import RegisteredOffers from '../screens/RegisteredOffers';
 import HelpSupport from '../screens/HelpSupportScreen';
 import { ScreenSkeleton, useFirstRenderSkeleton } from '../components/LuxurySkeleton';
+import ScreenErrorBoundary from '../components/ScreenErrorBoundary';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,7 +35,11 @@ const withPageSkeleton = (Component, duration = 620) => {
   const WrappedScreen = props => {
     const loading = useFirstRenderSkeleton(duration);
     if (loading) return <ScreenSkeleton variant="page" />;
-    return <Component {...props} />;
+    return (
+      <ScreenErrorBoundary>
+        <Component {...props} />
+      </ScreenErrorBoundary>
+    );
   };
   WrappedScreen.displayName = `WithPageSkeleton(${Component.displayName || Component.name || 'Screen'})`;
   return WrappedScreen;
@@ -54,7 +59,7 @@ const ReservationHistoryWrapped = withPageSkeleton(ReservationHistory);
 const LoyaltyPassWrapped = withPageSkeleton(LoyaltyPass);
 
 function MainStack() {
-  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
+  const isLoggedIn = useSelector(state => state.auth?.isLoggedIn);
   const isBooting = useFirstRenderSkeleton(1150);
 
   if (isBooting) return <ScreenSkeleton variant="page" />;

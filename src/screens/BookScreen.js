@@ -25,51 +25,87 @@ export default function BookScreen() {
   const user = useSelector(state => state.auth?.user);
   const membershipNumber = useSelector(state => state.auth?.membershipNumber);
   const loading = useFirstRenderSkeleton(820);
-  const sectionHeight = Math.max(560, (height - (Platform.OS === 'ios' ? 94 : 78)) * 0.76);
+  const sectionHeight = Math.max(
+    560,
+    (height - (Platform.OS === 'ios' ? 94 : 78)) * 0.76,
+  );
 
-  const reserveTable = () => {
-    if (user?.name || user?.membership_number || membershipNumber) {
-      navigation.navigate('ReserveLounge', { screen: 'table' });
-    } else {
+  const openReservation = experience => {
+    const isAuthenticated = Boolean(
+      user?.name || user?.membership_number || membershipNumber,
+    );
+
+    if (!isAuthenticated) {
       navigation.navigate('Login');
-      showToast('error', 'Please sign in to reserve your table.');
+      showToast('error', 'Please sign in to make a reservation.');
+      return;
     }
+
+    navigation.navigate('ReserveLounge', { screen: experience });
   };
 
   if (loading) return <ScreenSkeleton variant="image" />;
 
   return (
     <View style={styles.root}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="light-content"
+      />
       <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
-        <ImageBackground source={AppImages.restaurant} style={[styles.section, { minHeight: sectionHeight }]} resizeMode="cover">
+        <ImageBackground
+          source={AppImages.restaurant}
+          style={[styles.section, { minHeight: sectionHeight }]}
+          resizeMode="cover"
+        >
           <View style={styles.overlay} />
           <View style={styles.copy}>
             <Text style={styles.category}>RESTAURANTS</Text>
             <Text style={styles.title}>Reserve your table</Text>
-            <TouchableOpacity activeOpacity={0.86} style={styles.button} onPress={reserveTable}>
+            <TouchableOpacity
+              activeOpacity={0.86}
+              style={styles.button}
+              onPress={() => openReservation('Restaurant')}
+            >
               <Text style={styles.buttonText}>RESERVE A TABLE</Text>
             </TouchableOpacity>
           </View>
         </ImageBackground>
 
-        <ImageBackground source={AppImages.lounge} style={[styles.section, { minHeight: sectionHeight }]} resizeMode="cover">
+        <ImageBackground
+          source={AppImages.lounge}
+          style={[styles.section, { minHeight: sectionHeight }]}
+          resizeMode="cover"
+        >
           <View style={styles.overlay} />
           <View style={styles.copy}>
             <Text style={styles.category}>PRIVATE LOUNGE</Text>
             <Text style={styles.title}>An intimate escape</Text>
-            <TouchableOpacity activeOpacity={1} disabled style={[styles.button, styles.disabledButton]}>
-              <Text style={[styles.buttonText, styles.disabledButtonText]}>COMING SOON</Text>
+            <TouchableOpacity
+              activeOpacity={0.86}
+              style={styles.button}
+              onPress={() => openReservation('Lounge')}
+            >
+              <Text style={styles.buttonText}>RESERVE A LOUNGE</Text>
             </TouchableOpacity>
           </View>
         </ImageBackground>
 
-        <ImageBackground source={AppImages.events} style={[styles.section, { minHeight: sectionHeight }]} resizeMode="cover">
+        <ImageBackground
+          source={AppImages.events}
+          style={[styles.section, { minHeight: sectionHeight }]}
+          resizeMode="cover"
+        >
           <View style={styles.overlay} />
           <View style={styles.copy}>
             <Text style={styles.category}>COLONY EVENTS</Text>
             <Text style={styles.title}>Celebrate beautifully</Text>
-            <TouchableOpacity activeOpacity={0.86} style={styles.button} onPress={() => navigation.navigate('BookEvent')}>
+            <TouchableOpacity
+              activeOpacity={0.86}
+              style={styles.button}
+              onPress={() => navigation.navigate('BookEvent')}
+            >
               <Text style={styles.buttonText}>RESERVE AN EVENT</Text>
             </TouchableOpacity>
           </View>
@@ -82,7 +118,10 @@ export default function BookScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: T.ink },
   section: { width: '100%', justifyContent: 'flex-end' },
-  overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(10,8,6,0.31)' },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(10,8,6,0.31)',
+  },
   copy: { paddingHorizontal: 28, paddingBottom: 54, alignItems: 'center' },
   category: {
     color: T.surface,
@@ -116,6 +155,4 @@ const styles = StyleSheet.create({
     fontSize: 13,
     letterSpacing: 3.1,
   },
-  disabledButton: { backgroundColor: 'rgba(255,255,255,0.72)' },
-  disabledButtonText: { color: T.muted },
 });

@@ -1,12 +1,15 @@
 import axios from 'axios';
 import baseURL from './base_url';
 
-const buildHeaders = authKey => {
+const REQUEST_TIMEOUT = 15000;
+
+const buildHeaders = (authKey, isJson = true) => {
   const headers = {
     Accept: 'application/json',
-    'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true',
   };
 
+  if (isJson) headers['Content-Type'] = 'application/json';
   if (authKey) headers.Authorization = `Bearer ${authKey}`;
   return headers;
 };
@@ -14,105 +17,85 @@ const buildHeaders = authKey => {
 const normalizeError = error =>
   error?.response?.data || {
     success: false,
-    message: error?.message || 'Unable to connect to the server',
+    message:
+      error?.code === 'ECONNABORTED'
+        ? 'The request timed out. Please try again.'
+        : error?.message || 'Unable to connect to the server',
   };
 
-export async function getApi(method, authKey) {
+const request = async config => {
   try {
-    const response = await axios.get(baseURL.base_url + method, {
-      headers: buildHeaders(authKey),
-    });
+    const response = await axios({ timeout: REQUEST_TIMEOUT, ...config });
     return response.data;
   } catch (error) {
-    console.log('GET API Error:', error?.response?.data || error.message);
+    if (__DEV__) {
+      console.warn('API request failed:', error?.response?.data || error?.message);
+    }
     return normalizeError(error);
   }
+};
+
+export function getApi(method, authKey) {
+  return request({
+    method: 'get',
+    url: `${baseURL.base_url}${method}`,
+    headers: buildHeaders(authKey),
+  });
 }
 
-export async function getAPI(method) {
-  try {
-    const response = await axios.get((baseURL.termsBaseUrl || baseURL.base_url) + method, {
-      headers: buildHeaders(),
-    });
-    return response.data;
-  } catch (error) {
-    console.log('GET Terms API Error:', error?.response?.data || error.message);
-    return normalizeError(error);
-  }
+export function getAPI(method) {
+  return request({
+    method: 'get',
+    url: `${baseURL.termsBaseUrl || baseURL.base_url}${method}`,
+    headers: buildHeaders(),
+  });
 }
 
-export async function postAPI(method, data, authKey) {
+export function postAPI(method, data, authKey) {
   return postApi(method, data, authKey);
 }
 
-export async function postApi(method, data, authKey) {
-  try {
-    const response = await axios.post(baseURL.base_url + method, data, {
-      headers: buildHeaders(authKey),
-    });
-    return response.data;
-  } catch (error) {
-    console.log('POST API Error:', error?.response?.data || error.message);
-    return normalizeError(error);
-  }
+export function postApi(method, data, authKey) {
+  return request({
+    method: 'post',
+    url: `${baseURL.base_url}${method}`,
+    data,
+    headers: buildHeaders(authKey),
+  });
 }
 
-export async function postAbsoluteApi(url, data, authKey) {
-  try {
-    const response = await axios.post(url, data, {
-      headers: {
-        ...buildHeaders(authKey),
-        'ngrok-skip-browser-warning': 'true',
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.log('Absolute POST API Error:', error?.response?.data || error.message);
-    return normalizeError(error);
-  }
+export function postAbsoluteApi(url, data, authKey) {
+  return request({
+    method: 'post',
+    url: String(url || '').trim(),
+    data,
+    headers: buildHeaders(authKey),
+  });
 }
 
-export async function putApiWithBase1(method, data, authKey) {
-  try {
-    const response = await axios.put(baseURL.base_url1 + method, data, {
-      headers: buildHeaders(authKey),
-    });
-    return response.data;
-  } catch (error) {
-    console.log('PUT API Error:', error?.response?.data || error.message);
-    return normalizeError(error);
-  }
+export function putApiWithBase1(method, data, authKey) {
+  return request({
+    method: 'put',
+    url: `${baseURL.base_url1}${method}`,
+    data,
+    headers: buildHeaders(authKey),
+  });
 }
 
-
-export async function putMultipartApiWithBase1(method, formData, authKey) {
-  try {
-    const headers = { Accept: 'application/json' };
-    if (authKey) headers.Authorization = `Bearer ${authKey}`;
-
-    const response = await axios.put(baseURL.base_url1 + method, formData, {
-      headers,
-    });
-    return response.data;
-  } catch (error) {
-    console.log(
-      'PUT Multipart API Error:',
-      error?.response?.data || error.message,
-    );
-    return normalizeError(error);
-  }
+export function putMultipartApiWithBase1(method, formData, authKey) {
+  return request({
+    method: 'put',
+    url: `${baseURL.base_url1}${method}`,
+    data: formData,
+    headers: buildHeaders(authKey, false),
+  });
 }
 
-export async function CreateRestaurant(data, authKey) {
-  try {
-    const response = await axios.post(
-      `${baseURL.base_url1}restaurant`,
-      data,
-      { headers: buildHeaders(authKey) },
-    );
-    return response.data;
-  } catch (error) {
-    console.log('Create Restaurant API Error:', error?.response?.data || error.message);
-    return normalizeError(error);
-  }
+export function CreateRestaurant(data, authKey) {
+  return request({
+    method: 'post',
+    url: `${baseURL.base_url1}restaurant`,
+    data,
+    headers: buildHeaders(authKey),
+  });
 }

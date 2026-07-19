@@ -25,10 +25,7 @@ export default function BookScreen() {
   const user = useSelector(state => state.auth?.user);
   const membershipNumber = useSelector(state => state.auth?.membershipNumber);
   const loading = useFirstRenderSkeleton(820);
-  const sectionHeight = Math.max(
-    560,
-    (height - (Platform.OS === 'ios' ? 94 : 78)) * 0.76,
-  );
+  const sectionHeight = Math.max(590, height - (Platform.OS === 'ios' ? 94 : 78));
 
   const openReservation = experience => {
     const isAuthenticated = Boolean(
@@ -73,24 +70,7 @@ export default function BookScreen() {
           </View>
         </ImageBackground>
 
-        <ImageBackground
-          source={AppImages.lounge}
-          style={[styles.section, { minHeight: sectionHeight }]}
-          resizeMode="cover"
-        >
-          <View style={styles.overlay} />
-          <View style={styles.copy}>
-            <Text style={styles.category}>PRIVATE LOUNGE</Text>
-            <Text style={styles.title}>An intimate escape</Text>
-            <TouchableOpacity
-              activeOpacity={0.86}
-              style={styles.button}
-              onPress={() => openReservation('Lounge')}
-            >
-              <Text style={styles.buttonText}>RESERVE A LOUNGE</Text>
-            </TouchableOpacity>
-          </View>
-        </ImageBackground>
+    
 
         <ImageBackground
           source={AppImages.events}

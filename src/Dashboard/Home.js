@@ -37,15 +37,15 @@ const EXPERIENCES = [
     image: AppImages.events,
     destination: 'event',
   },
-  {
-    id: 'lounge',
-    eyebrow: 'PRIVATE LOUNGE',
-    title: 'A refined escape',
-    description: 'A private lounge experience is being prepared for evenings of comfort and understated luxury.',
-    cta: 'COMING SOON',
-    image: AppImages.lounge,
-    disabled: true,
-  },
+  // {
+  //   id: 'lounge',
+  //   eyebrow: 'PRIVATE LOUNGE',
+  //   title: 'A refined escape',
+  //   description: 'A private lounge experience is being prepared for evenings of comfort and understated luxury.',
+  //   cta: 'COMING SOON',
+  //   image: AppImages.lounge,
+  //   disabled: true,
+  // },
 ];
 
 export default function Home() {
@@ -103,7 +103,7 @@ export default function Home() {
                   {item.cta}
                 </Text>
               </TouchableOpacity>
-              <Text style={styles.sectionNumber}>0{index + 1} / 03</Text>
+              <Text style={styles.sectionNumber}>0{index + 1} / 02</Text>
             </View>
           </ImageBackground>
         ))}

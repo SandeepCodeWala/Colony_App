@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   },
   tabBarItem: { height: 64 },
   tabItem: {
-    width: '100%',
+    width: 80,
     height: 62,
     alignItems: 'center',
     justifyContent: 'center',
